@@ -1,7 +1,8 @@
 #include <stdio.h>
 
-int main()
+#include <windows.h>
+
+int APIENTRY WinMain(HINSTANCE hInst, HINSTANCE hInstPrev, PSTR cmdline, int cmdshow)
 {
-	printf("Hello world!");
-	return 0;
+	return MessageBox(NULL, "hello, world", "caption", 0);
 }
