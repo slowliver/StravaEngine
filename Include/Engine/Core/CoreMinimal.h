@@ -2,8 +2,13 @@
 
 #include <cstdint>
 
+#define STRAVA_VERIFY(Condition)
+#define STRAVA_VERIFYM(Condition, Message)
+
 namespace StravaEngine::Core
 {
+using Byte = std::byte;
+	
 using Int8 = std::int8_t;
 using UInt8 = std::uint8_t;
 using Int16 = std::int16_t;
@@ -14,9 +19,10 @@ using Int64 = std::int64_t;
 using UInt64 = std::uint64_t;
 using Size = UInt64;
 
-using Float = float;
-using Double = double;
+using NativeHandle = UInt64;
 }
+
+using StravaEngine::Core::Byte;
 
 using StravaEngine::Core::Int8;
 using StravaEngine::Core::UInt8;
@@ -28,5 +34,4 @@ using StravaEngine::Core::Int64;
 using StravaEngine::Core::UInt64;
 using StravaEngine::Core::Size;
 
-using StravaEngine::Core::Float;
-using StravaEngine::Core::Double;
+using StravaEngine::Core::NativeHandle;

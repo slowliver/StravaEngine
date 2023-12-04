@@ -13,170 +13,247 @@ public:
 	using value_type = Type;
 	using difference_type = ptrdiff_t;
 
-private:
-	using PointerType = const Type*;
-	using ReferenceType = const Type&;
-
-    enum { _EEN_SIZE = _Size }; // helper for expression evaluator
-
 public:
 	constexpr ArrayConstIterator()
 		: m_pointer()
 		, m_index(0)
 	{}
 
-	constexpr explicit ArrayConstIterator(PointerType pointer, Size Offset = 0)
+	constexpr explicit ArrayConstIterator(const Type* pointer, Size offset = 0)
 		: m_pointer(pointer)
-		, m_index(Offset)
+		, m_index(offset)
 	{}
 
-	[[nodiscard]] constexpr ReferenceType operator*() const
+	[[nodiscard]]
+	constexpr const Type* operator->() const
+	{
+		STRAVA_VERIFY(m_pointer);
+		STRAVA_VERIFY(m_index < k_size);
+		return m_pointer + m_index;
+	}
+
+	[[nodiscard]]
+	constexpr const Type& operator*() const
 	{
 		return *operator->();
 	}
 
-    _NODISCARD _CONSTEXPR17 pointer operator->() const noexcept {
-        _STL_VERIFY(_Ptr, "cannot dereference value-initialized array iterator");
-        _STL_VERIFY(_Idx < _Size, "cannot dereference out of range array iterator");
-        return _Ptr + _Idx;
-    }
+	constexpr ArrayConstIterator& operator++()
+	{
+		STRAVA_VERIFY(m_pointer);
+		STRAVA_VERIFY(m_index < k_size);
+		++m_index;
+		return *this;
+	}
 
-    _CONSTEXPR17 _Array_const_iterator& operator++() noexcept {
-        _STL_VERIFY(_Ptr, "cannot increment value-initialized array iterator");
-        _STL_VERIFY(_Idx < _Size, "cannot increment array iterator past end");
-        ++_Idx;
-        return *this;
-    }
+	constexpr ArrayConstIterator operator++(int)
+	{
+		ArrayConstIterator temp = *this;
+		++*this;
+		return temp;
+	}
 
-    _CONSTEXPR17 _Array_const_iterator operator++(int) noexcept {
-        _Array_const_iterator _Tmp = *this;
-        ++*this;
-        return _Tmp;
-    }
+	constexpr ArrayConstIterator& operator--()
+	{
+		STRAVA_VERIFY(m_pointer);
+		STRAVA_VERIFY(m_index != 0);
+		--m_index;
+		return *this;
+	}
 
-    _CONSTEXPR17 _Array_const_iterator& operator--() noexcept {
-        _STL_VERIFY(_Ptr, "cannot decrement value-initialized array iterator");
-        _STL_VERIFY(_Idx != 0, "cannot decrement array iterator before begin");
-        --_Idx;
-        return *this;
-    }
+	constexpr ArrayConstIterator operator--(int)
+	{
+		ArrayConstIterator temp = *this;
+		--*this;
+		return temp;
+	}
 
-    _CONSTEXPR17 _Array_const_iterator operator--(int) noexcept {
-        _Array_const_iterator _Tmp = *this;
-        --*this;
-        return _Tmp;
-    }
+	constexpr ArrayConstIterator& operator+=(const ptrdiff_t offset)
+	{
+		m_index += static_cast<Size>(offset);
+		return *this;
+	}
 
-    constexpr void _Verify_offset(const ptrdiff_t _Off) const noexcept {
-        if (_Off != 0) {
-            _STL_VERIFY(_Ptr, "cannot seek value-initialized array iterator");
-        }
+	constexpr ArrayConstIterator& operator-=(const ptrdiff_t offset)
+	{
+		return *this += -offset;
+	}
 
-        if (_Off < 0) {
-            _STL_VERIFY(_Idx >= size_t{0} - static_cast<size_t>(_Off), "cannot seek array iterator before begin");
-        }
+	[[nodiscard]]
+	constexpr ptrdiff_t operator-(const ArrayConstIterator& right) const
+	{
+		return static_cast<ptrdiff_t>(m_index - right.m_index);
+	}
 
-        if (_Off > 0) {
-            _STL_VERIFY(_Size - _Idx >= static_cast<size_t>(_Off), "cannot seek array iterator after end");
-        }
-    }
+	[[nodiscard]]
+	constexpr const Type& operator[](const ptrdiff_t offset) const
+	{
+		return *(*this + offset);
+	}
 
-    _CONSTEXPR17 _Array_const_iterator& operator+=(const ptrdiff_t _Off) noexcept {
-        _Verify_offset(_Off);
-        _Idx += static_cast<size_t>(_Off);
-        return *this;
-    }
+	[[nodiscard]]
+	constexpr bool operator==(const ArrayConstIterator& right) const
+	{
+		return m_index == right.m_index;
+	}
 
-    _CONSTEXPR17 _Array_const_iterator& operator-=(const ptrdiff_t _Off) noexcept {
-        return *this += -_Off;
-    }
+	[[nodiscard]]
+	constexpr bool operator<(const ArrayConstIterator& right) const
+	{
+		return m_index < right.m_index;
+	}
 
-    _NODISCARD _CONSTEXPR17 ptrdiff_t operator-(const _Array_const_iterator& _Right) const noexcept {
-        _Compat(_Right);
-        return static_cast<ptrdiff_t>(_Idx - _Right._Idx);
-    }
+	[[nodiscard]]
+	constexpr ArrayConstIterator operator+(const ptrdiff_t offset) const
+	{
+		ArrayConstIterator temp = *this;
+		temp += offset;
+		return temp;
+	}
 
-    _NODISCARD _CONSTEXPR17 reference operator[](const ptrdiff_t _Off) const noexcept {
-        return *(*this + _Off);
-    }
+	[[nodiscard]]
+	constexpr ArrayConstIterator operator-(const ptrdiff_t offset) const
+	{
+		ArrayConstIterator temp = *this;
+		temp -= offset;
+		return temp;
+	}
 
-    _NODISCARD _CONSTEXPR17 bool operator==(const _Array_const_iterator& _Right) const noexcept {
-        _Compat(_Right);
-        return _Idx == _Right._Idx;
-    }
+	[[nodiscard]]
+	constexpr ArrayConstIterator operator+(const ptrdiff_t offset, ArrayConstIterator next)
+	{
+		next += offset;
+		return next;
+	}
 
-#if _HAS_CXX20
-    _NODISCARD constexpr strong_ordering operator<=>(const _Array_const_iterator& _Right) const noexcept {
-        _Compat(_Right);
-        return _Idx <=> _Right._Idx;
-    }
-#else // ^^^ _HAS_CXX20 ^^^ / vvv !_HAS_CXX20 vvv
-    _NODISCARD _CONSTEXPR17 bool operator<(const _Array_const_iterator& _Right) const noexcept {
-        _Compat(_Right);
-        return _Idx < _Right._Idx;
-    }
-#endif // !_HAS_CXX20
+	[[nodiscard]]
+	constexpr bool operator!=(const ArrayConstIterator& right) const
+	{
+		return !(*this == right);
+	}
 
-    _CONSTEXPR17 void _Compat(const _Array_const_iterator& _Right) const noexcept { // test for compatible iterator pair
-        _STL_VERIFY(_Ptr == _Right._Ptr, "array iterators incompatible");
-    }
+	[[nodiscard]]
+	constexpr bool operator>(const ArrayConstIterator& right) const
+	{
+		return right < *this;
+	}
 
-    using _Prevent_inheriting_unwrap = _Array_const_iterator;
+	[[nodiscard]]
+	constexpr bool operator<=(const ArrayConstIterator& right) const
+	{
+		return !(right < *this);
+	}
 
-    _NODISCARD constexpr pointer _Unwrapped() const noexcept {
-        return _Ptr + _Idx;
-    }
-
-    constexpr void _Verify_with(const _Array_const_iterator& _Last) const noexcept {
-        // note _Compat check inside operator<=
-        _STL_VERIFY(*this <= _Last, "array iterator range transposed");
-    }
-
-    constexpr void _Seek_to(pointer _It) noexcept {
-        _Idx = static_cast<size_t>(_It - _Ptr);
-    }
+	[[nodiscard]]
+	constexpr bool operator>=(const ArrayConstIterator& right) const
+	{
+		return !(*this < right);
+	}
 
 private:
-	PointerType m_pointer;
+	const Type* m_pointer;
 	Size m_index;
+};
+
+
+template <class Type, Size k_size>
+class ArrayIterator : public ArrayConstIterator<Type, k_size>
+{
+public:
+	using iterator_category = std::random_access_iterator_tag;
+	using value_type = Type;
+	using difference_type = ptrdiff_t;
 
 public:
-    _NODISCARD _CONSTEXPR17 _Array_const_iterator operator+(const ptrdiff_t _Off) const noexcept {
-        _Array_const_iterator _Tmp = *this;
-        _Tmp += _Off;
-        return _Tmp;
-    }
+	constexpr ArrayIterator()
+	{}
 
-    _NODISCARD _CONSTEXPR17 _Array_const_iterator operator-(const ptrdiff_t _Off) const noexcept {
-        _Array_const_iterator _Tmp = *this;
-        _Tmp -= _Off;
-        return _Tmp;
-    }
+	constexpr explicit ArrayIterator(Type* pointer, Size offset = 0)
+		: ArrayConstIterator<Type, k_size>(pointer, offset)
+	{}
 
-    _NODISCARD_FRIEND _CONSTEXPR17 _Array_const_iterator operator+(
-        const ptrdiff_t _Off, _Array_const_iterator _Next) noexcept {
-        _Next += _Off;
-        return _Next;
-    }
+	[[nodiscard]]
+	constexpr Type& operator*() const
+	{
+		return const_cast<Type&>(ArrayConstIterator<Type, k_size>::operator*());
+	}
 
-#if !_HAS_CXX20
-    _NODISCARD _CONSTEXPR17 bool operator!=(const _Array_const_iterator& _Right) const noexcept {
-        return !(*this == _Right);
-    }
+	[[nodiscard]]
+	constexpr Type* operator->() const
+	{
+		return const_cast<Type*>(ArrayConstIterator<Type, k_size>::operator->());
+	}
 
-    _NODISCARD _CONSTEXPR17 bool operator>(const _Array_const_iterator& _Right) const noexcept {
-        return _Right < *this;
-    }
+	constexpr ArrayIterator& operator++()
+	{
+		ArrayConstIterator<Type, k_size>::operator++();
+		return *this;
+	}
 
-    _NODISCARD _CONSTEXPR17 bool operator<=(const _Array_const_iterator& _Right) const noexcept {
-        return !(_Right < *this);
-    }
+	constexpr ArrayIterator operator++(int)
+	{
+		ArrayIterator temp = *this;
+		ArrayConstIterator<Type, k_size>::operator++();
+		return temp;
+	}
 
-    _NODISCARD _CONSTEXPR17 bool operator>=(const _Array_const_iterator& _Right) const noexcept {
-        return !(*this < _Right);
-    }
-#endif // !_HAS_CXX20
+	constexpr ArrayIterator& operator--()
+	{
+		ArrayConstIterator<Type, k_size>::operator--();
+		return *this;
+	}
+
+	constexpr ArrayIterator operator--(int)
+	{
+		ArrayIterator temp = *this;
+		ArrayConstIterator<Type, k_size>::operator--();
+		return temp;
+	}
+
+	constexpr ArrayIterator& operator+=(const ptrdiff_t offset)
+	{
+		ArrayConstIterator<Type, k_size>::operator+=(offset);
+		return *this;
+	}
+
+	[[nodiscard]]
+	constexpr ArrayIterator operator+(const ptrdiff_t offset) const
+	{
+		ArrayIterator temp = *this;
+		temp += offset;
+		return temp;
+	}
+
+	[[nodiscard]]
+	constexpr ArrayIterator operator+(const ptrdiff_t offset, ArrayIterator next)
+	{
+		next += offset;
+		return next;
+	}
+
+	constexpr ArrayIterator& operator-=(const ptrdiff_t offset)
+	{
+		ArrayConstIterator<Type, k_size>::operator-=(offset);
+		return *this;
+	}
+
+	using ArrayConstIterator<Type, k_size>::operator-;
+
+	[[nodiscard]]
+	constexpr ArrayIterator operator-(const ptrdiff_t offset) const
+	{
+		ArrayIterator temp = *this;
+		temp -= offset;
+		return temp;
+	}
+
+	[[nodiscard]]
+	constexpr Type& operator[](const ptrdiff_t offset) const
+	{
+		return const_cast<Type&>(ArrayConstIterator<Type, k_size>::operator[](offset));
+	}
 };
+
 
 namespace StravaEngine::Core
 {
