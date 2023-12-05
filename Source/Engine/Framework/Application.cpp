@@ -2,6 +2,8 @@
 
 #include <Engine/Framework/Application.h>
 
+#include <Engine/Graphics/Renderer.h>
+
 namespace StravaEngine::Framework
 {
 static LRESULT Application_WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
@@ -33,6 +35,10 @@ static LRESULT Application_WindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 		return 0;
 
 	case WM_PAINT:
+	{
+		auto* renderer = Graphics::Renderer::GetInstance();
+		renderer->Update();
+	}
 		//		if (pSample)
 		//		{
 		//			pSample->OnUpdate();
@@ -51,6 +57,8 @@ static LRESULT Application_WindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 Application::Application(const ApplicationSpec& spec)
 {
+	auto* renderer = Graphics::Renderer::CreateInstance();
+
 	HINSTANCE hInstance = (HINSTANCE)spec.m_nativeHandle;
 
 	// Initialize the window class.
