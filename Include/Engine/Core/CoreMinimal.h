@@ -2,8 +2,8 @@
 
 #include <cstdint>
 
-#define STRAVA_VERIFY(Condition)
-#define STRAVA_VERIFYM(Condition, Message)
+#define STRAVA_VERIFY(condition)
+#define STRAVA_VERIFYM(condition, message)
 
 namespace StravaEngine::Core
 {

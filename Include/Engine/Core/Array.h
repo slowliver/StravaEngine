@@ -13,8 +13,8 @@ public:
 	using iterator_category = std::random_access_iterator_tag;
 	using value_type = Type;
 	using difference_type = ptrdiff_t;
-	using reference = const Type&;
 	using pointer = const Type*;
+	using reference = const Type&;
 
 public:
 	constexpr ArrayConstIterator()
@@ -27,6 +27,13 @@ public:
 		, m_index(offset)
 	{}
 
+	// Begin read ops.
+	[[nodiscard]]
+	constexpr reference operator*() const
+	{
+		return *operator->();
+	}
+
 	[[nodiscard]]
 	constexpr pointer operator->() const
 	{
@@ -36,11 +43,13 @@ public:
 	}
 
 	[[nodiscard]]
-	constexpr reference operator*() const
+	constexpr reference operator[](const difference_type offset) const
 	{
-		return *operator->();
+		return *(*this + offset);
 	}
+	// End read ops.
 
+	// Begin forward ops.
 	constexpr ArrayConstIterator& operator++()
 	{
 		STRAVA_VERIFY(m_pointer);
@@ -55,7 +64,9 @@ public:
 		++*this;
 		return temp;
 	}
+	// End forward ops.
 
+	// Begin back ops.
 	constexpr ArrayConstIterator& operator--()
 	{
 		STRAVA_VERIFY(m_pointer);
@@ -70,30 +81,47 @@ public:
 		--*this;
 		return temp;
 	}
+	// End back ops.
+
+	// Begin forward any ops.
+	[[nodiscard]]
+	constexpr ArrayConstIterator operator+(const difference_type offset) const
+	{
+		ArrayConstIterator temp = *this;
+		temp.m_index += offset;
+		return temp;
+	}
 
 	constexpr ArrayConstIterator& operator+=(const difference_type offset)
 	{
 		m_index += static_cast<Size>(offset);
 		return *this;
 	}
+	// End forward any ops.
 
+	// Begin back any ops.
+	[[nodiscard]]
+	constexpr ArrayConstIterator operator-(const difference_type offset) const
+	{
+		ArrayConstIterator temp = *this;
+		temp.m_index -= offset;
+		return temp;
+	}
 	constexpr ArrayConstIterator& operator-=(const difference_type offset)
 	{
 		return *this += -offset;
 	}
+	// End back any ops.
 
+	// Begin difference ops.
 	[[nodiscard]]
 	constexpr difference_type operator-(const ArrayConstIterator& right) const
 	{
 		return static_cast<difference_type>(m_index - right.m_index);
 	}
+	// End difference ops.
 
-	[[nodiscard]]
-	constexpr reference operator[](const difference_type offset) const
-	{
-		return *(*this + offset);
-	}
-
+	// Begin comparison ops.
 	[[nodiscard]]
 	constexpr bool operator==(const ArrayConstIterator& right) const
 	{
@@ -101,40 +129,15 @@ public:
 	}
 
 	[[nodiscard]]
-	constexpr bool operator<(const ArrayConstIterator& right) const
-	{
-		return m_index < right.m_index;
-	}
-
-	[[nodiscard]]
-	constexpr ArrayConstIterator operator+(const difference_type offset) const
-	{
-		ArrayConstIterator temp = *this;
-		temp += offset;
-		return temp;
-	}
-
-	[[nodiscard]]
-	constexpr ArrayConstIterator operator-(const difference_type offset) const
-	{
-		ArrayConstIterator temp = *this;
-		temp -= offset;
-		return temp;
-	}
-
-#if 0
-	[[nodiscard]]
-	constexpr ArrayConstIterator operator+(const difference_type offset, ArrayConstIterator next)
-	{
-		next += offset;
-		return next;
-	}
-#endif
-
-	[[nodiscard]]
 	constexpr bool operator!=(const ArrayConstIterator& right) const
 	{
 		return !(*this == right);
+	}
+
+	[[nodiscard]]
+	constexpr bool operator<(const ArrayConstIterator& right) const
+	{
+		return m_index < right.m_index;
 	}
 
 	[[nodiscard]]
@@ -154,6 +157,7 @@ public:
 	{
 		return !(*this < right);
 	}
+	// End comparison ops.
 
 private:
 	pointer m_pointer;
@@ -167,29 +171,38 @@ public:
 	using iterator_category = std::random_access_iterator_tag;
 	using value_type = Type;
 	using difference_type = ptrdiff_t;
-	using reference = Type&;
 	using pointer = Type*;
+	using reference = Type&;
 
 public:
 	constexpr ArrayIterator()
 	{}
 
-	constexpr explicit ArrayIterator(Type* pointer, Size offset = 0)
+	constexpr explicit ArrayIterator(pointer pointer, Size offset = 0)
 		: ArrayConstIterator<Type, k_size>(pointer, offset)
 	{}
 
+	// Begin write ops.
 	[[nodiscard]]
-	constexpr Type& operator*() const
+	constexpr reference operator*() const
 	{
-		return const_cast<Type&>(ArrayConstIterator<Type, k_size>::operator*());
+		return const_cast<reference>(ArrayConstIterator<Type, k_size>::operator*());
 	}
 
 	[[nodiscard]]
-	constexpr Type* operator->() const
+	constexpr pointer operator->() const
 	{
-		return const_cast<Type*>(ArrayConstIterator<Type, k_size>::operator->());
+		return const_cast<pointer>(ArrayConstIterator<Type, k_size>::operator->());
 	}
 
+	[[nodiscard]]
+	constexpr reference operator[](const ptrdiff_t offset) const
+	{
+		return const_cast<reference>(ArrayConstIterator<Type, k_size>::operator[](offset));
+	}
+	// End write ops.
+
+	// Begin forward ops.
 	constexpr ArrayIterator& operator++()
 	{
 		ArrayConstIterator<Type, k_size>::operator++();
@@ -202,7 +215,9 @@ public:
 		ArrayConstIterator<Type, k_size>::operator++();
 		return temp;
 	}
+	// End forward ops.
 
+	// Beign back os.
 	constexpr ArrayIterator& operator--()
 	{
 		ArrayConstIterator<Type, k_size>::operator--();
@@ -215,13 +230,9 @@ public:
 		ArrayConstIterator<Type, k_size>::operator--();
 		return temp;
 	}
+	// End back ops.
 
-	constexpr ArrayIterator& operator+=(const ptrdiff_t offset)
-	{
-		ArrayConstIterator<Type, k_size>::operator+=(offset);
-		return *this;
-	}
-
+	// Begin forward any ops.
 	[[nodiscard]]
 	constexpr ArrayIterator operator+(const ptrdiff_t offset) const
 	{
@@ -230,23 +241,14 @@ public:
 		return temp;
 	}
 
-#if 0
-	[[nodiscard]]
-	constexpr ArrayIterator operator+(const ptrdiff_t offset, ArrayIterator next)
+	constexpr ArrayIterator& operator+=(const ptrdiff_t offset)
 	{
-		next += offset;
-		return next;
-	}
-#endif
-
-	constexpr ArrayIterator& operator-=(const ptrdiff_t offset)
-	{
-		ArrayConstIterator<Type, k_size>::operator-=(offset);
+		ArrayConstIterator<Type, k_size>::operator+=(offset);
 		return *this;
 	}
+	// End forward any ops.
 
-	using ArrayConstIterator<Type, k_size>::operator-;
-
+	// Begin back any ops.
 	[[nodiscard]]
 	constexpr ArrayIterator operator-(const ptrdiff_t offset) const
 	{
@@ -255,11 +257,12 @@ public:
 		return temp;
 	}
 
-	[[nodiscard]]
-	constexpr Type& operator[](const ptrdiff_t offset) const
+	constexpr ArrayIterator& operator-=(const ptrdiff_t offset)
 	{
-		return const_cast<Type&>(ArrayConstIterator<Type, k_size>::operator[](offset));
+		ArrayConstIterator<Type, k_size>::operator-=(offset);
+		return *this;
 	}
+	// End back any ops.
 };
 
 namespace StravaEngine::Core
