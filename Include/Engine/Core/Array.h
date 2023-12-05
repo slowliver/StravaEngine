@@ -2,6 +2,7 @@
 
 #include <array>
 #include <iterator>
+#include <algorithm>
 
 #include "CoreMinimal.h"
 
@@ -12,6 +13,8 @@ public:
 	using iterator_category = std::random_access_iterator_tag;
 	using value_type = Type;
 	using difference_type = ptrdiff_t;
+	using reference = const Type&;
+	using pointer = const Type*;
 
 public:
 	constexpr ArrayConstIterator()
@@ -19,13 +22,13 @@ public:
 		, m_index(0)
 	{}
 
-	constexpr explicit ArrayConstIterator(const Type* pointer, Size offset = 0)
+	constexpr explicit ArrayConstIterator(pointer pointer, Size offset = 0)
 		: m_pointer(pointer)
 		, m_index(offset)
 	{}
 
 	[[nodiscard]]
-	constexpr const Type* operator->() const
+	constexpr pointer operator->() const
 	{
 		STRAVA_VERIFY(m_pointer);
 		STRAVA_VERIFY(m_index < k_size);
@@ -33,7 +36,7 @@ public:
 	}
 
 	[[nodiscard]]
-	constexpr const Type& operator*() const
+	constexpr reference operator*() const
 	{
 		return *operator->();
 	}
@@ -68,25 +71,25 @@ public:
 		return temp;
 	}
 
-	constexpr ArrayConstIterator& operator+=(const ptrdiff_t offset)
+	constexpr ArrayConstIterator& operator+=(const difference_type offset)
 	{
 		m_index += static_cast<Size>(offset);
 		return *this;
 	}
 
-	constexpr ArrayConstIterator& operator-=(const ptrdiff_t offset)
+	constexpr ArrayConstIterator& operator-=(const difference_type offset)
 	{
 		return *this += -offset;
 	}
 
 	[[nodiscard]]
-	constexpr ptrdiff_t operator-(const ArrayConstIterator& right) const
+	constexpr difference_type operator-(const ArrayConstIterator& right) const
 	{
-		return static_cast<ptrdiff_t>(m_index - right.m_index);
+		return static_cast<difference_type>(m_index - right.m_index);
 	}
 
 	[[nodiscard]]
-	constexpr const Type& operator[](const ptrdiff_t offset) const
+	constexpr reference operator[](const difference_type offset) const
 	{
 		return *(*this + offset);
 	}
@@ -104,7 +107,7 @@ public:
 	}
 
 	[[nodiscard]]
-	constexpr ArrayConstIterator operator+(const ptrdiff_t offset) const
+	constexpr ArrayConstIterator operator+(const difference_type offset) const
 	{
 		ArrayConstIterator temp = *this;
 		temp += offset;
@@ -112,19 +115,21 @@ public:
 	}
 
 	[[nodiscard]]
-	constexpr ArrayConstIterator operator-(const ptrdiff_t offset) const
+	constexpr ArrayConstIterator operator-(const difference_type offset) const
 	{
 		ArrayConstIterator temp = *this;
 		temp -= offset;
 		return temp;
 	}
 
+#if 0
 	[[nodiscard]]
-	constexpr ArrayConstIterator operator+(const ptrdiff_t offset, ArrayConstIterator next)
+	constexpr ArrayConstIterator operator+(const difference_type offset, ArrayConstIterator next)
 	{
 		next += offset;
 		return next;
 	}
+#endif
 
 	[[nodiscard]]
 	constexpr bool operator!=(const ArrayConstIterator& right) const
@@ -151,10 +156,9 @@ public:
 	}
 
 private:
-	const Type* m_pointer;
+	pointer m_pointer;
 	Size m_index;
 };
-
 
 template <class Type, Size k_size>
 class ArrayIterator : public ArrayConstIterator<Type, k_size>
@@ -163,6 +167,8 @@ public:
 	using iterator_category = std::random_access_iterator_tag;
 	using value_type = Type;
 	using difference_type = ptrdiff_t;
+	using reference = Type&;
+	using pointer = Type*;
 
 public:
 	constexpr ArrayIterator()
@@ -224,12 +230,14 @@ public:
 		return temp;
 	}
 
+#if 0
 	[[nodiscard]]
 	constexpr ArrayIterator operator+(const ptrdiff_t offset, ArrayIterator next)
 	{
 		next += offset;
 		return next;
 	}
+#endif
 
 	constexpr ArrayIterator& operator-=(const ptrdiff_t offset)
 	{
@@ -254,7 +262,6 @@ public:
 	}
 };
 
-
 namespace StravaEngine::Core
 {
 template <class Type, Size k_size>
@@ -268,168 +275,197 @@ public:
 	using const_pointer = const Type*;
 	using reference = Type&;
 	using const_reference = const Type&;
-
-#if 0
-	using iterator = _Array_iterator<_Ty, _Size>;
-	using const_iterator = _Array_const_iterator<_Ty, _Size>;
-
+	using iterator = ArrayIterator<Type, k_size>;
+	using const_iterator = ArrayConstIterator<Type, k_size>;
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-#endif
 
-#if _HAS_TR1_NAMESPACE
-	_DEPRECATE_TR1_NAMESPACE void assign(const _Ty& _Value) {
-		_STD fill_n(_Elems, _Size, _Value);
-	}
-#endif // _HAS_TR1_NAMESPACE
-
-	_CONSTEXPR20 void fill(const _Ty& _Value) {
-		_STD fill_n(_Elems, _Size, _Value);
+	[[nodiscard]]
+	constexpr reference operator[](Size index)
+	{
+		STRAVA_VERIFY(index >= 0 && index < k_size);
+		return m_data[index];
 	}
 
-	_CONSTEXPR20 void swap(array& _Other) noexcept(_Is_nothrow_swappable<_Ty>::value) {
-		_Swap_ranges_unchecked(_Elems, _Elems + _Size, _Other._Elems);
+	[[nodiscard]]
+	constexpr const_reference operator[](Size index) const
+	{
+		STRAVA_VERIFY(index >= 0 && index < k_size);
+		return m_data[index];
 	}
 
-	_NODISCARD _CONSTEXPR17 iterator begin() noexcept {
-		return iterator(_Elems, 0);
+	constexpr void fill(const Type& value)
+	{
+		for (Size i = 0; i < k_size; ++i)
+		{
+			at[i] == value;
+		}
 	}
 
-	_NODISCARD _CONSTEXPR17 const_iterator begin() const noexcept {
-		return const_iterator(_Elems, 0);
+	constexpr void swap(Array& other)
+	{
+		std::swap_ranges(begin(), end(), other.begin());
 	}
 
-	_NODISCARD _CONSTEXPR17 iterator end() noexcept {
-		return iterator(_Elems, _Size);
+	[[nodiscard]]
+	constexpr iterator begin()
+	{
+		return iterator(m_data, 0);
 	}
 
-	_NODISCARD _CONSTEXPR17 const_iterator end() const noexcept {
-		return const_iterator(_Elems, _Size);
+	[[nodiscard]]
+	constexpr const_iterator begin() const
+	{
+		return const_iterator(m_data, 0);
 	}
 
-	_NODISCARD _CONSTEXPR17 reverse_iterator rbegin() noexcept {
+	[[nodiscard]]
+	constexpr iterator end()
+	{
+		return iterator(m_data, k_size);
+	}
+
+	[[nodiscard]]
+	constexpr const_iterator end() const
+	{
+		return const_iterator(m_data, k_size);
+	}
+
+	[[nodiscard]]
+	constexpr reverse_iterator rbegin()
+	{
 		return reverse_iterator(end());
 	}
 
-	_NODISCARD _CONSTEXPR17 const_reverse_iterator rbegin() const noexcept {
+	[[nodiscard]]
+	constexpr const_reverse_iterator rbegin() const
+	{
 		return const_reverse_iterator(end());
 	}
 
-	_NODISCARD _CONSTEXPR17 reverse_iterator rend() noexcept {
+	[[nodiscard]]
+	constexpr reverse_iterator rend()
+	{
 		return reverse_iterator(begin());
 	}
 
-	_NODISCARD _CONSTEXPR17 const_reverse_iterator rend() const noexcept {
+	[[nodiscard]]
+	constexpr const_reverse_iterator rend() const
+	{
 		return const_reverse_iterator(begin());
 	}
 
-	_NODISCARD _CONSTEXPR17 const_iterator cbegin() const noexcept {
+	[[nodiscard]]
+	constexpr const_iterator cbegin() const
+	{
 		return begin();
 	}
 
-	_NODISCARD _CONSTEXPR17 const_iterator cend() const noexcept {
+	[[nodiscard]]
+	constexpr const_iterator cend() const
+	{
 		return end();
 	}
 
-	_NODISCARD _CONSTEXPR17 const_reverse_iterator crbegin() const noexcept {
+	[[nodiscard]]
+	constexpr const_reverse_iterator crbegin() const
+	{
 		return rbegin();
 	}
 
-	_NODISCARD _CONSTEXPR17 const_reverse_iterator crend() const noexcept {
+	[[nodiscard]]
+	constexpr const_reverse_iterator crend() const
+	{
 		return rend();
 	}
 
-	_CONSTEXPR17 _Ty* _Unchecked_begin() noexcept {
-		return _Elems;
-	}
-
-	_CONSTEXPR17 const _Ty* _Unchecked_begin() const noexcept {
-		return _Elems;
-	}
-
-	_CONSTEXPR17 _Ty* _Unchecked_end() noexcept {
-		return _Elems + _Size;
-	}
-
-	_CONSTEXPR17 const _Ty* _Unchecked_end() const noexcept {
-		return _Elems + _Size;
-	}
-
-	[[nodiscard]] constexpr size_type size() const
+	[[nodiscard]]
+	constexpr size_type size() const
 	{
 		return k_size;
 	}
 
-	[[nodiscard]] constexpr size_type max_size() const
+	[[nodiscard]]
+	constexpr size_type max_size() const
 	{
 		return size();
 	}
 
-	_NODISCARD_EMPTY_ARRAY_MEMBER constexpr bool empty() const noexcept {
+	[[nodiscard]]
+	constexpr bool empty() const
+	{
 		return false;
 	}
 
-	_NODISCARD _CONSTEXPR17 reference at(size_type _Pos) {
-		if (_Size <= _Pos) {
-			_Xran();
-		}
-
-		return _Elems[_Pos];
+	[[nodiscard]]
+	constexpr reference at(Size index)
+	{
+		return m_data[index];
 	}
 
-	_NODISCARD constexpr const_reference at(size_type _Pos) const {
-		if (_Size <= _Pos) {
-			_Xran();
-		}
-
-		return _Elems[_Pos];
+	[[nodiscard]]
+	constexpr const_reference at(Size index) const
+	{
+		return m_data[index];
 	}
 
-	_NODISCARD _CONSTEXPR17 reference operator[](_In_range_(0, _Size - 1) size_type _Pos) noexcept /* strengthened */ {
-#if _CONTAINER_DEBUG_LEVEL > 0
-		_STL_VERIFY(_Pos < _Size, "array subscript out of range");
-#endif // _CONTAINER_DEBUG_LEVEL > 0
-
-		return _Elems[_Pos];
+	[[nodiscard]]
+	constexpr reference front()
+	{
+		return m_data[0];
 	}
 
-	_NODISCARD constexpr const_reference operator[](_In_range_(0, _Size - 1) size_type _Pos) const noexcept
-		/* strengthened */ {
-#if _CONTAINER_DEBUG_LEVEL > 0
-		_STL_VERIFY(_Pos < _Size, "array subscript out of range");
-#endif // _CONTAINER_DEBUG_LEVEL > 0
-
-		return _Elems[_Pos];
+	[[nodiscard]]
+	constexpr const_reference front() const
+	{
+		return m_data[0];
 	}
 
-	_NODISCARD _CONSTEXPR17 reference front() noexcept /* strengthened */ {
-		return _Elems[0];
+	[[nodiscard]]
+	constexpr reference back()
+	{
+		return m_data[k_size - 1];
 	}
 
-	_NODISCARD constexpr const_reference front() const noexcept /* strengthened */ {
-		return _Elems[0];
+	[[nodiscard]]
+	constexpr const_reference back() const
+	{
+		return m_data[k_size - 1];
 	}
 
-	_NODISCARD _CONSTEXPR17 reference back() noexcept /* strengthened */ {
-		return _Elems[_Size - 1];
+	[[nodiscard]]
+	constexpr pointer data()
+	{
+		return m_data;
 	}
 
-	_NODISCARD constexpr const_reference back() const noexcept /* strengthened */ {
-		return _Elems[_Size - 1];
+	[[nodiscard]]
+	constexpr const_pointer data() const
+	{
+		return m_data;
 	}
 
-	_NODISCARD _CONSTEXPR17 _Ty* data() noexcept {
-		return _Elems;
-	}
-
-	_NODISCARD _CONSTEXPR17 const _Ty* data() const noexcept {
-		return _Elems;
-	}
-
-	[[noreturn]] void _Xran() const {
-		_Xout_of_range("invalid array<T, N> subscript");
-	}
-
-	Type m_elements[k_size];
+	
+public:
+	/// <summary>
+	/// arrayクラスはpublicな配列メンバ変数を持ち、非トリビアルなコンストラクタを提供しない。
+	/// そのため、arrayは集成体の要件を満たす。
+	/// これにより、arrayクラスは組み込み配列と同様の初期化構文を使用して初期化を行うことができる。
+	/// https://cpprefjp.github.io/reference/array/array/op_initializer.html
+	/// </summary>
+	Type m_data[k_size];
 };
+
+template <class Type, Size k_size>
+constexpr Array<std::remove_cv_t<Type>, k_size> ToArray(Type(&a)[k_size])
+{
+	return Array<std::remove_cv_t<Type>, k_size>(a);
 }
+
+template <class Type, Size k_size>
+constexpr Array<std::remove_cv_t<Type>, k_size> ToArray(Type(&&a)[k_size])
+{
+	return Array<std::remove_cv_t<Type>, k_size>(a);
+}
+}
+
