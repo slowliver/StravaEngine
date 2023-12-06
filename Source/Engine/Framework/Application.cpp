@@ -57,8 +57,6 @@ static LRESULT Application_WindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 
 Application::Application(const ApplicationSpec& spec)
 {
-	auto* renderer = Graphics::Renderer::CreateInstance();
-
 	HINSTANCE hInstance = (HINSTANCE)spec.m_nativeHandle;
 
 	// Initialize the window class.
@@ -96,6 +94,11 @@ Application::Application(const ApplicationSpec& spec)
 	// pSample->OnInit();
 
 	ShowWindow(hwnd, SW_SHOW);
+
+	auto* renderer = Graphics::Renderer::CreateInstance();
+	Graphics::RendererSpec rendererSpec;
+	rendererSpec.m_nativeWindowHandle = (NativeHandle)hwnd;
+	renderer->Initialize(rendererSpec);
 
 	// Main sample loop.
 	MSG msg = {};

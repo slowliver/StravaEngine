@@ -9,8 +9,7 @@ namespace StravaEngine::Graphics
 {
 struct RendererSpec final
 {
-	NativeHandle m_nativeHandle;
-	std::string m_title;
+	NativeHandle m_nativeWindowHandle;
 };
 
 class Renderer
@@ -24,7 +23,7 @@ private:
 	Renderer();
 
 public:
-	bool Initialize();
+	bool Initialize(const RendererSpec& spec);
 	void Terminate();
 	void Update();
 
