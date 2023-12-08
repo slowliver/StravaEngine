@@ -14,6 +14,10 @@
     <ClInclude Include="..\..\..\Include\Engine\Core\Array.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\ArrayList.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\CoreMinimal.h" />
+    <ClInclude Include="..\..\..\Include\Engine\Core\Diagnostics\Debugger.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Diagnostics\Debugger.cpp" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
@@ -55,6 +59,9 @@
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)..\Tool\Bootstrap\Bootstrap.exe</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
@@ -68,6 +75,9 @@
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)..\Tool\Bootstrap\Bootstrap.exe</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

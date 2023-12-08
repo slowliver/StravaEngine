@@ -1,6 +1,7 @@
 #pragma once
 
 #include <cstdint>
+#include <cstddef>
 
 #if defined(DEBUG) || defined(_DEBUG)
 #define STRAVA_DEBUG 1

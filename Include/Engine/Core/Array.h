@@ -6,6 +6,8 @@
 
 #include "CoreMinimal.h"
 
+namespace StravaEngine::Core
+{
 template <class Type, Size k_size>
 class ArrayConstIterator
 {
@@ -265,8 +267,6 @@ public:
 	// End back any ops.
 };
 
-namespace StravaEngine::Core
-{
 template <class Type, Size k_size>
 class Array
 {

@@ -16,6 +16,9 @@
     <Filter Include="ソース ファイル\D3D12">
       <UniqueIdentifier>{d47bb449-2178-47cf-b486-99a6d98585d1}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\D3D12\Shader">
+      <UniqueIdentifier>{32d039f7-1662-438a-bfce-2f8ecf1e11d0}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp">
@@ -32,5 +35,13 @@
     <ClInclude Include="D3D12\D3D12Core.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D3D12\Shader\Shader.y">
+      <Filter>ソース ファイル\D3D12\Shader</Filter>
+    </None>
+    <None Include="D3D12\Shader\Shader.hlsl">
+      <Filter>ソース ファイル\D3D12\Shader</Filter>
+    </None>
   </ItemGroup>
 </Project>

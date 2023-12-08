@@ -11,20 +11,6 @@ using namespace StravaEngine;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, PSTR cmdline, int cmdshow)
 {
-	Core::Array<int, 8> myArray;
-
-	int i = 0;
-	for (auto& elem : myArray)
-	{
-		elem = i++;
-	}
-
-	for (auto& elem : myArray)
-	{
-		char bytes[128];
-		sprintf_s(bytes, "%d\n", elem);
-		OutputDebugStringA(bytes);
-	}
 
 	Framework::ApplicationSpec spec;
 	spec.m_nativeHandle = (NativeHandle)hInstance;

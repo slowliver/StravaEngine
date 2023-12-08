@@ -28,8 +28,15 @@ Renderer::Renderer()
 
 bool Renderer::Initialize(const RendererSpec& spec)
 {
+	bool result = false;
+
 	D3D12::D3D12Core::s_instance.reset(new D3D12::D3D12Core());
-	D3D12::D3D12Core::s_instance->Initialize(spec);
+	result = D3D12::D3D12Core::s_instance->Initialize(spec);
+	if (!result)
+	{
+		return false;
+	}
+
 	return true;
 }
 

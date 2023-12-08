@@ -13,6 +13,12 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="ヘッダー ファイル\Diagnostics">
+      <UniqueIdentifier>{5341e79b-44eb-4179-a825-eab35b3f9adf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="ソース ファイル\Diagnostics">
+      <UniqueIdentifier>{64578d27-027d-4015-8753-348d9c85383c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Core\Array.h">
@@ -24,5 +30,13 @@
     <ClInclude Include="..\..\..\Include\Engine\Core\CoreMinimal.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Engine\Core\Diagnostics\Debugger.h">
+      <Filter>ヘッダー ファイル\Diagnostics</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Diagnostics\Debugger.cpp">
+      <Filter>ソース ファイル\Diagnostics</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
