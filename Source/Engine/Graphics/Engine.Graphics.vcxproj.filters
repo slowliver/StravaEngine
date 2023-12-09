@@ -27,6 +27,9 @@
     <ClCompile Include="D3D12\D3D12Core.cpp">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="D3D12\Shader\Shader.cpp">
+      <Filter>ソース ファイル\D3D12\Shader</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h">
@@ -37,6 +40,12 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
+    <None Include="D3D12\Shader\PixelShader.cso">
+      <Filter>ソース ファイル\D3D12\Shader</Filter>
+    </None>
+    <None Include="D3D12\Shader\VertexShader.cso">
+      <Filter>ソース ファイル\D3D12\Shader</Filter>
+    </None>
     <None Include="D3D12\Shader\Shader.y">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
     </None>

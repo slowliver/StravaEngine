@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D12\D3D12Core.cpp" />
+    <ClCompile Include="D3D12\Shader\Shader.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -27,6 +28,10 @@
     <None Include="D3D12\Shader\Shader.hlsl">
       <FileType>Document</FileType>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="D3D12\Shader\PixelShader.cso" />
+    <None Include="D3D12\Shader\VertexShader.cso" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>

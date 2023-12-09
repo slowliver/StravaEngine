@@ -1,40 +1,123 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:transformCallback="Microsoft.Cpp.Dev10.ConvertPropertyCallback">
-  <Rule
-    Name="Bison"
-    PageTemplate="tool"
-    DisplayName="シェーダビルダ"
-    Order="200">
+  <Rule Name="Bison" PageTemplate="tool" DisplayName="シェーダビルダ" Order="200">
     <Rule.DataSource>
-      <DataSource
-        Persistence="ProjectFile"
-        ItemType="Bison" />
+      <DataSource Persistence="ProjectFile" ItemType="Bison" />
     </Rule.DataSource>
     <Rule.Categories>
-      <Category
-        Name="General">
+      <Category Name="General">
         <Category.DisplayName>
           <sys:String>全般</sys:String>
         </Category.DisplayName>
       </Category>
-      <Category
-        Name="Command Line"
-        Subtype="CommandLine">
+      <Category Name="Command Line" Subtype="CommandLine">
         <Category.DisplayName>
-          <sys:String>コマンド ライン</sys:String>
+          <sys:String>コマンドライン</sys:String>
         </Category.DisplayName>
       </Category>
     </Rule.Categories>
 
     <StringListProperty
-      Name="OutputFile"
-      Category="Bison Options"
-      IsRequired="true"
-      HelpUrl="https://www.gnu.org/software/bison/manual/html_node/Bison-Options.html#Bison-Options"
-      DisplayName="Output File Name"
-      Description="Specify the file for the parser implementation file. --output=value"
+      Name="VSEntryName"
+      Category="General"
+      IsRequired="false"
+      HelpUrl="https://www.google.com/"
+      DisplayName="VS エントリポイント名"
+      Description="頂点シェーダのエントリポイントの名前を指定します"
+      Default="VSMain"
       Switch="output=&quot;[value]&quot;"
       />
+
+    <StringListProperty
+      Name="PSEntryName"
+      Category="General"
+      IsRequired="false"
+      HelpUrl="https://www.google.com/"
+      DisplayName="PS エントリポイント名"
+      Description="ピクセルシェーダのエントリポイントの名前を指定します"
+      Default="PSMain"
+      Switch="output=&quot;[value]&quot;"
+      />
+
+    <StringListProperty
+      Name="DSEntryName"
+      Category="General"
+      IsRequired="false"
+      HelpUrl="https://www.google.com/"
+      DisplayName="DS エントリポイント名"
+      Description="ドメインシェーダのエントリポイントの名前を指定します"
+      Switch="output=&quot;[value]&quot;"
+      />
+
+    <StringListProperty
+      Name="HSEntryName"
+      Category="General"
+      IsRequired="false"
+      HelpUrl="https://www.google.com/"
+      DisplayName="HS エントリポイント名"
+      Description="ハルシェーダのエントリポイントの名前を指定します"
+      Switch="output=&quot;[value]&quot;"
+      />
+
+    <StringListProperty
+      Name="GSEntryName"
+      Category="General"
+      IsRequired="false"
+      HelpUrl="https://www.google.com/"
+      DisplayName="GS エントリポイント名"
+      Description="ジオメトリシェーダのエントリポイントの名前を指定します"
+      Switch="output=&quot;[value]&quot;"
+      />
+
+    <StringListProperty
+      Name="CSEntryName"
+      Category="General"
+      IsRequired="false"
+      HelpUrl="https://www.google.com/"
+      DisplayName="CS エントリポイント名"
+      Description="コンピュートシェーダのエントリポイントの名前を指定します"
+      Switch="output=&quot;[value]&quot;"
+      />
+
+    <EnumProperty
+      Name="OptimizationLevel"
+      Category="General"
+      IsRequired="false"
+      HelpUrl="https://www.google.com/"
+      DisplayName="最適化"
+      Description="最適化レベルを指定します"
+      Switch="output=&quot;[value]&quot;" >
+      <EnumValue Name="Od" DisplayName="無効" Switch="Od"/>
+      <EnumValue Name="O0" DisplayName="最適化レベル 0" Switch="O0"/>
+      <EnumValue Name="O1" DisplayName="最適化レベル 1" Switch="O1"/>
+      <EnumValue Name="O2" DisplayName="最適化レベル 2" Switch="O2"/>
+      <EnumValue Name="O3" DisplayName="最適化レベル 3" Switch="O3"/>
+    </EnumProperty>
+
+    <EnumProperty
+      Name="EnableDebugInformation"
+      Category="General"
+      IsRequired="false"
+      HelpUrl="https://www.google.com/"
+      DisplayName="デバッグ情報を有効にする"
+      Description="デバッグ情報を有効にします"
+      Switch="output=&quot;[value]&quot;" >
+      <EnumValue Name="False" DisplayName="いいえ" Switch=""/>
+      <EnumValue Name="True" DisplayName="はい" Switch="-Zi"/>
+    </EnumProperty>
+
+    <EnumProperty
+      Name="ShaderModel"
+      Category="General"
+      IsRequired="false"
+      HelpUrl="https://www.google.com/"
+      DisplayName="シェーダモデル"
+      Description="シェーダモデルを指定します"
+      Switch="output=&quot;[value]&quot;" >
+      <EnumValue Name="6_5" DisplayName="6.5" Switch=""/>
+      <EnumValue Name="6_6" DisplayName="6.6" Switch="-Zi"/>
+      <EnumValue Name="6_7" DisplayName="6.7" Switch="-Zi"/>
+    </EnumProperty>
 
     <StringListProperty
       Name="DefinesFile"

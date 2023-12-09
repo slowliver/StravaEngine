@@ -3,7 +3,7 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IntDir>$(SolutionDir)..\Temp\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
+    <IntDir>$(SolutionDir)..\Temporary\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
     <OutDir>$(SolutionDir)..\Library\$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
@@ -36,6 +36,9 @@
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
+    <PreBuildEvent>
+      <Command>$(SolutionDir)..\Tool\Bootstrap\Bootstrap.exe</Command>
+    </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
 </Project>

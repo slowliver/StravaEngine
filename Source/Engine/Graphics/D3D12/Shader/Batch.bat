@@ -1,0 +1,1 @@
+dxc C:\Users\kawanayu\projects\slowliver\StravaEngine\Source\Engine\Graphics\D3D12\Shader\Shader.hlsl -E VSMain -Fo VertexShader.cso -T vs_6_5

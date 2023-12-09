@@ -5,6 +5,9 @@ namespace StravaEngine::Graphics::D3D12
 {
 std::unique_ptr<D3D12Core> D3D12Core::s_instance = nullptr;
 
+extern "C" char g_vertexShader[];
+extern "C" char g_pixelShader[];
+
 bool D3D12Core::Initialize(const RendererSpec& spec)
 {
 	HRESULT hr = {};
@@ -161,16 +164,25 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		}
 	}
 
-#if 0
 	// Create an empty root signature.
 	{
-		CD3DX12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-		rootSignatureDesc.Init(0, nullptr, 0, nullptr, D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT);
+		D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
+		rootSignatureDesc.NumParameters = 0;
+		rootSignatureDesc.pParameters = nullptr;
+		rootSignatureDesc.NumStaticSamplers = 0;
+		rootSignatureDesc.pStaticSamplers = nullptr;
+		rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
 
-		ComPtr<ID3DBlob> signature;
-		ComPtr<ID3DBlob> error;
-		ThrowIfFailed(D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error));
-		ThrowIfFailed(m_device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
+		ID3DBlob* signature = nullptr;
+		ID3DBlob* error = nullptr;
+
+		hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
+		if (FAILED(hr))
+		{
+			return false;
+		}
+
+		m_d3d12Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
 	}
 
 	// Create the pipeline state, which includes compiling and loading shaders.
@@ -274,7 +286,6 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		// complete before continuing.
 		WaitForGpu();
 	}
-#endif
 
 	return true;
 }
