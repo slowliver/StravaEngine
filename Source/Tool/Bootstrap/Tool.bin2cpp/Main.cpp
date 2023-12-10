@@ -2,14 +2,41 @@
 //
 
 #include <string>
-#include <iostream>
-#include <fstream>
-#include <iomanip>
+#include <cstdio>
 
-static void PrintError(const char* error)
+#if defined(_MSC_VER )
+#pragma warning(disable : 4996)
+#pragma warning(disable : 6387)
+#endif
+
+static FILE* g_input = nullptr;
+static FILE* g_output = nullptr;
+
+static void CloseFile(FILE*& file)
 {
-	std::cerr << error << std::endl;
-	return;
+	if (file)
+	{
+		std::fclose(file);
+		file = nullptr;
+	}
+}
+
+static void OnError(const char* error)
+{
+	CloseFile(g_input);
+	CloseFile(g_output);
+	std::fprintf(stderr, error);
+	std::fprintf(stderr, "\n");
+	std::exit(-1);
+}
+
+[[noreturn]]
+static void WriteString(const char* str)
+{
+	if (std::fputs(str, g_output) < 0)
+	{
+		OnError("Failed to write to file.");
+	}
 }
 
 int main(int argc, const char* argv[])
@@ -18,49 +45,59 @@ int main(int argc, const char* argv[])
 	// bin2cpp -o <output.cpp> -eh <output.h> -vn <variable_name> <input.bin>
 	if (argc < 2)
 	{
-		PrintError("There is no input file.");
-		return 0xFFFFFFFF;
+		OnError("There is no input file.");
 	}
 
 	std::string inputFilePath = argv[argc - 1];
-	std::ifstream inputFileStream(inputFilePath, std::ios_base::in | std::ios_base::binary);
-	if (!inputFileStream)
+	g_input = std::fopen(inputFilePath.c_str(), "rb");
+	if (!g_input)
 	{
-		PrintError("Error.");
-		return 0xFFFFFFFF;
+		OnError("Error.");
 	}
 
 	std::string outputFilePath = inputFilePath + ".output.cpp";
-	std::ofstream outputFileStream(inputFilePath, std::ios_base::out);
-	if (!outputFileStream)
+	g_output = std::fopen(outputFilePath.c_str(), "w+");
+	if (!g_output)
 	{
-		PrintError("Error.");
-		return 0xFFFFFFFF;
+		OnError("Error.");
 	}
 
-	outputFileStream << "extern \"C\" Byte g_data[] = \n{ ";
-	const auto outputFileStreamFlags = outputFileStream.flags();
-	outputFileStream.setf(std::ios::hex, std::ios::basefield);
-	outputFileStream.fill('0');
-	char chr = 0;
-	for (std::uint32_t i = 0; inputFileStream.get(chr); ++i)
-	{
-		outputFileStream << "(Byte)0x" << std::setw(2) << chr << ", ";
-	}
-	std::cout.flags(outputFileStreamFlags);
-	outputFileStream << "};" << std::endl;
+#define LINE(text) text "\n"
+	WriteString
+	(
+		LINE("#include <Engine/Core/CoreMinimul.h>")
+		LINE("")
+		LINE("namespace StravaEngine")
+		LINE("{")
+		LINE("extern \"C\" Byte g_data[] = \n{")
+	);
+#undef LINE
 
-//	std::cout << inputFilePath << std::endl;
+	static constexpr int k_numColumns = 8;
+	for (std::uint32_t i = 0;; ++i)
+	{
+		char fs[32] = {};
+		int c = std::fgetc(g_input);
+		if (c == EOF)
+		{
+			break;
+		}
+		if (i % k_numColumns == 0)
+		{
+			WriteString(i != 0 ? "\n\t" : "\t");
+		}
+		std::sprintf(fs, "(Byte)0x%02x,", c);
+		WriteString(fs);
+		if (i % k_numColumns != k_numColumns - 1)
+		{
+			WriteString(" ");
+		}
+	}
+
+	WriteString("\n};\n} // namespace StravaEngine");
+
+	CloseFile(g_input);
+	CloseFile(g_output);
+
 	return 0;
 }
-
-// プログラムの実行: Ctrl + F5 または [デバッグ] > [デバッグなしで開始] メニュー
-// プログラムのデバッグ: F5 または [デバッグ] > [デバッグの開始] メニュー
-
-// 作業を開始するためのヒント: 
-//    1. ソリューション エクスプローラー ウィンドウを使用してファイルを追加/管理します 
-//   2. チーム エクスプローラー ウィンドウを使用してソース管理に接続します
-//   3. 出力ウィンドウを使用して、ビルド出力とその他のメッセージを表示します
-//   4. エラー一覧ウィンドウを使用してエラーを表示します
-//   5. [プロジェクト] > [新しい項目の追加] と移動して新しいコード ファイルを作成するか、[プロジェクト] > [既存の項目の追加] と移動して既存のコード ファイルをプロジェクトに追加します
-//   6. 後ほどこのプロジェクトを再び開く場合、[ファイル] > [開く] > [プロジェクト] と移動して .sln ファイルを選択します
