@@ -16,6 +16,10 @@ public:
 	vector(IteratorType first, IteratorType last);
 	ArrayList(const ArrayList& arrayList);
 	ArrayList(ArrayList&& arrayList);
-	ArrayList(initializer_list<T> initializerList);
+	ArrayList(std::initializer_list<Type> initializerList);
+
+private:
+	Type* m_data = nullptr;
+	Size m_size = 0;
 };
 }

@@ -9,6 +9,12 @@
 #define STRAVA_DEBUG 0
 #endif
 
+#if defined(_WIN32) || defined(_WIN64)
+#define STRAVA_WINDOWS 1
+#else
+#define STRAVA_WINDOWS 0
+#endif
+
 #define STRAVA_VERIFY(condition)
 #define STRAVA_VERIFYM(condition, message)
 

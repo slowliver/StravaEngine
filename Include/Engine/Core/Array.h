@@ -1,10 +1,8 @@
 #pragma once
 
-#include <array>
 #include <iterator>
-#include <algorithm>
 
-#include "CoreMinimal.h"
+#include <Engine/Core/CoreMinimal.h>
 
 namespace StravaEngine::Core
 {
