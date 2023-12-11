@@ -164,6 +164,7 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		}
 	}
 
+#if 0
 	// Create an empty root signature.
 	{
 		D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
@@ -286,6 +287,7 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		// complete before continuing.
 		WaitForGpu();
 	}
+#endif
 
 	return true;
 }

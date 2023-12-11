@@ -33,6 +33,9 @@
     <ClInclude Include="..\..\..\Include\Engine\Core\Diagnostics\Debugger.h">
       <Filter>ヘッダー ファイル\Diagnostics</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Engine\Core\Allocator.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Diagnostics\Debugger.cpp">

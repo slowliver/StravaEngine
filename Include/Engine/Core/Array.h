@@ -1,6 +1,7 @@
 #pragma once
 
 #include <iterator>
+#include <algorithm>
 
 #include <Engine/Core/CoreMinimal.h>
 
