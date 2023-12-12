@@ -45,22 +45,23 @@ public:
 
 	void Reserve(Size count)
 	{
-		if (count > m_capacity)
+		if (count <= m_capacity)
 		{
-			auto allocator = Allocator<Type>();
-			auto* newData = allocator.allocate(count);
-			for (Size i = 0; i < m_count; ++i)
-			{
-				::new(&newData[i]) Type(std::move(m_data[i]));
-				m_data[i].~Type();
-			}
-			if (m_data)
-			{
-				allocator.deallocate(m_data, m_capacity);
-			}
-			m_data = newData;
-			m_capacity = count;
+			return;
 		}
+		auto allocator = Allocator<Type>();
+		auto* newData = allocator.allocate(count);
+		for (Size i = 0; i < m_count; ++i)
+		{
+			::new(&newData[i]) Type(std::move(m_data[i]));
+			m_data[i].~Type();
+		}
+		if (m_data)
+		{
+			allocator.deallocate(m_data, m_capacity);
+		}
+		m_data = newData;
+		m_capacity = count;
 	}
 
 	Size GetCapacity() const
@@ -128,12 +129,59 @@ public:
 
 	void TrimToSize()
 	{
-		assert(0);
+		if (m_count >= m_capacity)
+		{
+			return;
+		}
+		auto allocator = Allocator<Type>();
+		if (m_count == 0)
+		{
+			if (m_data)
+			{
+				allocator.deallocate(m_data, m_capacity);
+			}
+			m_data = nullptr;
+			m_capacity = 0;
+			return;
+		}
+		auto* newData = allocator.allocate(m_count);
+		for (Size i = 0; i < m_count; ++i)
+		{
+			::new(&newData[i]) Type(std::move(m_data[i]));
+			m_data[i].~Type();
+		}
+		allocator.deallocate(m_data, m_capacity);
+		m_data = newData;
+		m_capacity = m_count;
+	}
+
+	Type& GetAt(Size index)
+	{
+		if (index >= m_count)
+		{
+			// assert
+			Reserve(index + 1);
+		}
+		return m_data[index];
+	}
+
+	const Type& GetAt(Size index) const
+	{
+		return m_data[index];
+	}
+
+	Type& operator[](Size index)
+	{
+		return GetAt(index);
+	}
+
+	const Type& operator[](Size index) const
+	{
+		return GetAt(index);
 	}
 
 	// C++ STL alias
 	Size size() const { return GetCount(); }
-	Size max_size() const { return GetMaxCount(); }
 	Size max_size() const { return GetMaxCount(); }
 	void resize(Size count) { Resize(count); }
 	void resize(Size count, const Type& value) { Resize(count, value); }
@@ -141,6 +189,7 @@ public:
 	[[nodiscard]]
 	bool empty() const { bool IsEmpty(); }
 	void reserve(Size count) { Reserve(count); }
+	void shrink_to_fit() { TrimToSize(); }
 
 private:
 	Type* m_data = nullptr;
