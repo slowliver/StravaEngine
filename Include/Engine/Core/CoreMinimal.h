@@ -15,6 +15,9 @@
 #define STRAVA_WINDOWS 0
 #endif
 
+#define STRAVA_BREAK do { ::DebugBreak(); } while(false);
+#define STRAVA_ASSERT(condition) do { if (!(condition)) { STRAVA_BREAK; } } while(false);
+
 #define STRAVA_VERIFY(condition)
 #define STRAVA_VERIFYM(condition, message)
 

@@ -446,7 +446,6 @@ public:
 	{
 		return m_data;
 	}
-
 	
 public:
 	/// <summary>
