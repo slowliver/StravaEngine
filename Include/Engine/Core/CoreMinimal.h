@@ -59,6 +59,20 @@ constexpr Core::Size GetCount(const BoolArray<N>&) { return N; }
 
 template <class Enum>
 constexpr Size GetCount(const Enum) { return ToUnderlying<Enum>(Enum::Count); }
+
+template <class Type>
+[[nodiscard]]
+constexpr const Type& Min(const Type& lhs, const Type& rhs)
+{
+	return lhs > rhs ? rhs : lhs;
+}
+
+template <class Type>
+[[nodiscard]]
+constexpr const Type& Max(const Type& lhs, const Type& rhs)
+{
+	return lhs > rhs ? lhs : rhs;
+}
 }
 
 using StravaEngine::Core::Byte;

@@ -455,7 +455,7 @@ public:
 	/// これにより、arrayクラスは組み込み配列と同様の初期化構文を使用して初期化を行うことができる。
 	/// https://cpprefjp.github.io/reference/array/array/op_initializer.html
 	/// </summary>
-	Type m_data[k_size];
+	Type m_data[k_size] = {};
 };
 
 template <class Type, Size k_size>

@@ -157,11 +157,6 @@ public:
 
 	Type& GetAt(Size index)
 	{
-		if (index >= m_count)
-		{
-			// assert
-			Reserve(index + 1);
-		}
 		return m_data[index];
 	}
 
@@ -180,6 +175,61 @@ public:
 		return GetAt(index);
 	}
 
+	Type* GetData()
+	{
+		return m_data;
+	}
+
+	const Type* GetData() const
+	{
+		return m_data;
+	}
+
+	Type& GetFront()
+	{
+		return m_data[0];
+	}
+
+	const Type& GetFront() const
+	{
+		return m_data[0];
+	}
+
+	Type& GetBack()
+	{
+		return m_data[m_count - 1];
+	}
+
+	const Type& GetBack() const
+	{
+		return m_data[m_count - 1];
+	}
+
+	void AddAt(Size index, const Type& value)
+	{
+		Size newCount = m_count + 1;
+		if (newCount > m_capacity)
+		{
+			Reserve(newCount * 3 / 2);
+		}
+		for (Size i = m_count; i > index; --i)
+		{
+			std::swap(m_data[i], m_data[i - 1]);
+		}
+		::new(&m_data[index]) Type(value);
+		m_count = newCount;
+	}
+
+	void Add(const Type& value)
+	{
+		AddAt(m_count, value);
+	}
+
+	void AddRange()
+	{
+
+	}
+
 	// C++ STL alias
 	Size size() const { return GetCount(); }
 	Size max_size() const { return GetMaxCount(); }
@@ -190,6 +240,12 @@ public:
 	bool empty() const { bool IsEmpty(); }
 	void reserve(Size count) { Reserve(count); }
 	void shrink_to_fit() { TrimToSize(); }
+	Type& at(Size index) { return GetAt(index); }
+	const Type& at(Size index) const { return GetAt(index); }
+	Type& front() { return GetFront(); }
+	const Type& front() const { return GetFront(); }
+	Type& back() { return GetBack(); }
+	const Type& back() const { return GetBack(); }
 
 private:
 	Type* m_data = nullptr;
