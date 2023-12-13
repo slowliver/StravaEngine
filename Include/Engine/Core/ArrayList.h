@@ -3,6 +3,7 @@
 #include <initializer_list>
 #include <vector>
 #include <xutility>
+#include <type_traits>
 
 #include <Engine/Core/Array.h>
 #include <Engine/Core/CoreMinimal.h>
@@ -205,24 +206,47 @@ public:
 		return m_data[m_count - 1];
 	}
 
-	void AddAt(Size index, const Type& value)
+	template <class... Args>
+	void EmplaceAt(Size index, Args&&... args)
 	{
-		Size newCount = m_count + 1;
+		const Size oldCount = m_count;
+		const Size newCount = m_count + 1;
 		if (newCount > m_capacity)
 		{
 			Reserve(newCount * 3 / 2);
 		}
-		for (Size i = m_count; i > index; --i)
+		Resize(newCount);
+		for (Size i = oldCount; i > index; --i)
 		{
 			std::swap(m_data[i], m_data[i - 1]);
 		}
-		::new(&m_data[index]) Type(value);
-		m_count = newCount;
+		::new(&m_data[index]) Type(std::forward<Args>(args)...);
+	}
+
+	void AddAt(Size index, const Type& value)
+	{
+		EmplaceAt(index, value);
+	}
+
+	void AddAt(Size index, Type&& value)
+	{
+		EmplaceAt(index, std::move(value));
+	}
+
+	template <class... Args>
+	void Emplace(Args&&... args)
+	{
+		EmplaceAt(m_count, std::forward<Args>(args)...);
 	}
 
 	void Add(const Type& value)
 	{
-		AddAt(m_count, value);
+		Emplace(value);
+	}
+
+	void Add(const Type&& value)
+	{
+		Emplace(std::move(value));
 	}
 
 	void AddRange()
