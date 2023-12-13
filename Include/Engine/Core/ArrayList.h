@@ -33,20 +33,17 @@ public:
 	{}
 
 	// Begin read ops.
-	[[nodiscard]]
 	reference operator*() const
 	{
 		return *operator->();
 	}
 
-	[[nodiscard]]
 	pointer operator->() const
 	{
 		STRAVA_VERIFY(m_pointer);
 		return m_pointer + m_index;
 	}
 
-	[[nodiscard]]
 	reference operator[](const difference_type offset) const
 	{
 		return *(*this + offset);
@@ -87,7 +84,6 @@ public:
 	// End back ops.
 
 	// Begin forward any ops.
-	[[nodiscard]]
 	ArrayListConstIterator operator+(const difference_type offset) const
 	{
 		ArrayListConstIterator temp = *this;
@@ -103,7 +99,6 @@ public:
 	// End forward any ops.
 
 	// Begin back any ops.
-	[[nodiscard]]
 	ArrayListConstIterator operator-(const difference_type offset) const
 	{
 		ArrayListConstIterator temp = *this;
@@ -117,7 +112,6 @@ public:
 	// End back any ops.
 
 	// Begin difference ops.
-	[[nodiscard]]
 	difference_type operator-(const ArrayListConstIterator& right) const
 	{
 		return static_cast<difference_type>(m_index - right.m_index);
@@ -125,37 +119,31 @@ public:
 	// End difference ops.
 
 	// Begin comparison ops.
-	[[nodiscard]]
 	bool operator==(const ArrayListConstIterator& right) const
 	{
 		return m_index == right.m_index;
 	}
 
-	[[nodiscard]]
 	bool operator!=(const ArrayListConstIterator& right) const
 	{
 		return !(*this == right);
 	}
 
-	[[nodiscard]]
 	bool operator<(const ArrayListConstIterator& right) const
 	{
 		return m_index < right.m_index;
 	}
 
-	[[nodiscard]]
 	bool operator>(const ArrayListConstIterator& right) const
 	{
 		return right < *this;
 	}
 
-	[[nodiscard]]
 	bool operator<=(const ArrayListConstIterator& right) const
 	{
 		return !(right < *this);
 	}
 
-	[[nodiscard]]
 	bool operator>=(const ArrayListConstIterator& right) const
 	{
 		return !(*this < right);
@@ -186,19 +174,16 @@ public:
 	{}
 
 	// Begin write ops.
-	[[nodiscard]]
 	reference operator*() const
 	{
 		return const_cast<reference>(ArrayListConstIterator<Type>::operator*());
 	}
 
-	[[nodiscard]]
 	pointer operator->() const
 	{
 		return const_cast<pointer>(ArrayListConstIterator<Type>::operator->());
 	}
 
-	[[nodiscard]]
 	reference operator[](const ptrdiff_t offset) const
 	{
 		return const_cast<reference>(ArrayListConstIterator<Type>::operator[](offset));
@@ -236,7 +221,6 @@ public:
 	// End back ops.
 
 	// Begin forward any ops.
-	[[nodiscard]]
 	ArrayListIterator operator+(const ptrdiff_t offset) const
 	{
 		ArrayListIterator temp = *this;
@@ -252,7 +236,6 @@ public:
 	// End forward any ops.
 
 	// Begin back any ops.
-	[[nodiscard]]
 	ArrayListIterator operator-(const ptrdiff_t offset) const
 	{
 		ArrayListIterator temp = *this;
@@ -299,40 +282,17 @@ public:
 	ArrayList(std::initializer_list<Type> initializerList);
 #endif
 
-	[[nodiscard]]
 	iterator begin() { return iterator(m_data, 0); }
-
-	[[nodiscard]]
 	const_iterator begin() const { return const_iterator(m_data, 0); }
-
-	[[nodiscard]]
 	iterator end() { return iterator(m_data, m_count); }
-
-	[[nodiscard]]
 	const_iterator end() const { return const_iterator(m_data, m_count); }
-
-	[[nodiscard]]
 	reverse_iterator rbegin() { return reverse_iterator(end()); }
-
-	[[nodiscard]]
 	const_reverse_iterator rbegin() const { return const_reverse_iterator(end()); }
-
-	[[nodiscard]]
 	reverse_iterator rend() { return reverse_iterator(begin()); }
-
-	[[nodiscard]]
 	const_reverse_iterator rend() const { return const_reverse_iterator(begin()); }
-
-	[[nodiscard]]
 	const_iterator cbegin() const { return begin(); }
-
-	[[nodiscard]]
 	const_iterator cend() const { return end(); }
-
-	[[nodiscard]]
 	const_reverse_iterator crbegin() const { return rbegin(); }
-
-	[[nodiscard]]
 	const_reverse_iterator crend() const { return rend(); }
 
 	void Reserve(Size count)
@@ -356,20 +316,11 @@ public:
 		m_capacity = count;
 	}
 
-	Size GetCapacity() const
-	{
-		return m_capacity;
-	}
+	Size GetCapacity() const { return m_capacity; }
 
-	Size GetCount() const
-	{
-		return m_count;
-	}
+	Size GetCount() const { return m_count; }
 
-	Size GetMaxCount() const
-	{
-		return UINT64_MAX;
-	}
+	Size GetMaxCount() const { return UINT64_MAX; }
 
 	void Resize(Size count)
 	{
@@ -413,11 +364,7 @@ public:
 		}
 	}
 
-	[[nodiscard]]
-	bool IsEmpty() const
-	{
-		return m_count == 0;
-	}
+	bool IsEmpty() const { return m_count == 0; }
 
 	void TrimToSize()
 	{
@@ -447,55 +394,18 @@ public:
 		m_capacity = m_count;
 	}
 
-	Type& GetAt(Size index)
-	{
-		return m_data[index];
-	}
+	Type& GetAt(Size index) { return m_data[index]; }
+	const Type& GetAt(Size index) const { return m_data[index]; }
+	Type& operator[](Size index) { return GetAt(index); }
+	const Type& operator[](Size index) const { return GetAt(index); }
 
-	const Type& GetAt(Size index) const
-	{
-		return m_data[index];
-	}
+	Type* GetData() { return m_data; }
+	const Type* GetData() const { return m_data; }
 
-	Type& operator[](Size index)
-	{
-		return GetAt(index);
-	}
-
-	const Type& operator[](Size index) const
-	{
-		return GetAt(index);
-	}
-
-	Type* GetData()
-	{
-		return m_data;
-	}
-
-	const Type* GetData() const
-	{
-		return m_data;
-	}
-
-	Type& GetFront()
-	{
-		return m_data[0];
-	}
-
-	const Type& GetFront() const
-	{
-		return m_data[0];
-	}
-
-	Type& GetBack()
-	{
-		return m_data[m_count - 1];
-	}
-
-	const Type& GetBack() const
-	{
-		return m_data[m_count - 1];
-	}
+	Type& GetFront() { return m_data[0]; }
+	const Type& GetFront() const { return m_data[0]; }
+	Type& GetBack() { return m_data[m_count - 1]; }
+	const Type& GetBack() const { return m_data[m_count - 1]; }
 
 	template <class... Args>
 	void EmplaceAt(Size index, Args&&... args)
@@ -514,15 +424,8 @@ public:
 		::new(&m_data[index]) Type(std::forward<Args>(args)...);
 	}
 
-	void AddAt(Size index, const Type& value)
-	{
-		EmplaceAt(index, value);
-	}
-
-	void AddAt(Size index, Type&& value)
-	{
-		EmplaceAt(index, std::move(value));
-	}
+	void AddAt(Size index, const Type& value) { EmplaceAt(index, value); }
+	void AddAt(Size index, Type&& value) { EmplaceAt(index, std::move(value)); }
 
 	template <class... Args>
 	void Emplace(Args&&... args)
@@ -530,15 +433,8 @@ public:
 		EmplaceAt(m_count, std::forward<Args>(args)...);
 	}
 
-	void Add(const Type& value)
-	{
-		Emplace(value);
-	}
-
-	void Add(const Type&& value)
-	{
-		Emplace(std::move(value));
-	}
+	void Add(const Type& value) { Emplace(value); }
+	void Add(const Type&& value) { Emplace(std::move(value)); }
 
 	void AddRange()
 	{
@@ -551,7 +447,6 @@ public:
 	void resize(Size count) { Resize(count); }
 	void resize(Size count, const Type& value) { Resize(count, value); }
 	Size capacity() const { return GetCapacity(); }
-	[[nodiscard]]
 	bool empty() const { bool IsEmpty(); }
 	void reserve(Size count) { Reserve(count); }
 	void shrink_to_fit() { TrimToSize(); }
