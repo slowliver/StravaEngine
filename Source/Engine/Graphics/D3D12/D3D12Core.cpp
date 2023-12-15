@@ -6,8 +6,10 @@ namespace StravaEngine::Graphics::D3D12
 {
 std::unique_ptr<D3D12Core> D3D12Core::s_instance = nullptr;
 
-extern "C" char g_vertexShader[];
-extern "C" char g_pixelShader[];
+extern "C" Byte g_vertexShader[];
+extern "C" Size g_vertexShaderSize;
+extern "C" Byte g_pixelShader[];
+extern "C" Size g_pixelShaderSize;
 
 bool D3D12Core::Initialize(const RendererSpec& spec)
 {
@@ -190,7 +192,6 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		}
 	}
 
-#if 0
 	// Create the pipeline state, which includes compiling and loading shaders.
 	{
 		// Define the vertex input layout.
@@ -204,8 +205,8 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
 		psoDesc.pRootSignature = m_rootSignature;
-		psoDesc.VS = { g_vertexShader, sizeof(g_vertexShader) };
-		psoDesc.PS = { g_pixelShader, sizeof(g_pixelShader) };
+		psoDesc.VS = { g_vertexShader, g_vertexShaderSize };
+		psoDesc.PS = { g_pixelShader, g_pixelShaderSize };
 		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 		psoDesc.DepthStencilState.DepthEnable = FALSE;
@@ -222,6 +223,7 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		}
 	}
 
+#if 0
 	// Create the command list.
 	ThrowIfFailed(m_device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[m_frameIndex].Get(), m_pipelineState.Get(), IID_PPV_ARGS(&m_commandList)));
 
