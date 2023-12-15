@@ -271,10 +271,8 @@ public:
 	ArrayList() {}
 	explicit ArrayList(Size count) { Resize(count); }
 	ArrayList(Size count, const Type& value) { Resize(count, value); }
-#if 0
 	template <class IteratorType>
-	vector(IteratorType first, IteratorType last);
-#endif
+	vector(IteratorType first, IteratorType last) { AddRange(first, last); }
 	ArrayList(const ArrayList& arrayList)
 		: m_count(arrayList.m_count)
 		, m_capacity(arrayList.m_capacity)
@@ -289,10 +287,12 @@ public:
 			}
 		}
 	}
-#if 0
-	ArrayList(ArrayList&& arrayList);
-	ArrayList(std::initializer_list<Type> initializerList);
-#endif
+	ArrayList(ArrayList&& arrayList)
+		: m_data(std::move(arrayList.m_data))
+		, m_count(std::move(arrayList.m_count))
+		, m_capacity(std::move(arrayList.m_capacity))
+	{}
+	ArrayList(std::initializer_list<Type> initializerList) { AddRange(initializerList); }
 
 	iterator begin() { return iterator(m_data, 0); }
 	const_iterator begin() const { return const_iterator(m_data, 0); }
