@@ -272,7 +272,7 @@ public:
 	explicit ArrayList(Size count) { Resize(count); }
 	ArrayList(Size count, const Type& value) { Resize(count, value); }
 	template <class IteratorType>
-	vector(IteratorType first, IteratorType last) { AddRange(first, last); }
+	ArrayList(IteratorType first, IteratorType last) { AddRange(first, last); }
 	ArrayList(const ArrayList& arrayList)
 		: m_count(arrayList.m_count)
 		, m_capacity(arrayList.m_capacity)
