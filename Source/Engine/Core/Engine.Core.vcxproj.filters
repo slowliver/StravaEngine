@@ -42,4 +42,9 @@
       <Filter>ソース ファイル\Diagnostics</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Engine.Core.natvis">
+      <Filter>ソース ファイル</Filter>
+    </Natvis>
+  </ItemGroup>
 </Project>

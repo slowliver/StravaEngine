@@ -268,16 +268,28 @@ public:
 	using reverse_iterator = std::reverse_iterator<iterator>;
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 
-	ArrayList()
-	{
-//		std::vector a = std::vector();
-	}
+	ArrayList() {}
+	explicit ArrayList(Size count) { Resize(count); }
+	ArrayList(Size count, const Type& value) { Resize(count, value); }
 #if 0
-	explicit ArrayList(Size size);
-	ArrayList(Size size, const Type& value);
 	template <class IteratorType>
 	vector(IteratorType first, IteratorType last);
-	ArrayList(const ArrayList& arrayList);
+#endif
+	ArrayList(const ArrayList& arrayList)
+		: m_count(arrayList.m_count)
+		, m_capacity(arrayList.m_capacity)
+	{
+		if (arrayList.m_count)
+		{
+			auto allocator = Allocator<Type>();
+			m_data = allocator.allocate(m_capacity);
+			for (Size i = 0; i < m_count; ++i)
+			{
+				::new(&m_data[i]) Type(arrayList.m_data[i]);
+			}
+		}
+	}
+#if 0
 	ArrayList(ArrayList&& arrayList);
 	ArrayList(std::initializer_list<Type> initializerList);
 #endif
@@ -295,14 +307,14 @@ public:
 	const_reverse_iterator crbegin() const { return rbegin(); }
 	const_reverse_iterator crend() const { return rend(); }
 
-	void Reserve(Size count)
+	void Reserve(Size capacity)
 	{
-		if (count <= m_capacity)
+		if (capacity <= m_capacity)
 		{
 			return;
 		}
 		auto allocator = Allocator<Type>();
-		auto* newData = allocator.allocate(count);
+		auto* newData = allocator.allocate(capacity);
 		for (Size i = 0; i < m_count; ++i)
 		{
 			::new(&newData[i]) Type(std::move(m_data[i]));
@@ -310,10 +322,10 @@ public:
 		}
 		if (m_data)
 		{
-			allocator.deallocate(m_data, m_capacity);
+			allocator.deallocate(m_data);
 		}
 		m_data = newData;
-		m_capacity = count;
+		m_capacity = capacity;
 	}
 
 	Size GetCapacity() const { return m_capacity; }
@@ -408,7 +420,7 @@ public:
 	const Type& GetBack() const { return m_data[m_count - 1]; }
 
 	template <class... Args>
-	void EmplaceAt(Size index, Args&&... args)
+	Type& Emplace(Size index, Args&&... args)
 	{
 		const Size oldCount = m_count;
 		const Size newCount = m_count + 1;
@@ -416,29 +428,74 @@ public:
 		{
 			Reserve(newCount * 3 / 2);
 		}
+		for (Size i = oldCount; i < index; --i)
+		{
+			::new(&m_data[i]) Type(std::move(m_data[i - 1]));
+		}
+		::new(&m_data[index]) Type(std::forward<Args>(args)...);
+		m_count = newCount;
+		return m_data[index];
+	}
+
+	void Insert(Size index, const Type& value) { Emplace(index, value); }
+	void Insert(Size index, Type&& value) { Emplace(index, std::move(value)); }
+
+	template <class... Args>
+	Type& EmplaceBack(Args&&... args) { return Emplace(m_count, std::forward<Args>(args)...); }
+
+	Size Add(const Type& value) { EmplaceBack(value); return m_count - 1; }
+	Size Add(const Type&& value) { return EmplaceBack(std::move(value)); return m_count - 1; }
+
+	template <class IteratorType>
+	void InsertRange(Size index, IteratorType first, IteratorType last)
+	{
+		const Size numRangeCount = static_cast<Size>(last - first);
+		const Size oldCount = m_count;
+		const Size newCount = m_count + numRangeCount;
+		if (newCount > m_capacity)
+		{
+			Reserve(newCount * 3 / 2);
+		}
+#if 0
 		Resize(newCount);
 		for (Size i = oldCount; i > index; --i)
 		{
-			std::swap(m_data[i], m_data[i - 1]);
+			m_data[i - 1 + numRangeCount] = std::move(m_data[i - 1]);
 		}
-		::new(&m_data[index]) Type(std::forward<Args>(args)...);
+#else
+		for (Size i = oldCount; i > index; --i)
+		{
+			::new(&m_data[i - 1 + numRangeCount]) Type(std::move(m_data[i - 1]));
+		}
+#endif
+		for (IteratorType itr = first; itr < last; ++itr)
+		{
+			const auto offset = static_cast<Size>(itr - first);
+			::new(&m_data[index + offset]) Type(*itr);
+		}
+		m_count = newCount;
 	}
+	void InsertRange(Size index, const ArrayList& other) { InsertRange(index, other.cbegin(), other.cend()); }
+	void InsertRange(Size index, ArrayList&& other) { InsertRange(index, other.cbegin(), other.cend()); }
+	void InsertRange(Size index, std::initializer_list<Type> other) { InsertRange(index, other.begin(), other.end()); }
+	void InsertRange(Size index, Type* other, Size count) { InsertRange(index, &other[0], &other[count]); }
+	template <Size k_size> void InsertRange(Size index, const Array<Type, k_size>& other) { InsertRange(index, other.cbegin(), other.cend()); }
 
-	void AddAt(Size index, const Type& value) { EmplaceAt(index, value); }
-	void AddAt(Size index, Type&& value) { EmplaceAt(index, std::move(value)); }
+	template <class IteratorType>
+	void AddRange(IteratorType first, IteratorType last) { InsertRange(m_count - 1, first, last); }
+	void AddRange(const ArrayList& other) { InsertRange(m_count - 1, other); }
+	void AddRange(ArrayList&& other) { InsertRange(m_count - 1, std::move(other)); }
+	void AddRange(std::initializer_list<Type> other) { InsertRange(m_count - 1, other); }
+	void AddRange(Type* other, Size count) { InsertRange(m_count - 1, other, count); }
+	template <Size k_size> void AddRange(const Array<Type, k_size>& other) { InsertRange(m_count - 1, other); }
 
-	template <class... Args>
-	void Emplace(Args&&... args)
+	void Clear() { Resize(0); }
+
+	void Swap(ArrayList other)
 	{
-		EmplaceAt(m_count, std::forward<Args>(args)...);
-	}
-
-	void Add(const Type& value) { Emplace(value); }
-	void Add(const Type&& value) { Emplace(std::move(value)); }
-
-	void AddRange()
-	{
-
+		std::swap(m_data, other.m_data);
+		std::swap(m_count, other.m_count);
+		std::swap(m_capacity, other.m_capacity);
 	}
 
 	// C++ STL alias
@@ -452,10 +509,18 @@ public:
 	void shrink_to_fit() { TrimToSize(); }
 	Type& at(Size index) { return GetAt(index); }
 	const Type& at(Size index) const { return GetAt(index); }
+	Type* data() { return GetData(); }
+	const Type* data() const { return GetData(); }
 	Type& front() { return GetFront(); }
 	const Type& front() const { return GetFront(); }
 	Type& back() { return GetBack(); }
 	const Type& back() const { return GetBack(); }
+	void push_back(const Type& value) { Add(value); }
+	void push_back(Type&& value) { Add(std::move(value)); }
+	template <class... Args> void emplace_back(Args&&... args) { EmplaceBack(std::forward<Args>(args)...); }
+	template <class... Args> Type& emplace_back(Args&&... args) { return EmplaceBack(std::forward<Args>(args)...); }
+	void swap(ArrayList other) { Swap(other); }
+	void clear() { Clear(); }
 
 private:
 	Type* m_data = nullptr;

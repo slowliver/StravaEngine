@@ -20,6 +20,9 @@
   <ItemGroup>
     <ClCompile Include="Diagnostics\Debugger.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <Natvis Include="Engine.Core.natvis" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
     <Keyword>Win32Proj</Keyword>

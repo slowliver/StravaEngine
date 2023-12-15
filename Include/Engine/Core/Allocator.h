@@ -23,28 +23,33 @@ struct Allocator
 
 	Allocator() {};
 	Allocator(const Allocator&) {};
+	Allocator(Allocator&&) {};
+#if 0
 	template<typename OtherType, Size k_alignment2>
 	Allocator(const Allocator<OtherType, k_alignment2>&) {};
+#endif
 	~Allocator() {};
 
 	Allocator& operator=(const Allocator&) {};
+#if 0
 	template<typename OtherType, Size k_alignment2>
 	Allocator& operator=(const Allocator<OtherType, k_alignment2>&) {};
+#endif
 
 	[[nodiscard]]
-	Type* allocate(size_type n)
+	Type* allocate(Size count)
 	{
 #if STRAVA_WINDOWS
-		return static_cast<Type*>(::_aligned_malloc(n * sizeof(Type), k_alignment));
+		return static_cast<Type*>(::_aligned_malloc(count * sizeof(Type), k_alignment));
 #else
 #error
 #endif
 	}
 
-	void deallocate(Type* p, size_type n)
+	void deallocate(Type* pointer)
 	{
 #if STRAVA_WINDOWS
-		::_aligned_free(p);
+		::_aligned_free(pointer);
 #else
 #error
 #endif
