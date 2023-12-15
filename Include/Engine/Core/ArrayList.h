@@ -519,6 +519,13 @@ public:
 	void push_back(Type&& value) { Add(std::move(value)); }
 	template <class... Args> void emplace_back(Args&&... args) { EmplaceBack(std::forward<Args>(args)...); }
 	template <class... Args> Type& emplace_back(Args&&... args) { return EmplaceBack(std::forward<Args>(args)...); }
+	void pop_back() { Resize(m_count - 1); }
+	iterator insert(const_iterator position, const Type& value) { Insert(static_cast<Size>(position - cbegin()), value); }
+	iterator insert(const_iterator position, Type&& value) { Insert(static_cast<Size>(position - cbegin()), std::move(value)); }
+	iterator insert(const_iterator position, Size count, const Type& value);
+	iterator insert(const_iterator position, std::initializer_list<Type> other) { Insert(static_cast<Size>(position - cbegin()), other); }
+	template <class IteratorType> iterator insert(IteratorType position, IteratorType first, IteratorType last) { Insert(static_cast<Size>(position - cbegin()), first, last); }
+	template <class... Args> iterator emplace(const_iterator position, Args&&... args) { Emplace(static_cast<Size>(position - cbegin()), std::forward<Args>(args)); }
 	void swap(ArrayList other) { Swap(other); }
 	void clear() { Clear(); }
 
