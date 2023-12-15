@@ -1,5 +1,6 @@
 #include "D3D12Core.h"
 
+#include <d3dx12.h>
 
 namespace StravaEngine::Graphics::D3D12
 {
@@ -164,7 +165,6 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		}
 	}
 
-#if 0
 	// Create an empty root signature.
 	{
 		D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
@@ -183,24 +183,16 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 			return false;
 		}
 
-		m_d3d12Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature)));
+		hr = m_d3d12Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
+		if (FAILED(hr))
+		{
+			return false;
+		}
 	}
 
+#if 0
 	// Create the pipeline state, which includes compiling and loading shaders.
 	{
-		ComPtr<ID3DBlob> vertexShader;
-		ComPtr<ID3DBlob> pixelShader;
-
-#if defined(_DEBUG)
-		// Enable better shader debugging with the graphics debugging tools.
-		UINT compileFlags = D3DCOMPILE_DEBUG | D3DCOMPILE_SKIP_OPTIMIZATION;
-#else
-		UINT compileFlags = 0;
-#endif
-
-		ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "VSMain", "vs_5_0", compileFlags, 0, &vertexShader, nullptr));
-		ThrowIfFailed(D3DCompileFromFile(GetAssetFullPath(L"shaders.hlsl").c_str(), nullptr, nullptr, "PSMain", "ps_5_0", compileFlags, 0, &pixelShader, nullptr));
-
 		// Define the vertex input layout.
 		D3D12_INPUT_ELEMENT_DESC inputElementDescs[] =
 		{
@@ -211,9 +203,9 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		// Describe and create the graphics pipeline state object (PSO).
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
-		psoDesc.pRootSignature = m_rootSignature.Get();
-		psoDesc.VS = CD3DX12_SHADER_BYTECODE(vertexShader.Get());
-		psoDesc.PS = CD3DX12_SHADER_BYTECODE(pixelShader.Get());
+		psoDesc.pRootSignature = m_rootSignature;
+		psoDesc.VS = { g_vertexShader, sizeof(g_vertexShader) };
+		psoDesc.PS = { g_pixelShader, sizeof(g_pixelShader) };
 		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
 		psoDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
 		psoDesc.DepthStencilState.DepthEnable = FALSE;
@@ -223,7 +215,11 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		psoDesc.NumRenderTargets = 1;
 		psoDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 		psoDesc.SampleDesc.Count = 1;
-		ThrowIfFailed(m_device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState)));
+		hr = m_d3d12Device->CreateGraphicsPipelineState(&psoDesc, IID_PPV_ARGS(&m_pipelineState));
+		if (FAILED(hr))
+		{
+			return false;
+		}
 	}
 
 	// Create the command list.
