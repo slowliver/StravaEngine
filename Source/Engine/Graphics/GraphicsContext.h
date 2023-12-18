@@ -17,9 +17,9 @@ namespace ToString													\
 	static constexpr const char8_t u8#p;							\
 }																	\
 struct CommandPacket##p final : public CommandPacket<CommandPacketType::p>
-; 
+;
 #endif
-#define STRAVA_COMMAND_PACKET(p) struct CommandPacket##p final : public CommandPacket<CommandPacketType::p>
+#define STRAVA_COMMAND_PACKET(p) struct CommandPacket##p final : public CommandPacketBase<CommandPacketType::p>
 
 enum class CommandPacketType : UInt32
 {
@@ -87,14 +87,14 @@ static constexpr const char8_t* k_commandPacketNames[] =
 	u8"SetRenderTargets",
 };
 
-//static_assert(Core::ToUnderlying(CommandPacketType::Count) == Core::GetCount(k_commandPacketNames));
+static_assert(Core::ToUnderlying(CommandPacketType::Count) == Core::GetCount(k_commandPacketNames));
 
-template <CommandPacketType commandPacketType>
-struct CommandPacket
+template <CommandPacketType k_commandPacketType>
+struct alignas(sizeof(void*)) CommandPacketBase
 {
-	static constexpr CommandPacketType k_commandPacketType = commandPacketType;
-	CommandPacketType m_commandPacketType = commandPacketType;
-//	const char8_t ToString() const { k_commandPacketNames[ToUnderlying(k_commandPacketType)]; }
+	static constexpr CommandPacketType k_type = k_commandPacketType;
+	const CommandPacketType m_type = k_commandPacketType;
+	constexpr const char8_t* ToString() const { k_commandPacketNames[ToUnderlying(k_type)]; }
 };
 
 #if 0
@@ -139,13 +139,51 @@ STRAVA_COMMAND_PACKET(SetRenderTargets)
 
 class CommandBufferBase
 {
+public:
+	CommandBufferBase() = delete;
+	CommandBufferBase(const CommandBufferBase&) = delete;
+	explicit CommandBufferBase(Size size);
+	virtual ~CommandBufferBase();
 
+	void Reset();
+
+	template <typename T>
+	T& Push(const Size additionalSize = 0)
+	{
+		auto& command = reinterpret_cast<T&>(*Push(sizeof(T), additionalSize));
+		command.m_type = T::k_type;
+		return command;
+	}
+
+#if 0
+	template <typename T>
+	void End(const Size additionalSize = 0)
+	{
+		End(sizeof(T), additionalSize);
+	}
+#endif
+
+	Byte* GetBegin() { return m_begin; }
+
+private:
+	Byte* Push(Size commandSize, Size additionalSize);
+#if 0
+	void End(Size commandSize, Size additionalSize);
+#endif
+
+private:
+	Size m_size = 0;
+	Byte* m_current = nullptr;
+	Byte* m_begin = nullptr;
+	Byte* m_end = nullptr;
 };
 
 class GraphicsCommandBuffer final : public CommandBufferBase
 {
 public:
-	GraphicsCommandBuffer() {}
+	explicit GraphicsCommandBuffer(Size size)
+		: CommandBufferBase(size)
+	{}
 	~GraphicsCommandBuffer() {}
 
 	bool Initialize();

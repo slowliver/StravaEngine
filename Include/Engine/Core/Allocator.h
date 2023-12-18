@@ -37,7 +37,7 @@ struct Allocator
 #endif
 
 	[[nodiscard]]
-	Type* allocate(Size count)
+	Type* Allocate(Size count)
 	{
 #if STRAVA_WINDOWS
 		return static_cast<Type*>(::_aligned_malloc(count * sizeof(Type), k_alignment));
@@ -46,7 +46,7 @@ struct Allocator
 #endif
 	}
 
-	void deallocate(Type* pointer)
+	void Deallocate(Type* pointer)
 	{
 #if STRAVA_WINDOWS
 		::_aligned_free(pointer);
