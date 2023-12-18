@@ -49,15 +49,5 @@ struct Viewport
 	float m_maxDepth = 1.0f;
 };
 
-struct Viewport
-{
-	float m_left = 0.0f;
-	float m_top = 0.0f;
-	float m_width = 0.0f;
-	float m_height = 0.0f;
-	float m_minDepth = 0.0f;
-	float m_maxDepth = 1.0f;
-};
-
 using NativeResouce = std::intptr_t;
 }

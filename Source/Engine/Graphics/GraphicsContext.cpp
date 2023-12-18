@@ -3,7 +3,9 @@
 namespace StravaEngine::Graphics
 {
 bool GraphicsCommandBuffer::Initialize()
-{}
+{
+	return true;
+}
 
 void GraphicsCommandBuffer::Terminate()
 {}

@@ -13,11 +13,14 @@
   <ItemGroup>
     <ClCompile Include="D3D12\D3D12Core.cpp" />
     <ClCompile Include="D3D12\Shader\Shader.cpp" />
+    <ClCompile Include="GraphicsContext.cpp" />
     <ClCompile Include="Renderer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h" />
+    <ClInclude Include="..\..\..\Include\Engine\Graphics\Type.h" />
     <ClInclude Include="D3D12\D3D12Core.h" />
+    <ClInclude Include="GraphicsContext.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="D3D12\Shader\Shader.y">

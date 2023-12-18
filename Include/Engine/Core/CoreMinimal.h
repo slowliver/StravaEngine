@@ -82,7 +82,7 @@ template <class Enum>
 using UnderlyingType = std::underlying_type_t<Enum>;
 
 template <class Enum>
-constexpr UnderlyingType<Enum> ToUnderlying(Enum e) { return static_cast<UnderlyingType>(e); }
+constexpr UnderlyingType<Enum> ToUnderlying(Enum e) { return static_cast<UnderlyingType<Enum>>(e); }
 
 template <class Type>
 [[nodiscard]]
