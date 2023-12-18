@@ -280,7 +280,7 @@ public:
 		if (arrayList.m_count)
 		{
 			auto allocator = Allocator<Type>();
-			m_data = allocator.allocate(m_capacity);
+			m_data = allocator.Allocate(m_capacity);
 			for (Size i = 0; i < m_count; ++i)
 			{
 				::new(&m_data[i]) Type(arrayList.m_data[i]);
@@ -314,7 +314,7 @@ public:
 			return;
 		}
 		auto allocator = Allocator<Type>();
-		auto* newData = allocator.allocate(capacity);
+		auto* newData = allocator.Allocate(capacity);
 		for (Size i = 0; i < m_count; ++i)
 		{
 			::new(&newData[i]) Type(std::move(m_data[i]));
@@ -322,7 +322,7 @@ public:
 		}
 		if (m_data)
 		{
-			allocator.deallocate(m_data);
+			allocator.Deallocate(m_data);
 		}
 		m_data = newData;
 		m_capacity = capacity;
@@ -389,19 +389,19 @@ public:
 		{
 			if (m_data)
 			{
-				allocator.deallocate(m_data, m_capacity);
+				allocator.Deallocate(m_data, m_capacity);
 			}
 			m_data = nullptr;
 			m_capacity = 0;
 			return;
 		}
-		auto* newData = allocator.allocate(m_count);
+		auto* newData = allocator.Allocate(m_count);
 		for (Size i = 0; i < m_count; ++i)
 		{
 			::new(&newData[i]) Type(std::move(m_data[i]));
 			m_data[i].~Type();
 		}
-		allocator.deallocate(m_data, m_capacity);
+		allocator.Deallocate(m_data, m_capacity);
 		m_data = newData;
 		m_capacity = m_count;
 	}

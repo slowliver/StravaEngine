@@ -93,8 +93,8 @@ template <CommandPacketType k_commandPacketType>
 struct alignas(sizeof(void*)) CommandPacketBase
 {
 	static constexpr CommandPacketType k_type = k_commandPacketType;
-	const CommandPacketType m_type = k_commandPacketType;
 	constexpr const char8_t* ToString() const { k_commandPacketNames[ToUnderlying(k_type)]; }
+	const CommandPacketType m_type = k_commandPacketType;
 };
 
 #if 0
@@ -150,9 +150,7 @@ public:
 	template <typename T>
 	T& Push(const Size additionalSize = 0)
 	{
-		auto& command = reinterpret_cast<T&>(*Push(sizeof(T), additionalSize));
-		command.m_type = T::k_type;
-		return command;
+		return reinterpret_cast<T&>(*Push(sizeof(T), additionalSize));
 	}
 
 #if 0
