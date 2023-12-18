@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <type_traits>
 
 #if defined(DEBUG) || defined(_DEBUG)
 #define STRAVA_DEBUG 1
@@ -38,6 +39,20 @@ using Size = UInt64;
 using NativeHandle = UInt64;
 
 template <class Type>
+struct RectBase
+{
+	Type m_left = {};
+	Type m_top = {};
+	Type m_right = {};
+	Type m_bottom = {};
+	RectBase& SetWidth(Type width) { m_right = m_left + width; return this; }
+	RectBase& SetHeight(Type height) { m_right = m_left + height; return this; }
+	Type GetWidth(Type width) const { return m_right - m_left; }
+	Type GetHeight(Type height) const { return m_right - m_left; }
+};
+using Int32Rect = RectBase<Int32>;
+
+template <class Type>
 void SafeDelete(Type*& pointer)
 {
 	delete pointer;
@@ -62,6 +77,12 @@ constexpr Core::Size GetCount(const BoolArray<N>&) { return N; }
 
 template <class Enum>
 constexpr Size GetCount(const Enum) { return ToUnderlying<Enum>(Enum::Count); }
+
+template <class Enum>
+using UnderlyingType = std::underlying_type_t<Enum>;
+
+template <class Enum>
+constexpr UnderlyingType<Enum> ToUnderlying(Enum e) { return static_cast<UnderlyingType>(e); }
 
 template <class Type>
 [[nodiscard]]
