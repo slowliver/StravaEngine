@@ -25,7 +25,7 @@ private:
 public:
 	bool Initialize(const RendererSpec& spec);
 	void Terminate();
-	void Update();
+	void OnUpdate();
 
 private:
 	static std::unique_ptr<Renderer> s_instance;

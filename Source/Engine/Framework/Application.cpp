@@ -37,7 +37,7 @@ static LRESULT Application_WindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	case WM_PAINT:
 	{
 		auto* renderer = Graphics::Renderer::GetInstance();
-		renderer->Update();
+		renderer->OnUpdate();
 	}
 		//		if (pSample)
 		//		{

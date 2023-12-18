@@ -46,8 +46,8 @@ void Renderer::Terminate()
 	D3D12::D3D12Core::s_instance.reset(nullptr);
 }
 
-void Renderer::Update()
+void Renderer::OnUpdate()
 {
-
+	D3D12::D3D12Core::s_instance->OnUpdate();
 }
 }
