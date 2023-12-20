@@ -29,5 +29,6 @@ public:
 
 private:
 	static std::unique_ptr<Renderer> s_instance;
+	std::unique_ptr<class GraphicsCommandBuffer> m_graphicsCommandBuffer;
 };
 }
