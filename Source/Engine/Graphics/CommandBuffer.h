@@ -1,3 +1,5 @@
+#pragma once
+
 #include <Engine/Core/CoreMinimal.h>
 #include <Engine/Graphics/Type.h>
 #include "D3D12/D3D12Core.h"

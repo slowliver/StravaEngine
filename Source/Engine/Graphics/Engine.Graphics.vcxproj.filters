@@ -30,7 +30,7 @@
     <ClCompile Include="D3D12\Shader\Shader.cpp">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
     </ClCompile>
-    <ClCompile Include="GraphicsContext.cpp">
+    <ClCompile Include="CommandBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
@@ -41,7 +41,7 @@
     <ClInclude Include="D3D12\D3D12Core.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="GraphicsContext.h">
+    <ClInclude Include="CommandBuffer.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Type.h">

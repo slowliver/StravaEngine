@@ -1,7 +1,9 @@
 #include <Windows.h>
 
 #include <Engine/Graphics/Renderer.h>
+
 #include "D3D12/D3D12Core.h"
+#include "CommandBuffer.h"
 
 namespace StravaEngine::Graphics
 {
@@ -31,6 +33,7 @@ bool Renderer::Initialize(const RendererSpec& spec)
 	bool result = false;
 
 	D3D12::D3D12Core::s_instance.reset(new D3D12::D3D12Core());
+	m_graphicsCommandBuffer.reset(new GraphicsCommandBuffer(32));
 	result = D3D12::D3D12Core::s_instance->Initialize(spec);
 	if (!result)
 	{
