@@ -444,7 +444,7 @@ public:
 	Type& EmplaceBack(Args&&... args) { return Emplace(m_count, std::forward<Args>(args)...); }
 
 	Size Add(const Type& value) { EmplaceBack(value); return m_count - 1; }
-	Size Add(const Type&& value) { return EmplaceBack(std::move(value)); return m_count - 1; }
+	Size Add(const Type&& value) { EmplaceBack(std::move(value)); return m_count - 1; }
 
 	template <class IteratorType>
 	void InsertRange(Size index, IteratorType first, IteratorType last)
