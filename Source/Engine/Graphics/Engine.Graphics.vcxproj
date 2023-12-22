@@ -12,15 +12,21 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="D3D12\D3D12Core.cpp" />
+    <ClCompile Include="D3D12\D3D12VertexBuffer.cpp" />
     <ClCompile Include="D3D12\Shader\Shader.cpp" />
     <ClCompile Include="CommandBuffer.cpp" />
+    <ClCompile Include="DrawTriangleSamplePass.cpp" />
     <ClCompile Include="Renderer.cpp" />
+    <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Type.h" />
     <ClInclude Include="D3D12\D3D12Core.h" />
     <ClInclude Include="CommandBuffer.h" />
+    <ClInclude Include="D3D12\D3D12VertexBuffer.h" />
+    <ClInclude Include="DrawTriangleSamplePass.h" />
+    <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="D3D12\Shader\Shader.y">

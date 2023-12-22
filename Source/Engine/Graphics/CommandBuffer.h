@@ -1,5 +1,7 @@
 #pragma once
 
+#include <functional>
+
 #include <Engine/Core/CoreMinimal.h>
 #include <Engine/Graphics/Type.h>
 #include "D3D12/D3D12Core.h"
@@ -53,6 +55,9 @@ enum class CommandPacketType : UInt32
 	// Output Merger
 	SetRenderTargets,
 
+	// Native Command
+	SetNativeCommand,
+
 	Count
 };
 
@@ -87,6 +92,9 @@ static constexpr const char8_t* k_commandPacketNames[] =
 
 	// Output Merger
 	u8"SetRenderTargets",
+
+	// Native Command
+	u8"SetNativeCommand",
 };
 
 static_assert(Core::ToUnderlying(CommandPacketType::Count) == Core::GetCount(k_commandPacketNames));
@@ -139,6 +147,11 @@ STRAVA_COMMAND_PACKET(SetRenderTargets)
 };
 #endif
 
+STRAVA_COMMAND_PACKET(SetNativeCommand)
+{
+	std::function<void(void)> m_function = nullptr;
+};
+
 class CommandBufferBase
 {
 public:
@@ -164,6 +177,9 @@ public:
 #endif
 
 	Byte* GetBegin() { return m_begin; }
+
+	// Native Command
+	void SetNativeCommand(std::function<void(void)> func);
 
 private:
 	Byte* Push(Size commandSize, Size additionalSize);

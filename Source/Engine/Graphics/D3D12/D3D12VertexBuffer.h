@@ -1,0 +1,36 @@
+#pragma once
+
+#include <memory>
+#include <d3d12.h>
+
+#include <Engine/Core/CoreMinimal.h>
+#include <Engine/Core/ArrayList.h>
+#include <Engine/Graphics/Type.h>
+#include "./../VertexBuffer.h"
+
+namespace StravaEngine::Graphics
+{
+namespace D3D12
+{
+class D3D12VertexBuffer : public NativeVertexBufferBase
+{
+public:
+	D3D12VertexBuffer() {}
+	virtual ~D3D12VertexBuffer() override;
+	virtual bool OnCreate(const VertexBufferSpec& vertexBufferSpec) override;
+
+private:
+	ID3D12Resource* m_resource = nullptr;
+
+};
+}
+#if 0
+class NativeVertexBuffer : public D3D12::D3D12VertexBuffer {
+public:
+	NativeVertexBuffer() : D3D12::D3D12VertexBuffer() {}
+	~NativeVertexBuffer() {}
+};
+#else
+using NativeVertexBuffer = typename D3D12::D3D12VertexBuffer;
+#endif
+}

@@ -17,6 +17,8 @@ public:
 	void Terminate();
 	void OnUpdate();
 
+	ID3D12Device* GetD3D12Device() { return m_d3d12Device; }
+
 public:
 	static std::unique_ptr<D3D12Core> s_instance;
 

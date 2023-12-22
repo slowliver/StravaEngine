@@ -37,6 +37,12 @@ Byte* CommandBufferBase::Push(Size commandSize, Size additionalSize)
 	return previousPosition;
 }
 
+void CommandBufferBase::SetNativeCommand(std::function<void(void)> func)
+{
+	auto& packet = Push<CommandPacketSetNativeCommand>();
+	packet.m_function = func;
+}
+
 #if 0
 void CommandBufferBase::End(Size commandSize, Size additionalSize)
 {}

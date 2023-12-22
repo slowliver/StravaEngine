@@ -33,6 +33,15 @@
     <ClCompile Include="CommandBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="DrawTriangleSamplePass.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="VertexBuffer.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12\D3D12VertexBuffer.cpp">
+      <Filter>ソース ファイル\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h">
@@ -46,6 +55,15 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Type.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="DrawTriangleSamplePass.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="VertexBuffer.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12\D3D12VertexBuffer.h">
+      <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

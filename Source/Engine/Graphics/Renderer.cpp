@@ -4,6 +4,7 @@
 
 #include "D3D12/D3D12Core.h"
 #include "CommandBuffer.h"
+#include "DrawTriangleSamplePass.h"
 
 namespace StravaEngine::Graphics
 {
@@ -40,6 +41,9 @@ bool Renderer::Initialize(const RendererSpec& spec)
 		return false;
 	}
 
+	m_drawTriangleSamplePass.reset(new DrawTriangleSamplePass());
+	m_drawTriangleSamplePass->Initialize();
+
 	return true;
 }
 
@@ -51,6 +55,11 @@ void Renderer::Terminate()
 
 void Renderer::OnUpdate()
 {
+	for (auto& resourceCreationFunc : m_resourceCreationQueue)
+	{
+		resourceCreationFunc();
+	}
 	D3D12::D3D12Core::s_instance->OnUpdate();
+	m_resourceCreationQueue.Clear();
 }
 }
