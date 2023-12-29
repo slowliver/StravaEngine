@@ -11,6 +11,7 @@ namespace StravaEngine::Graphics
 struct VertexBufferSpec final
 {
 	Byte* m_data;
+	Size m_sizePerElement;
 	Size m_dataSize;
 };
 

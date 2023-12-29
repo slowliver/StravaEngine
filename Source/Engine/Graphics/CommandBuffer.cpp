@@ -16,6 +16,8 @@ CommandBufferBase::CommandBufferBase(Size size)
 {
 	auto allocator = Core::Allocator<Byte>();
 	m_begin = allocator.Allocate(size);
+	m_end = m_begin + size;
+	m_current = m_begin;
 }
 
 CommandBufferBase::~CommandBufferBase()
@@ -47,6 +49,13 @@ void CommandBufferBase::SetNativeCommand(std::function<void(void)> func)
 void CommandBufferBase::End(Size commandSize, Size additionalSize)
 {}
 #endif
+
+// Input Assembler
+void GraphicsCommandBuffer::SetPrimitiveTopology(PrimitiveTopology primitiveTopology)
+{
+	auto& packet = Push<CommandPacketSetPrimitiveTopology>();
+	packet.m_primitiveTopology = primitiveTopology;
+}
 
 // Rasterizer
 void GraphicsCommandBuffer::SetViewport(const Viewport& viewport)

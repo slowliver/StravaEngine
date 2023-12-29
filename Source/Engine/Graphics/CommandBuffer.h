@@ -160,7 +160,7 @@ public:
 	explicit CommandBufferBase(Size size);
 	virtual ~CommandBufferBase();
 
-	void Reset();
+	void Reset() {}
 
 	template <typename T>
 	T& Push(const Size additionalSize = 0)
@@ -205,13 +205,13 @@ public:
 	bool Initialize();
 	void Terminate();
 
-	void Reset();
+	void Reset() {}
 
 //	void ClearRenderTarget(NativeResouce* const renderTarget, const Kernel::Color clearColor);
 
 	// Input Assembler
-//	void SetPrimitiveTopology(const PrimitiveTopology primitiveTopology);
-//	void SetVertexBuffers(const PrimitiveTopology primitiveTopology);
+	void SetPrimitiveTopology(PrimitiveTopology primitiveTopology);
+	//	void SetVertexBuffers(UInt8 startSlot, UInt8 numBuffers, );
 
 	// Rasterizer
 	void SetViewport(const Viewport& viewport);

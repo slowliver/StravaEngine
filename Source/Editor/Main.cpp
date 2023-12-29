@@ -6,6 +6,7 @@
 
 #include <Engine/Core/Array.h>
 #include <Engine/Core/ArrayList.h>
+#include <Engine/Core/ArrayProxy.h>
 #include <Engine/Framework/Application.h>
 #include <Engine/Core/Diagnostics/Debugger.h>
 
@@ -15,12 +16,8 @@ using namespace StravaEngine;
 
 int APIENTRY WinMain(HINSTANCE hInstance, HINSTANCE hInstancePrev, PSTR cmdline, int cmdshow)
 {
-	enum Test
-	{
-		Nop
-	};
-
-	static_assert(Core::ToUnderlying(Test::Nop) == 0);
+	int a = 1;
+	Core::ArrayProxy<const int> ap = Core::ArrayProxy<const int>(a);
 
 	Framework::ApplicationSpec spec;
 	spec.m_nativeHandle = (NativeHandle)hInstance;

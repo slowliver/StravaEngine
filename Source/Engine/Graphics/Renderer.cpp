@@ -34,12 +34,14 @@ bool Renderer::Initialize(const RendererSpec& spec)
 	bool result = false;
 
 	D3D12::D3D12Core::s_instance.reset(new D3D12::D3D12Core());
-	m_graphicsCommandBuffer.reset(new GraphicsCommandBuffer(32));
 	result = D3D12::D3D12Core::s_instance->Initialize(spec);
 	if (!result)
 	{
 		return false;
 	}
+
+	m_graphicsCommandBuffer.reset(new GraphicsCommandBuffer(1024 * 512));
+	m_graphicsCommandBuffer->Initialize();
 
 	m_drawTriangleSamplePass.reset(new DrawTriangleSamplePass());
 	m_drawTriangleSamplePass->Initialize();
@@ -55,11 +57,13 @@ void Renderer::Terminate()
 
 void Renderer::OnUpdate()
 {
+	D3D12::D3D12Core::s_instance->OnUpdate();
 	for (auto& resourceCreationFunc : m_resourceCreationQueue)
 	{
 		resourceCreationFunc();
 	}
-	D3D12::D3D12Core::s_instance->OnUpdate();
+	m_graphicsCommandBuffer->Reset();
+	m_drawTriangleSamplePass->OnRender();
 	m_resourceCreationQueue.Clear();
 }
 }

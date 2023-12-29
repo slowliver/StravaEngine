@@ -13,10 +13,12 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Core\Array.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\ArrayList.h" />
+    <ClInclude Include="..\..\..\Include\Engine\Core\ArrayProxy.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\CoreMinimal.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\Allocator.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\Diagnostics\Debugger.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\List.h" />
+    <ClInclude Include="..\..\..\Include\Engine\Core\Pointer.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Diagnostics\Debugger.cpp" />

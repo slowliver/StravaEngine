@@ -18,7 +18,9 @@ D3D12VertexBuffer::~D3D12VertexBuffer()
 bool D3D12VertexBuffer::OnCreate(const VertexBufferSpec& vertexBufferSpec)
 {
 	HRESULT hr = {};
+
 	auto* d3d12Device = D3D12Core::s_instance->GetD3D12Device();
+
 	D3D12_HEAP_PROPERTIES d3d12HeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
 	D3D12_RESOURCE_DESC vertexBufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSpec.m_dataSize);
 	hr = d3d12Device->CreateCommittedResource
@@ -31,6 +33,27 @@ bool D3D12VertexBuffer::OnCreate(const VertexBufferSpec& vertexBufferSpec)
 		IID_PPV_ARGS(&m_resource)
 	);
 	STRAVA_ASSERT(SUCCEEDED(hr));
+	if (FAILED(hr))
+	{
+		return false;
+	}
+
+	// Copy the triangle data to the vertex buffer.
+	Byte* vertexBufferData;
+	D3D12_RANGE readRange = CD3DX12_RANGE(0, 0);        // We do not intend to read from this resource on the CPU.
+	hr = m_resource->Map(0, &readRange, reinterpret_cast<void**>(&vertexBufferData));
+	if (FAILED(hr))
+	{
+		return false;
+	}
+	memcpy(vertexBufferData, vertexBufferSpec.m_data, sizeof(vertexBufferSpec.m_dataSize));
+	m_resource->Unmap(0, nullptr);
+
+	// Initialize the vertex buffer view.
+	m_view.BufferLocation = m_resource->GetGPUVirtualAddress();
+	m_view.SizeInBytes = static_cast<UINT>(vertexBufferSpec.m_dataSize);
+	m_view.StrideInBytes = static_cast<UINT>(vertexBufferSpec.m_sizePerElement);
+
 	return true;
 }
 }

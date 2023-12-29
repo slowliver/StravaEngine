@@ -59,8 +59,6 @@ Application::Application(const ApplicationSpec& spec)
 {
 	HINSTANCE hInstance = (HINSTANCE)spec.m_nativeHandle;
 
-	::MessageBoxA(NULL, "Test", "Test", MB_OK);
-
 	// Initialize the window class.
 	WNDCLASSEX windowClass = { 0 };
 	windowClass.cbSize = sizeof(WNDCLASSEX);

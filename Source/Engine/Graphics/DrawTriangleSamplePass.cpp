@@ -1,5 +1,8 @@
 #include "DrawTriangleSamplePass.h"
 
+#include <Engine/Graphics/Renderer.h>
+#include "CommandBuffer.h"
+
 namespace StravaEngine::Graphics
 {
 bool DrawTriangleSamplePass::Initialize()
@@ -39,5 +42,35 @@ void DrawTriangleSamplePass::Terminate()
 {}
 
 void DrawTriangleSamplePass::OnRender()
-{}
+{
+	auto* graphicsCmmandBuffer = Renderer::GetInstance()->GetGraphicsCommandBuffer();
+
+	Viewport viewport = { 0.0f, 0.0f, 800.0f, 600.0f, 0.0f, 1.0f };
+	graphicsCmmandBuffer->SetViewport(viewport);
+
+	Core::Int32Rect scissor = { 0, 0, 800, 600 };
+	graphicsCmmandBuffer->SetScissor(scissor);
+
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+
+//	graphicsCmmandBuffer->Set
+//	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+}
 }

@@ -21,7 +21,7 @@ public:
 
 private:
 	ID3D12Resource* m_resource = nullptr;
-
+	D3D12_VERTEX_BUFFER_VIEW m_view = {};
 };
 }
 #if 0

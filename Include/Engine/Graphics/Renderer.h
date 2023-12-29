@@ -13,6 +13,8 @@ struct RendererSpec final
 	NativeHandle m_nativeWindowHandle;
 };
 
+class GraphicsCommandBuffer;
+class DrawTriangleSamplePass;
 class Renderer
 {
 public:
@@ -28,12 +30,13 @@ public:
 	void Terminate();
 	void OnUpdate();
 
+	GraphicsCommandBuffer* GetGraphicsCommandBuffer() { return m_graphicsCommandBuffer.get(); }
 	Core::ArrayList<std::function<void(void)>>& GetResourceCreationQueue() { return m_resourceCreationQueue; }
 
 private:
 	static std::unique_ptr<Renderer> s_instance;
 	Core::ArrayList<std::function<void(void)>> m_resourceCreationQueue;
-	std::unique_ptr<class GraphicsCommandBuffer> m_graphicsCommandBuffer;
-	std::unique_ptr<class DrawTriangleSamplePass> m_drawTriangleSamplePass;
+	std::unique_ptr<GraphicsCommandBuffer> m_graphicsCommandBuffer;
+	std::unique_ptr<DrawTriangleSamplePass> m_drawTriangleSamplePass;
 };
 }
