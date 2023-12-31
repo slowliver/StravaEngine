@@ -3,6 +3,7 @@
 #include <functional>
 
 #include <Engine/Core/CoreMinimal.h>
+#include <Engine/Core/ArrayProxy.h>
 #include <Engine/Graphics/Type.h>
 #include "D3D12/D3D12Core.h"
 
@@ -24,6 +25,8 @@ struct CommandPacket##p final : public CommandPacket<CommandPacketType::p>
 ;
 #endif
 #define STRAVA_COMMAND_PACKET(p) struct CommandPacket##p final : public CommandPacketBase<CommandPacketType::p>
+
+class VertexBuffer;
 
 enum class CommandPacketType : UInt32
 {
@@ -120,14 +123,13 @@ STRAVA_COMMAND_PACKET(SetPrimitiveTopology)
 	PrimitiveTopology m_primitiveTopology = PrimitiveTopology::TriangleList;
 };
 
-#if 0
 STRAVA_COMMAND_PACKET(SetVertexBuffers)
 {
-	Kernel::Size m_startSlot = 0;
-	Kernel::Size m_numBuffers = 0;
-	NativeResouce* m_buffers = nullptr;
+	UInt8 m_startSlot = 0;
+	UInt8 m_numBuffers = 0;
+	Core::ArrayProxy<VertexBuffer*> m_buffers = nullptr;
+	UInt8 m_offset = 0;
 };
-#endif
 
 STRAVA_COMMAND_PACKET(SetViewport)
 {
@@ -211,7 +213,7 @@ public:
 
 	// Input Assembler
 	void SetPrimitiveTopology(PrimitiveTopology primitiveTopology);
-	//	void SetVertexBuffers(UInt8 startSlot, UInt8 numBuffers, );
+	void SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers, UInt8 offset = 0);
 
 	// Rasterizer
 	void SetViewport(const Viewport& viewport);

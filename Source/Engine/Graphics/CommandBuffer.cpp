@@ -57,6 +57,14 @@ void GraphicsCommandBuffer::SetPrimitiveTopology(PrimitiveTopology primitiveTopo
 	packet.m_primitiveTopology = primitiveTopology;
 }
 
+void GraphicsCommandBuffer::SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers, UInt8 offset)
+{
+	auto& packet = Push<CommandPacketSetVertexBuffers>();
+	packet.m_startSlot = startSlot;
+	packet.m_buffers = buffers;
+	packet.m_offset = offset;
+}
+
 // Rasterizer
 void GraphicsCommandBuffer::SetViewport(const Viewport& viewport)
 {

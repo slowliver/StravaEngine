@@ -33,7 +33,7 @@ public:
 	template <class OtherType = Type, std::enable_if_t<std::is_const_v<OtherType>, std::nullptr_t> = nullptr>
 	ArrayProxy(std::initializer_list<std::remove_const_t<OtherType>>&&) = delete;
 	template <Size k_count>
-	ArrayProxy(Type& pointer[k_count]) : m_pointer(pointer) : m_count(k_count) {}
+	ArrayProxy(Type (&pointer)[k_count]) : m_pointer(pointer) : m_count(k_count) {}
 	template <Size k_count>
 	ArrayProxy(Type&&[k_count]) = delete;
 	template <class OtherType = Type, Size k_count, std::enable_if_t<std::is_const_v<OtherType>, std::nullptr_t> = nullptr>
@@ -66,7 +66,44 @@ public:
 	const Type& at(Size index) const { return GetAt(index); }
 
 private:
-	Type* m_pointer;
-	Size m_count;
+	Type* m_pointer = nullptr;
+	Size m_count = 0;
+};
+
+template <class Type>
+class StridedArrayProxy
+{
+public:
+	StridedArrayProxy(ArrayProxy<Type> arrayProxy, Size stride) : m_arrayProxy(arrayProxy), m_stride(stride) {}
+	StridedArrayProxy(ArrayProxy<Type> arrayProxy) : StridedArrayProxy(arrayProxy, sizeof(Type)) {}
+	StridedArrayProxy(std::nullptr_t) : StridedArrayProxy(nullptr, 0) {}
+	StridedArrayProxy() : StridedArrayProxy(nullptr, 0) {}
+
+	StridedArrayProxy& operator=(ArrayProxy<Type>& arrayProxy) { m_arrayProxy = arrayProxy; m_stride = sizeof(Type); return *this; }
+
+	Size GetCount() const { return m_arrayProxy.GetCount(); }
+	bool IsEmpty() const { return m_arrayProxy.IsEmpty(); }
+	const Type& GetAt(Size index) const { return m_arrayProxy.GetAt(index); }
+	const Type& operator[](Size index) const { return m_arrayProxy.GetAt(index); }
+	const Type* GetData() const { return m_arrayProxy.GetData(); }
+	Type& GetFront() { return m_arrayProxy.GetFront(); }
+	const Type& GetFront() const { return m_arrayProxy.GetFront(); }
+	Type& GetBack() { return m_arrayProxy.GetBack(); }
+	const Type& GetBack() const { return m_arrayProxy.GetBack(); }
+	Size GetStride() const { return m_stride; }
+
+	// C++ STL alias
+	const Type* begin() const { return m_arrayProxy.begin(); }
+	const Type* end() const { return m_arrayProxy.end(); }
+	const Type& front() const { return m_arrayProxy.front(); }
+	const Type& back() const { return m_arrayProxy.back(); }
+	bool empty() const { return IsEmpty(); }
+	Size size() const { return GetCount(); }
+	Type* data() const { return GetData(); }
+	const Type& at(Size index) const { return GetAt(index); }
+
+private:
+	ArrayProxy<Type> m_arrayProxy = ArrayProxy<Size>();
+	Size m_stride = sizeof(Type);
 };
 }

@@ -45,6 +45,9 @@ void DrawTriangleSamplePass::OnRender()
 {
 	auto* graphicsCmmandBuffer = Renderer::GetInstance()->GetGraphicsCommandBuffer();
 
+	VertexBuffer* vertexBuffers[] = { m_vertexBuffer.get()};
+	graphicsCmmandBuffer->SetVertexBuffers(0, vertexBuffers);
+
 	Viewport viewport = { 0.0f, 0.0f, 800.0f, 600.0f, 0.0f, 1.0f };
 	graphicsCmmandBuffer->SetViewport(viewport);
 
