@@ -33,15 +33,15 @@ public:
 	template <class OtherType = Type, std::enable_if_t<std::is_const_v<OtherType>, std::nullptr_t> = nullptr>
 	ArrayProxy(std::initializer_list<std::remove_const_t<OtherType>>&&) = delete;
 	template <Size k_count>
-	ArrayProxy(Type (&pointer)[k_count]) : m_pointer(pointer) : m_count(k_count) {}
+	ArrayProxy(Type (&pointer)[k_count]) : m_pointer(pointer), m_count(k_count) {}
 	template <Size k_count>
-	ArrayProxy(Type&&[k_count]) = delete;
+	ArrayProxy(Type (&&pointer)[k_count]) = delete;
 	template <class OtherType = Type, Size k_count, std::enable_if_t<std::is_const_v<OtherType>, std::nullptr_t> = nullptr>
-	ArrayProxy(std::remove_const_t<OtherType>& pointer[k_count]) : m_pointer(pointer) : m_count(k_count) {}
-	template <std::size_t k_count, class OtherType = Type, std::enable_if_t<std::is_const_v<OtherType>::value, std::nullptr_t> = nullptr>
-	ArrayProxy(std::remove_const_t<OtherType>&&[k_count]) = delete;
+	ArrayProxy(std::remove_const_t<OtherType> (&pointer)[k_count]) : m_pointer(pointer), m_count(k_count) {}
+	template <std::size_t k_count, class OtherType = Type, std::enable_if_t<std::is_const_v<OtherType>, std::nullptr_t> = nullptr>
+	ArrayProxy(std::remove_const_t<OtherType> (&&pointer)[k_count]) = delete;
 	template <class OtherType, std::enable_if_t<std::is_convertible_v<decltype(std::declval<OtherType>().data()), Type*> && std::is_convertible_v<decltype(std::declval<OtherType>().size()), Size>, std::nullptr_t> = nullptr>
-	ArrayProxy(OtherType& other) : m_pointer(other.data()) : m_count(other.size()) {}
+	ArrayProxy(OtherType& other) : m_pointer(other.data()), m_count(other.size()) {}
 	template <class OtherType, std::enable_if_t<std::is_convertible_v<decltype(std::declval<OtherType>().data()), Type*>&& std::is_convertible_v<decltype(std::declval<OtherType>().size()), Size>, std::nullptr_t> = nullptr>
 	ArrayProxy(OtherType&& other) = delete;
 	
@@ -49,11 +49,11 @@ public:
 	bool IsEmpty() const { return m_count == 0; }
 	const Type& GetAt(Size index) const { STRAVA_ASSERT(index >= 0 && index < m_count); return m_pointer[index]; }
 	const Type& operator[](Size index) const { return GetAt(index); }
-	const Type* GetData() const { return m_data; }
-	Type& GetFront() { return m_data[0]; }
-	const Type& GetFront() const { return m_data[0]; }
-	Type& GetBack() { return m_data[m_count - 1]; }
-	const Type& GetBack() const { return m_data[m_count - 1]; }
+	const Type* GetData() const { return m_pointer; }
+	Type& GetFront() { return m_pointer[0]; }
+	const Type& GetFront() const { return m_pointer[0]; }
+	Type& GetBack() { return m_pointer[m_count - 1]; }
+	const Type& GetBack() const { return m_pointer[m_count - 1]; }
 
 	// C++ STL alias
 	const Type* begin() const { return m_pointer; }
