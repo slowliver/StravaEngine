@@ -11,6 +11,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="D3D12\D3D12CommandProcessor.cpp" />
     <ClCompile Include="D3D12\D3D12Core.cpp" />
     <ClCompile Include="D3D12\D3D12VertexBuffer.cpp" />
     <ClCompile Include="D3D12\Shader\Shader.cpp" />
@@ -22,6 +23,7 @@
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Type.h" />
+    <ClInclude Include="D3D12\D3D12CommandProcessor.h" />
     <ClInclude Include="D3D12\D3D12Core.h" />
     <ClInclude Include="CommandBuffer.h" />
     <ClInclude Include="D3D12\D3D12VertexBuffer.h" />

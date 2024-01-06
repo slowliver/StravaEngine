@@ -42,6 +42,9 @@
     <ClCompile Include="D3D12\D3D12VertexBuffer.cpp">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="D3D12\D3D12CommandProcessor.cpp">
+      <Filter>ソース ファイル\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h">
@@ -63,6 +66,9 @@
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="D3D12\D3D12VertexBuffer.h">
+      <Filter>ソース ファイル\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12\D3D12CommandProcessor.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
   </ItemGroup>

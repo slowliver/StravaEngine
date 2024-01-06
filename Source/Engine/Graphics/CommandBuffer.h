@@ -58,6 +58,9 @@ enum class CommandPacketType : UInt32
 	// Output Merger
 	SetRenderTargets,
 
+	// Draw
+	Draw,
+
 	// Native Command
 	SetNativeCommand,
 
@@ -95,6 +98,9 @@ static constexpr const char8_t* k_commandPacketNames[] =
 
 	// Output Merger
 	u8"SetRenderTargets",
+
+	// Draw
+	u8"Draw",
 
 	// Native Command
 	u8"SetNativeCommand",
@@ -149,6 +155,14 @@ STRAVA_COMMAND_PACKET(SetRenderTargets)
 };
 #endif
 
+STRAVA_COMMAND_PACKET(Draw)
+{
+	UInt32 m_vertexCountPerInstance = 0;
+	UInt32 m_instanceCount = 1;
+	UInt32 m_startVertexLocation = 0;
+	UInt32 m_startInstanceLocation = 0;
+};
+
 STRAVA_COMMAND_PACKET(SetNativeCommand)
 {
 	std::function<void(void)> m_function = nullptr;
@@ -178,7 +192,8 @@ public:
 	}
 #endif
 
-	Byte* GetBegin() { return m_begin; }
+	Byte* GetBegin() const { return m_begin; }
+	Byte* GetEnd() const { return m_end; }
 
 	// Native Command
 	void SetNativeCommand(std::function<void(void)> func);
@@ -221,6 +236,9 @@ public:
 
 	// Output Merger
 //	void SetRenderTargets(const Kernel::Size numRenderTargets, NativeResouce* const renderTargets);
+
+	// Draw
+	void Draw(UInt32 vertexCountPerInstance, UInt32 instanceCount, UInt32 startVertexLocation, UInt32 startInstanceLocation);
 
 //	CommandBuffer* GetCommandBuffer() { return m_commandBuffer; }
 

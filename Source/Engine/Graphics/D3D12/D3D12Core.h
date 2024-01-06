@@ -5,19 +5,26 @@
 
 #include <Engine/Graphics/Renderer.h>
 
+#include "./../CommandBuffer.h"
+
 namespace StravaEngine::Graphics::D3D12
 {
+class D3D12CommandProcessor;
 class D3D12Core
 {
 private:
 	static constexpr UInt32 k_frameCount = 3;
 
 public:
+	D3D12Core();
+	~D3D12Core();
 	bool Initialize(const RendererSpec& spec);
 	void Terminate();
-	void OnUpdate();
+	void OnPrepareCommandBuffer();
+	void OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsCommandBuffer);
 
 	ID3D12Device* GetD3D12Device() { return m_d3d12Device; }
+	ID3D12CommandAllocator* GetD3D12CommandAllocator(UInt32 index = 0) { return m_commandAllocators[index]; }
 
 public:
 	static std::unique_ptr<D3D12Core> s_instance;
@@ -27,6 +34,7 @@ private:
 	void MoveToNextFrame();
 
 private:
+	std::unique_ptr<D3D12CommandProcessor> m_commandProcessor = nullptr;
 	IDXGIFactory7* m_dxgiFactory7 = nullptr;
 	IDXGIAdapter4* m_dxgiAdapter4 = nullptr;
 	ID3D12Device* m_d3d12Device = nullptr;
@@ -37,7 +45,7 @@ private:
 	ID3D12RootSignature* m_rootSignature = nullptr;
 	ID3D12PipelineState* m_pipelineState = nullptr;
 	ID3D12CommandAllocator* m_commandAllocators[k_frameCount] = {};
-	ID3D12GraphicsCommandList* m_commandList = nullptr;
+//	ID3D12GraphicsCommandList* m_commandList = nullptr;
 	ID3D12Resource* m_vertexBuffer = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 	UInt32 m_frameIndex = 0;

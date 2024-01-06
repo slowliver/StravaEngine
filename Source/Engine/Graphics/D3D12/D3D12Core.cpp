@@ -2,6 +2,8 @@
 
 #include <d3dx12.h>
 
+#include "D3D12CommandProcessor.h"
+
 namespace StravaEngine::Graphics::D3D12
 {
 std::unique_ptr<D3D12Core> D3D12Core::s_instance = nullptr;
@@ -10,6 +12,15 @@ extern "C" Byte g_vertexShader[];
 extern "C" Size g_vertexShaderSize;
 extern "C" Byte g_pixelShader[];
 extern "C" Size g_pixelShaderSize;
+
+D3D12Core::D3D12Core()
+	: m_commandProcessor(new D3D12CommandProcessor())
+{}
+
+D3D12Core::~D3D12Core()
+{
+
+}
 
 bool D3D12Core::Initialize(const RendererSpec& spec)
 {
@@ -223,19 +234,12 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		}
 	}
 
-	// Create the command list.
-	hr = m_d3d12Device->CreateCommandList(0, D3D12_COMMAND_LIST_TYPE_DIRECT, m_commandAllocators[m_frameIndex], m_pipelineState, IID_PPV_ARGS(&m_commandList));
-	if (FAILED(hr))
 	{
-		return false;
-	}
-
-	// Command lists are created in the recording state, but there is nothing
-	// to record yet. The main loop expects it to be closed, so close it now.
-	hr = m_commandList->Close();
-	if (FAILED(hr))
-	{
-		return false;
+		bool result = m_commandProcessor->Initialize(m_d3d12Device, m_commandAllocators[m_frameIndex]);
+		if (!result)
+		{
+			return false;
+		}
 	}
 
 	struct Vertex
@@ -323,7 +327,7 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 	return true;
 }
 
-void D3D12Core::OnUpdate()
+void D3D12Core::OnPrepareCommandBuffer()
 {
 	HRESULT hr = {};
 
@@ -340,19 +344,25 @@ void D3D12Core::OnUpdate()
 	// However, when ExecuteCommandList() is called on a particular command 
 	// list, that command list can then be reset at any time and must be before 
 	// re-recording.
-	hr = m_commandList->Reset(m_commandAllocators[m_frameIndex], m_pipelineState);
-	if (FAILED(hr))
 	{
-		return;
+		bool result = m_commandProcessor->OnPrepareCommandBuffer(m_commandAllocators[m_frameIndex]);
+		if (!result)
+		{
+			return;
+		}
 	}
+}
+
+void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsCommandBuffer)
+{
+	HRESULT hr = {};
+
+	auto* d3d12GraphicsCommandList = m_commandProcessor->GetD3D12GraphicsCommandList();
+
+	m_commandProcessor->OnSubmitCommandBuffer(graphicsCommandBuffer);
 
 	// Set necessary state.
-	m_commandList->SetGraphicsRootSignature(m_rootSignature);
-
-	D3D12_VIEWPORT viewport = CD3DX12_VIEWPORT(0.0f, 0.0f, 800.0f, 600.0f);
-	D3D12_RECT scissorRect = CD3DX12_RECT(0, 0, 800, 600);
-	m_commandList->RSSetViewports(1, &viewport);
-	m_commandList->RSSetScissorRects(1, &scissorRect);
+	d3d12GraphicsCommandList->SetGraphicsRootSignature(m_rootSignature);
 
 	// Indicate that the back buffer will be used as a render target.
 	{
@@ -362,18 +372,18 @@ void D3D12Core::OnUpdate()
 			D3D12_RESOURCE_STATE_PRESENT,
 			D3D12_RESOURCE_STATE_RENDER_TARGET
 		);
-		m_commandList->ResourceBarrier(1, &barrier);
+		d3d12GraphicsCommandList->ResourceBarrier(1, &barrier);
 	}
 
 	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_d3d12RTVHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_d3d12RTVDescriptorSize);
-	m_commandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+	d3d12GraphicsCommandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
 
 	// Record commands.
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	m_commandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
-	m_commandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
-	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
-	m_commandList->DrawInstanced(3, 1, 0, 0);
+	d3d12GraphicsCommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	d3d12GraphicsCommandList->IASetPrimitiveTopology(D3D_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+	d3d12GraphicsCommandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
+	d3d12GraphicsCommandList->DrawInstanced(3, 1, 0, 0);
 
 	// Indicate that the back buffer will now be used to present.
 	{
@@ -383,17 +393,17 @@ void D3D12Core::OnUpdate()
 			D3D12_RESOURCE_STATE_RENDER_TARGET,
 			D3D12_RESOURCE_STATE_PRESENT
 		);
-		m_commandList->ResourceBarrier(1, &barrier);
+		d3d12GraphicsCommandList->ResourceBarrier(1, &barrier);
 	}
 
-	hr = m_commandList->Close();
+	hr = d3d12GraphicsCommandList->Close();
 	if (FAILED(hr))
 	{
 		return;
 	}
 
 	// Execute the command list.
-	ID3D12CommandList* ppCommandLists[] = { m_commandList };
+	ID3D12CommandList* ppCommandLists[] = { d3d12GraphicsCommandList };
 	m_d3d12CmmandQueue->ExecuteCommandLists(static_cast<UINT>(Core::GetCount(ppCommandLists)), ppCommandLists);
 
 	// Present the frame.
@@ -458,6 +468,6 @@ void D3D12Core::MoveToNextFrame()
 
 void D3D12Core::Terminate()
 {
-
+	m_commandProcessor->Terminate();
 }
 }

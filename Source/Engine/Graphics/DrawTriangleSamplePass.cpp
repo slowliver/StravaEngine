@@ -55,23 +55,6 @@ void DrawTriangleSamplePass::OnRender()
 	graphicsCmmandBuffer->SetScissor(scissor);
 
 	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
 //	graphicsCmmandBuffer->Set
 //	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);

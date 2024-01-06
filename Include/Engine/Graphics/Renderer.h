@@ -34,6 +34,13 @@ public:
 	Core::ArrayList<std::function<void(void)>>& GetResourceCreationQueue() { return m_resourceCreationQueue; }
 
 private:
+	void OnPrepareResource();
+	void OnPreRender();
+	void OnRender();
+	void OnPostRender();
+	void OnExecuteCommandBuffer();
+
+private:
 	static std::unique_ptr<Renderer> s_instance;
 	Core::ArrayList<std::function<void(void)>> m_resourceCreationQueue;
 	std::unique_ptr<GraphicsCommandBuffer> m_graphicsCommandBuffer;

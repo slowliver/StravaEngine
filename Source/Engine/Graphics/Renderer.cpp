@@ -57,13 +57,41 @@ void Renderer::Terminate()
 
 void Renderer::OnUpdate()
 {
-	D3D12::D3D12Core::s_instance->OnUpdate();
+	OnPrepareResource();
+	OnPreRender();
+	OnRender();
+	OnPostRender();
+	OnExecuteCommandBuffer();
+}
+
+void Renderer::OnPrepareResource()
+{
 	for (auto& resourceCreationFunc : m_resourceCreationQueue)
 	{
 		resourceCreationFunc();
 	}
-	m_graphicsCommandBuffer->Reset();
-	m_drawTriangleSamplePass->OnRender();
+	// ‚±‚±‚ÅƒLƒ…[‚ðíœ‚·‚é‚×‚«‚È‚Ì‚©‚Í“ä.
 	m_resourceCreationQueue.Clear();
+}
+
+void Renderer::OnPreRender()
+{
+	m_graphicsCommandBuffer->Reset();
+}
+
+void Renderer::OnRender()
+{
+	m_drawTriangleSamplePass->OnRender();
+}
+
+void Renderer::OnPostRender()
+{
+
+}
+
+void Renderer::OnExecuteCommandBuffer()
+{
+	D3D12::D3D12Core::s_instance->OnPrepareCommandBuffer();
+	D3D12::D3D12Core::s_instance->OnSubmitCommandBuffer(*m_graphicsCommandBuffer);
 }
 }

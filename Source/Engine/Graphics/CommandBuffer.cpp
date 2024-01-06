@@ -77,4 +77,13 @@ void GraphicsCommandBuffer::SetScissor(const Core::Int32Rect& scissor)
 	auto& packet = Push<CommandPacketSetScissor>();
 	packet.m_scissor = scissor;
 }
+
+void GraphicsCommandBuffer::Draw(UInt32 vertexCountPerInstance, UInt32 instanceCount, UInt32 startVertexLocation, UInt32 startInstanceLocation)
+{
+	auto& packet = Push<CommandPacketDraw>();
+	packet.m_vertexCountPerInstance = vertexCountPerInstance;
+	packet.m_instanceCount = instanceCount;
+	packet.m_startVertexLocation = startVertexLocation;
+	packet.m_startInstanceLocation = startInstanceLocation;
+}
 }
