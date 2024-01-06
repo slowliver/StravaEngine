@@ -22,6 +22,12 @@
 #define STRAVA_VERIFY(condition)
 #define STRAVA_VERIFYM(condition, message)
 
+#if STRAVA_WINDOWS
+#define STRAVA_FORCE_INLINE __forceinline
+#else
+#define STRAVA_FORCE_INLINE inline
+#endif
+
 namespace StravaEngine::Core
 {
 using Byte = std::byte;
@@ -50,6 +56,11 @@ struct RectBase
 	Type GetWidth(Type width) const { return m_right - m_left; }
 	Type GetHeight(Type height) const { return m_right - m_left; }
 };
+template <class Type>
+bool operator==(const RectBase<Type>& x, const RectBase<Type>& y) { return x.m_left == y.m_left && x.m_top == y.m_top && x.m_right == y.m_right && x.m_bottom == y.m_bottom; }
+template <class Type>
+bool operator!=(const RectBase<Type>& x, const RectBase<Type>& y) { return !(x == y); }
+
 using Int32Rect = RectBase<Int32>;
 
 template <class Type>
