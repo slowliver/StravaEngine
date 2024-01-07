@@ -69,19 +69,17 @@ void D3D12CommandProcessor::Terminate()
 
 #if !defined(STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK)
 #define STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(commandPacketType, commandProcessor, packet, pointer)	\
-static Byte* D3D12CommandProcessor_on##commandPacketType(D3D12CommandProcessor& commandProcessor, CommandPacket##commandPacketType* packet, Byte* pointer)
+static void D3D12CommandProcessor_on##commandPacketType(D3D12CommandProcessor& commandProcessor, CommandPacket##commandPacketType* packet, Byte* pointer)
 #endif
 
 // Begin Input Assembler
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetPrimitiveTopology, commandProcessor, packet, pointer)
 {
-	return pointer + sizeof(CommandPacketSetPrimitiveTopology);
 }
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetVertexBuffers, commandProcessor, packet, pointer)
 {
-	return pointer + sizeof(CommandPacketSetVertexBuffers);
 }
 
 // End Input Assembler
@@ -96,7 +94,6 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetViewport, commandProcessor, packet, p
 		stateCache->m_viewport = packet->m_viewport;
 		stateCache->m_dirtyFlags.m_viewport = true;
 	}
-	return pointer + sizeof(CommandPacketSetViewport);
 }
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetScissor, commandProcessor, packet, pointer)
@@ -107,7 +104,6 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetScissor, commandProcessor, packet, po
 		stateCache->m_scissor = packet->m_scissor;
 		stateCache->m_dirtyFlags.m_scissor = true;
 	}
-	return pointer + sizeof(CommandPacketSetScissor);
 }
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet, pointer)
@@ -119,8 +115,8 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet, pointer)
 		D3D12_VIEWPORT viewport = CD3DX12_VIEWPORT
 		(
 			stateCache->m_viewport.m_left,
-			stateCache->m_viewport.m_left + stateCache->m_viewport.m_width,
 			stateCache->m_viewport.m_top,
+			stateCache->m_viewport.m_left + stateCache->m_viewport.m_width,
 			stateCache->m_viewport.m_top + stateCache->m_viewport.m_height,
 			stateCache->m_viewport.m_minDepth,
 			stateCache->m_viewport.m_maxDepth
@@ -138,7 +134,6 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet, pointer)
 		);
 		d3d12GraphicsCommandList->RSSetScissorRects(1, &scissorRect);
 	}
-	return pointer + sizeof(CommandPacketDraw);
 }
 
 // End Rasterizer
@@ -152,13 +147,14 @@ void D3D12CommandProcessor::OnSubmitCommandBuffer(const GraphicsCommandBuffer& g
 case CommandPacketType::##commandPacketType:										\
 {																					\
 	auto* commandPacket = reinterpret_cast<CommandPacket##commandPacketType*>(cb);	\
-	cb = D3D12CommandProcessor_on##commandPacketType(*this, commandPacket, cb);		\
+	D3D12CommandProcessor_on##commandPacketType(*this, commandPacket, cb);			\
+	cb += commandPacket->m_size;													\
 	break;																			\
 }
 #endif
 	auto* gcbCurrent = graphicsCommandBuffer.GetBegin();
-	auto* gcbEnd = graphicsCommandBuffer.GetEnd();
-	while (gcbCurrent != gcbEnd)
+	auto* gcbBack = graphicsCommandBuffer.GetBack();
+	while (gcbCurrent != gcbBack)
 	{
 		auto* commandPacketType = reinterpret_cast<CommandPacketType*>(gcbCurrent);
 		switch (*commandPacketType)
@@ -171,6 +167,7 @@ case CommandPacketType::##commandPacketType:										\
 				break;
 		}
 #endif
+
 		// Input Assembler
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetPrimitiveTopology, gcbCurrent);
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetVertexBuffers, gcbCurrent);
@@ -198,12 +195,15 @@ case CommandPacketType::##commandPacketType:										\
 
 bool D3D12CommandProcessor::OnPrepareCommandBuffer(ID3D12CommandAllocator* d3d12CommandAllocator)
 {
+	m_stateCache->Reset();
+
 	HRESULT hr = {};
 	hr = m_d3d12GraphicsCommandList->Reset(d3d12CommandAllocator, nullptr);
 	if (FAILED(hr))
 	{
 		return false;
 	}
+
 	return true;
 }
 }

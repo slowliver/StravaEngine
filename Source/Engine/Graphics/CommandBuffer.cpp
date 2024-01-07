@@ -17,7 +17,7 @@ CommandBufferBase::CommandBufferBase(Size size)
 	auto allocator = Core::Allocator<Byte>();
 	m_begin = allocator.Allocate(size);
 	m_end = m_begin + size;
-	m_current = m_begin;
+	m_back = m_begin;
 }
 
 CommandBufferBase::~CommandBufferBase()
@@ -26,16 +26,21 @@ CommandBufferBase::~CommandBufferBase()
 	allocator.Deallocate(m_begin);
 }
 
+void CommandBufferBase::Reset()
+{
+	m_back = m_begin;
+}
+
 Byte* CommandBufferBase::Push(Size commandSize, Size additionalSize)
 {
-	const auto diff = reinterpret_cast<uintptr_t>(m_end) - reinterpret_cast<uintptr_t>(m_current);
+	const auto diff = reinterpret_cast<uintptr_t>(m_end) - reinterpret_cast<uintptr_t>(m_back);
 	if (diff < commandSize + additionalSize)
 	{
 		STRAVA_ASSERT(!"Can't allocate command!")
 		return nullptr;
 	}
-	auto* previousPosition = m_current;
-	previousPosition += commandSize + additionalSize;
+	auto* previousPosition = m_back;
+	m_back += commandSize + additionalSize;
 	return previousPosition;
 }
 

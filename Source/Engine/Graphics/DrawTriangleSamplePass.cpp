@@ -56,6 +56,8 @@ void DrawTriangleSamplePass::OnRender()
 
 	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
+	graphicsCmmandBuffer->Draw(0, 0, 0, 0);
+
 //	graphicsCmmandBuffer->Set
 //	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
 }

@@ -113,7 +113,8 @@ struct alignas(sizeof(void*)) CommandPacketBase
 {
 	static constexpr CommandPacketType k_type = k_commandPacketType;
 	constexpr const char8_t* ToString() const { k_commandPacketNames[ToUnderlying(k_type)]; }
-	const CommandPacketType m_type = k_commandPacketType;
+	const CommandPacketType m_type;
+	const UInt32 m_size;
 };
 
 #if 0
@@ -132,7 +133,6 @@ STRAVA_COMMAND_PACKET(SetPrimitiveTopology)
 STRAVA_COMMAND_PACKET(SetVertexBuffers)
 {
 	UInt8 m_startSlot = 0;
-	UInt8 m_numBuffers = 0;
 	Core::ArrayProxy<VertexBuffer*> m_buffers = nullptr;
 	UInt8 m_offset = 0;
 };
@@ -176,12 +176,17 @@ public:
 	explicit CommandBufferBase(Size size);
 	virtual ~CommandBufferBase();
 
-	void Reset() {}
+	virtual void Reset();
 
 	template <typename T>
 	T& Push(const Size additionalSize = 0)
 	{
-		return reinterpret_cast<T&>(*Push(sizeof(T), additionalSize));
+		T& commandPacket = reinterpret_cast<T&>(*Push(sizeof(T), additionalSize));
+		auto& type = const_cast<CommandPacketType&>(commandPacket.m_type);
+		auto& size = const_cast<UInt32&>(commandPacket.m_size);
+		type = T::k_type;
+		size = static_cast<UInt32>(std::intptr_t(m_back) - std::intptr_t(&commandPacket));
+		return commandPacket;
 	}
 
 #if 0
@@ -194,6 +199,7 @@ public:
 
 	Byte* GetBegin() const { return m_begin; }
 	Byte* GetEnd() const { return m_end; }
+	Byte* GetBack() const { return m_back; }
 
 	// Native Command
 	void SetNativeCommand(std::function<void(void)> func);
@@ -206,7 +212,7 @@ private:
 
 private:
 	Size m_size = 0;
-	Byte* m_current = nullptr;
+	Byte* m_back = nullptr;
 	Byte* m_begin = nullptr;
 	Byte* m_end = nullptr;
 };
@@ -221,8 +227,6 @@ public:
 
 	bool Initialize();
 	void Terminate();
-
-	void Reset() {}
 
 //	void ClearRenderTarget(NativeResouce* const renderTarget, const Kernel::Color clearColor);
 
