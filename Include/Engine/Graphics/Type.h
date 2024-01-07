@@ -119,7 +119,7 @@ struct Viewport
 	float m_minDepth = 0.0f;
 	float m_maxDepth = 1.0f;
 };
-bool operator==(const Viewport& x, const Viewport& y)
+inline bool operator==(const Viewport& x, const Viewport& y)
 {
 	return
 		x.m_left == y.m_left &&
@@ -129,7 +129,7 @@ bool operator==(const Viewport& x, const Viewport& y)
 		x.m_minDepth == y.m_minDepth &&
 		x.m_maxDepth == y.m_maxDepth;
 }
-bool operator!=(const Viewport& x, const Viewport& y) { return !(x == y); }
+inline bool operator!=(const Viewport& x, const Viewport& y) { return !(x == y); }
 
 using NativeResouce = std::intptr_t;
 }

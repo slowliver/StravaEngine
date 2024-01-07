@@ -57,9 +57,9 @@ struct RectBase
 	Type GetHeight(Type height) const { return m_right - m_left; }
 };
 template <class Type>
-bool operator==(const RectBase<Type>& x, const RectBase<Type>& y) { return x.m_left == y.m_left && x.m_top == y.m_top && x.m_right == y.m_right && x.m_bottom == y.m_bottom; }
+inline bool operator==(const RectBase<Type>& x, const RectBase<Type>& y) { return x.m_left == y.m_left && x.m_top == y.m_top && x.m_right == y.m_right && x.m_bottom == y.m_bottom; }
 template <class Type>
-bool operator!=(const RectBase<Type>& x, const RectBase<Type>& y) { return !(x == y); }
+inline bool operator!=(const RectBase<Type>& x, const RectBase<Type>& y) { return !(x == y); }
 
 using Int32Rect = RectBase<Int32>;
 
