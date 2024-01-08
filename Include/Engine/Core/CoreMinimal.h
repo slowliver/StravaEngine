@@ -2,6 +2,7 @@
 
 #include <cstdint>
 #include <cstddef>
+#include <cstring>
 #include <type_traits>
 
 #if defined(DEBUG) || defined(_DEBUG)
@@ -107,6 +108,11 @@ template <class Type>
 constexpr const Type& Max(const Type& lhs, const Type& rhs)
 {
 	return lhs > rhs ? lhs : rhs;
+}
+
+STRAVA_FORCE_INLINE void* Memcpy(void* dst, const void* src, Size size)
+{
+	return std::memcpy(dst, src, size);
 }
 }
 
