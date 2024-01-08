@@ -394,6 +394,15 @@ void D3D12Core::MoveToNextFrame()
 
 void D3D12Core::Terminate()
 {
-	m_commandProcessor->Terminate();
+	if (m_rootSignature)
+	{
+		m_rootSignature->Terminate();
+		m_rootSignature.reset();
+	}
+	if (m_commandProcessor)
+	{
+		m_commandProcessor->Terminate();
+		m_commandProcessor.reset();
+	}
 }
 }

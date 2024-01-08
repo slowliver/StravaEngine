@@ -192,6 +192,10 @@ case CommandPacketType::##commandPacketType:										\
 		}
 #endif
 
+		// Render Pass
+		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(BeginPass, gcbCurrent);
+		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(EndPass, gcbCurrent);
+
 		// Input Assembler
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetPrimitiveTopology, gcbCurrent);
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetVertexBuffers, gcbCurrent);

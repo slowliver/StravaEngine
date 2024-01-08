@@ -55,6 +55,17 @@ void CommandBufferBase::End(Size commandSize, Size additionalSize)
 {}
 #endif
 
+// Render Pass
+void GraphicsCommandBuffer::BeginPass()
+{
+	auto& packet = Push<CommandPacketBeginPass>();
+}
+
+void GraphicsCommandBuffer::EndPass()
+{
+	auto& packet = Push<CommandPacketEndPass>();
+}
+
 // Input Assembler
 void GraphicsCommandBuffer::SetPrimitiveTopology(PrimitiveTopology primitiveTopology)
 {

@@ -35,6 +35,10 @@ enum class CommandPacketType : UInt32
 
 	ClearRenderTarget,
 
+	// Render Pass
+	BeginPass,
+	EndPass,
+
 	// Input Assembler
 	SetPrimitiveTopology,
 	SetVertexBuffers,
@@ -73,6 +77,10 @@ static constexpr const char8_t* k_commandPacketNames[] =
 	u8"NOP",
 
 	u8"ClearRenderTarget",
+	
+	// Render Pass
+	u8"BeginPass",
+	u8"EndPass",
 
 	// Input Assembler
 	u8"SetPrimitiveTopology",
@@ -125,14 +133,22 @@ STRAVA_COMMAND_PACKET(ClearRenderTarget)
 };
 #endif
 
+STRAVA_COMMAND_PACKET(BeginPass)
+{
+};
+
+STRAVA_COMMAND_PACKET(EndPass)
+{
+};
+
 STRAVA_COMMAND_PACKET(SetPrimitiveTopology)
 {
-	PrimitiveTopology m_primitiveTopology = PrimitiveTopology::TriangleList;
+	PrimitiveTopology m_primitiveTopology;
 };
 
 STRAVA_COMMAND_PACKET(SetVertexBuffers)
 {
-	UInt32 m_startSlot = 0;
+	UInt32 m_startSlot;
 	UInt32 m_numBuffers;
 	VertexBuffer* m_buffers[32];
 };
@@ -165,7 +181,7 @@ STRAVA_COMMAND_PACKET(Draw)
 
 STRAVA_COMMAND_PACKET(SetNativeCommand)
 {
-	std::function<void(void)> m_function = nullptr;
+	std::function<void(void)> m_function;
 };
 
 class CommandBufferBase
@@ -229,6 +245,10 @@ public:
 	void Terminate();
 
 //	void ClearRenderTarget(NativeResouce* const renderTarget, const Kernel::Color clearColor);
+
+	// Render Pass
+	void BeginPass();
+	void EndPass();
 
 	// Input Assembler
 	void SetPrimitiveTopology(PrimitiveTopology primitiveTopology);
