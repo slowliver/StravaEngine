@@ -4,9 +4,7 @@
 
 #include "./../CommandBuffer.h"
 
-namespace StravaEngine::Graphics
-{
-namespace D3D12
+namespace StravaEngine::Graphics::D3D12
 {
 class D3D12CommandProcessor final
 {
@@ -31,5 +29,4 @@ private:
 	StateCache* m_stateCache = nullptr;
 
 };
-}
 }

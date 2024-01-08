@@ -8,9 +8,7 @@
 #include <Engine/Graphics/Type.h>
 #include "./../VertexBuffer.h"
 
-namespace StravaEngine::Graphics
-{
-namespace D3D12
+namespace StravaEngine::Graphics::D3D12
 {
 class D3D12VertexBuffer : public NativeVertexBufferBase
 {
@@ -26,14 +24,4 @@ private:
 	ID3D12Resource* m_resource = nullptr;
 	D3D12_VERTEX_BUFFER_VIEW m_view = {};
 };
-}
-#if 0
-class NativeVertexBuffer : public D3D12::D3D12VertexBuffer {
-public:
-	NativeVertexBuffer() : D3D12::D3D12VertexBuffer() {}
-	~NativeVertexBuffer() {}
-};
-#else
-using NativeVertexBuffer = typename D3D12::D3D12VertexBuffer;
-#endif
 }
