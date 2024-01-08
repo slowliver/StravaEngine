@@ -3,6 +3,7 @@
 #include <d3dx12.h>
 
 #include "D3D12CommandProcessor.h"
+#include "D3D12RootSignature.h"
 
 namespace StravaEngine::Graphics::D3D12
 {
@@ -15,12 +16,11 @@ extern "C" Size g_pixelShaderSize;
 
 D3D12Core::D3D12Core()
 	: m_commandProcessor(new D3D12CommandProcessor())
+	, m_rootSignature(new D3D12RootSignature())
 {}
 
 D3D12Core::~D3D12Core()
-{
-
-}
+{}
 
 bool D3D12Core::Initialize(const RendererSpec& spec)
 {
@@ -178,26 +178,9 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		}
 	}
 
-	// Create an empty root signature.
 	{
-		D3D12_ROOT_SIGNATURE_DESC rootSignatureDesc;
-		rootSignatureDesc.NumParameters = 0;
-		rootSignatureDesc.pParameters = nullptr;
-		rootSignatureDesc.NumStaticSamplers = 0;
-		rootSignatureDesc.pStaticSamplers = nullptr;
-		rootSignatureDesc.Flags = D3D12_ROOT_SIGNATURE_FLAG_ALLOW_INPUT_ASSEMBLER_INPUT_LAYOUT;
-
-		ID3DBlob* signature = nullptr;
-		ID3DBlob* error = nullptr;
-
-		hr = D3D12SerializeRootSignature(&rootSignatureDesc, D3D_ROOT_SIGNATURE_VERSION_1, &signature, &error);
-		if (FAILED(hr))
-		{
-			return false;
-		}
-
-		hr = m_d3d12Device->CreateRootSignature(0, signature->GetBufferPointer(), signature->GetBufferSize(), IID_PPV_ARGS(&m_rootSignature));
-		if (FAILED(hr))
+		bool success = m_rootSignature->Initialize(m_d3d12Device);
+		if (!success)
 		{
 			return false;
 		}
@@ -215,7 +198,7 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 		// Describe and create the graphics pipeline state object (PSO).
 		D3D12_GRAPHICS_PIPELINE_STATE_DESC psoDesc = {};
 		psoDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
-		psoDesc.pRootSignature = m_rootSignature;
+		psoDesc.pRootSignature = m_rootSignature->GetD3D12RootSignature();
 		psoDesc.VS = { g_vertexShader, g_vertexShaderSize };
 		psoDesc.PS = { g_pixelShader, g_pixelShaderSize };
 		psoDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
@@ -235,8 +218,8 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 	}
 
 	{
-		bool result = m_commandProcessor->Initialize(m_d3d12Device, m_commandAllocators[m_frameIndex]);
-		if (!result)
+		bool success = m_commandProcessor->Initialize(m_d3d12Device, m_commandAllocators[m_frameIndex]);
+		if (!success)
 		{
 			return false;
 		}
@@ -306,7 +289,7 @@ void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsComma
 	m_commandProcessor->OnSubmitCommandBuffer(graphicsCommandBuffer);
 
 	// Set necessary state.
-	d3d12GraphicsCommandList->SetGraphicsRootSignature(m_rootSignature);
+	d3d12GraphicsCommandList->SetGraphicsRootSignature(m_rootSignature->GetD3D12RootSignature());
 	d3d12GraphicsCommandList->SetPipelineState(m_pipelineState);
 
 	// Indicate that the back buffer will be used as a render target.

@@ -10,6 +10,7 @@
 namespace StravaEngine::Graphics::D3D12
 {
 class D3D12CommandProcessor;
+class D3D12RootSignature;
 class D3D12Core
 {
 private:
@@ -35,6 +36,7 @@ private:
 
 private:
 	std::unique_ptr<D3D12CommandProcessor> m_commandProcessor = nullptr;
+	std::unique_ptr<D3D12RootSignature> m_rootSignature = nullptr;
 	IDXGIFactory7* m_dxgiFactory7 = nullptr;
 	IDXGIAdapter4* m_dxgiAdapter4 = nullptr;
 	ID3D12Device* m_d3d12Device = nullptr;
@@ -42,7 +44,6 @@ private:
 	ID3D12CommandQueue* m_d3d12CmmandQueue = nullptr;
 	ID3D12DescriptorHeap* m_d3d12RTVHeap = nullptr;
 	ID3D12Resource* m_renderTargets[k_frameCount] = {};
-	ID3D12RootSignature* m_rootSignature = nullptr;
 	ID3D12PipelineState* m_pipelineState = nullptr;
 	ID3D12CommandAllocator* m_commandAllocators[k_frameCount] = {};
 	UInt32 m_frameIndex = 0;
