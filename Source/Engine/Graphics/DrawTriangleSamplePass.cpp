@@ -29,11 +29,11 @@ bool DrawTriangleSamplePass::Initialize()
 	};
 
 	VertexBufferSpec spec;
-	spec.m_data = (Byte*)triangleVertices;
-	spec.m_dataSize = sizeof(triangleVertices);
+	spec.m_size = sizeof(triangleVertices);
+	spec.m_stride = sizeof(Vertex);
 
 	m_vertexBuffer.reset(new VertexBuffer());
-	m_vertexBuffer->Create(spec);
+	m_vertexBuffer->Create(spec, triangleVertices);
 //	std::printf(k_vertexAttributeTypeNames[0]);
 	return true;
 }
@@ -56,7 +56,7 @@ void DrawTriangleSamplePass::OnRender()
 
 	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
-	graphicsCmmandBuffer->Draw(0, 0, 0, 0);
+	graphicsCmmandBuffer->Draw(3);
 
 //	graphicsCmmandBuffer->Set
 //	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);

@@ -45,9 +45,6 @@ private:
 	ID3D12RootSignature* m_rootSignature = nullptr;
 	ID3D12PipelineState* m_pipelineState = nullptr;
 	ID3D12CommandAllocator* m_commandAllocators[k_frameCount] = {};
-//	ID3D12GraphicsCommandList* m_commandList = nullptr;
-	ID3D12Resource* m_vertexBuffer = nullptr;
-	D3D12_VERTEX_BUFFER_VIEW m_vertexBufferView;
 	UInt32 m_frameIndex = 0;
 	HANDLE m_fenceEvent = {};
 	ID3D12Fence* m_fence = nullptr;

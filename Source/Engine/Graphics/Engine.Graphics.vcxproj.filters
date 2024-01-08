@@ -71,6 +71,9 @@
     <ClInclude Include="D3D12\D3D12CommandProcessor.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="D3D12\D3D12TypeTranslator.h">
+      <Filter>ソース ファイル\D3D12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="D3D12\Shader\PixelShader.cso">

@@ -132,19 +132,19 @@ STRAVA_COMMAND_PACKET(SetPrimitiveTopology)
 
 STRAVA_COMMAND_PACKET(SetVertexBuffers)
 {
-	UInt8 m_startSlot = 0;
-	Core::ArrayProxy<VertexBuffer*> m_buffers = nullptr;
-	UInt8 m_offset = 0;
+	UInt32 m_startSlot = 0;
+	UInt32 m_numBuffers;
+	VertexBuffer* m_buffers[32];
 };
 
 STRAVA_COMMAND_PACKET(SetViewport)
 {
-	Viewport m_viewport = Viewport();
+	Viewport m_viewport;
 };
 
 STRAVA_COMMAND_PACKET(SetScissor)
 {
-	Core::Int32Rect m_scissor = Core::Int32Rect();
+	Core::Int32Rect m_scissor;
 };
 
 #if 0
@@ -157,10 +157,10 @@ STRAVA_COMMAND_PACKET(SetRenderTargets)
 
 STRAVA_COMMAND_PACKET(Draw)
 {
-	UInt32 m_vertexCountPerInstance = 0;
-	UInt32 m_instanceCount = 1;
-	UInt32 m_startVertexLocation = 0;
-	UInt32 m_startInstanceLocation = 0;
+	UInt32 m_vertexCountPerInstance;
+	UInt32 m_instanceCount;
+	UInt32 m_startVertexLocation;
+	UInt32 m_startInstanceLocation;
 };
 
 STRAVA_COMMAND_PACKET(SetNativeCommand)
@@ -232,7 +232,7 @@ public:
 
 	// Input Assembler
 	void SetPrimitiveTopology(PrimitiveTopology primitiveTopology);
-	void SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers, UInt8 offset = 0);
+	void SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers);
 
 	// Rasterizer
 	void SetViewport(const Viewport& viewport);
@@ -242,6 +242,7 @@ public:
 //	void SetRenderTargets(const Kernel::Size numRenderTargets, NativeResouce* const renderTargets);
 
 	// Draw
+	void Draw(UInt32 vertexCount);
 	void Draw(UInt32 vertexCountPerInstance, UInt32 instanceCount, UInt32 startVertexLocation, UInt32 startInstanceLocation);
 
 //	CommandBuffer* GetCommandBuffer() { return m_commandBuffer; }

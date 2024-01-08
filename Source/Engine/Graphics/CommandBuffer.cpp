@@ -62,12 +62,15 @@ void GraphicsCommandBuffer::SetPrimitiveTopology(PrimitiveTopology primitiveTopo
 	packet.m_primitiveTopology = primitiveTopology;
 }
 
-void GraphicsCommandBuffer::SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers, UInt8 offset)
+void GraphicsCommandBuffer::SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers)
 {
 	auto& packet = Push<CommandPacketSetVertexBuffers>();
 	packet.m_startSlot = startSlot;
-	packet.m_buffers = buffers;
-	packet.m_offset = offset;
+	packet.m_numBuffers = static_cast<UInt32>(Core::Min(Core::GetCount(packet.m_buffers), buffers.GetCount()));
+	for (Size i = 0; i < packet.m_numBuffers; ++i)
+	{
+		packet.m_buffers[i] = buffers[i];
+	}
 }
 
 // Rasterizer
@@ -81,6 +84,11 @@ void GraphicsCommandBuffer::SetScissor(const Core::Int32Rect& scissor)
 {
 	auto& packet = Push<CommandPacketSetScissor>();
 	packet.m_scissor = scissor;
+}
+
+void GraphicsCommandBuffer::Draw(UInt32 vertexCount)
+{
+	Draw(vertexCount, 1, 0, 0);
 }
 
 void GraphicsCommandBuffer::Draw(UInt32 vertexCountPerInstance, UInt32 instanceCount, UInt32 startVertexLocation, UInt32 startInstanceLocation)

@@ -17,7 +17,10 @@ class D3D12VertexBuffer : public NativeVertexBufferBase
 public:
 	D3D12VertexBuffer() {}
 	virtual ~D3D12VertexBuffer() override;
-	virtual bool OnCreate(const VertexBufferSpec& vertexBufferSpec) override;
+	virtual bool OnCreate(const VertexBufferSpec& vertexBufferSpec, void* vertexData) override;
+
+	ID3D12Resource* GetD3D12Resource() { return m_resource; }
+	const D3D12_VERTEX_BUFFER_VIEW& GetD3D12VertexBufferView() const { return m_view; }
 
 private:
 	ID3D12Resource* m_resource = nullptr;

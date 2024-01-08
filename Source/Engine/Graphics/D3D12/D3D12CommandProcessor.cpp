@@ -1,9 +1,10 @@
 #include "D3D12CommandProcessor.h"
-#include "D3D12CommandProcessor.h"
 
 #include <d3dx12.h>
 
 #include "D3D12Core.h"
+#include "D3D12TypeTranslator.h"
+#include "D3D12VertexBuffer.h"
 
 namespace StravaEngine::Graphics::D3D12
 {
@@ -14,13 +15,24 @@ struct D3D12CommandProcessor::StateCache final
 		UInt64 m_raw;
 		struct
 		{
-			bool m_viewport : 1;
-			bool m_scissor  : 1;
+			// Input Assembler
+			bool m_primitiveTopology	: 1;
+			bool m_vertexBuffers		: 1;
+
+			// Rasterizer
+			bool m_viewport				: 1;
+			bool m_scissor				: 1;
 		};
 	};
 	DirtyFlag m_dirtyFlags = { 0xFFFFFFFFFFFFFFFF };
+
+	// Input Assembler
+	PrimitiveTopology m_primitiveTopology = PrimitiveTopology::PointList;
+
+	// Rasterizer
 	Viewport m_viewport = Viewport();
 	Core::Int32Rect m_scissor = Core::Int32Rect();
+
 	void Reset()
 	{
 		m_dirtyFlags.m_raw = 0xFFFFFFFFFFFFFFFF;
@@ -76,10 +88,25 @@ static void D3D12CommandProcessor_on##commandPacketType(D3D12CommandProcessor& c
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetPrimitiveTopology, commandProcessor, packet, pointer)
 {
+	auto* stateCache = commandProcessor.GetStateCache();
+	if (packet->m_primitiveTopology != stateCache->m_primitiveTopology)
+	{
+		stateCache->m_primitiveTopology = packet->m_primitiveTopology;
+		stateCache->m_dirtyFlags.m_primitiveTopology = true;
+	}
 }
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetVertexBuffers, commandProcessor, packet, pointer)
 {
+	auto* d3d12GraphicsCommandList = commandProcessor.GetD3D12GraphicsCommandList();
+	D3D12_VERTEX_BUFFER_VIEW d3d12VertexBufferViews[D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
+	const auto numViews = Core::Min(Core::GetCount(d3d12VertexBufferViews), static_cast<Size>(packet->m_numBuffers));
+	for (Size i = 0; i < numViews; ++i)
+	{
+		auto* vertexBuffer = static_cast<D3D12VertexBuffer*>(packet->m_buffers[i]->GetNativeVertexBuffer());
+		d3d12VertexBufferViews[i] = vertexBuffer->GetD3D12VertexBufferView();
+	}
+	d3d12GraphicsCommandList->IASetVertexBuffers(packet->m_startSlot, static_cast<UINT>(numViews), d3d12VertexBufferViews);
 }
 
 // End Input Assembler
@@ -110,30 +137,27 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet, pointer)
 {
 	auto* stateCache = commandProcessor.GetStateCache();
 	auto* d3d12GraphicsCommandList = commandProcessor.GetD3D12GraphicsCommandList();
+
+	// Input Assembler
+	if (stateCache->m_dirtyFlags.m_primitiveTopology)
+	{
+		D3D12_PRIMITIVE_TOPOLOGY d3d12PrimitiveTopology = Translator::ToD3D12(stateCache->m_primitiveTopology);
+		d3d12GraphicsCommandList->IASetPrimitiveTopology(d3d12PrimitiveTopology);
+	}
+
+	// Rasterizer
 	if (stateCache->m_dirtyFlags.m_viewport)
 	{
-		D3D12_VIEWPORT viewport = CD3DX12_VIEWPORT
-		(
-			stateCache->m_viewport.m_left,
-			stateCache->m_viewport.m_top,
-			stateCache->m_viewport.m_left + stateCache->m_viewport.m_width,
-			stateCache->m_viewport.m_top + stateCache->m_viewport.m_height,
-			stateCache->m_viewport.m_minDepth,
-			stateCache->m_viewport.m_maxDepth
-		);
+		D3D12_VIEWPORT viewport = Translator::ToD3D12(stateCache->m_viewport);
 		d3d12GraphicsCommandList->RSSetViewports(1, &viewport);
 	}
 	if (stateCache->m_dirtyFlags.m_scissor)
 	{
-		D3D12_RECT scissorRect = CD3DX12_RECT
-		(
-			stateCache->m_scissor.m_left,
-			stateCache->m_scissor.m_top,
-			stateCache->m_scissor.m_right,
-			stateCache->m_scissor.m_bottom
-		);
+		D3D12_RECT scissorRect = Translator::ToD3D12(stateCache->m_scissor);
 		d3d12GraphicsCommandList->RSSetScissorRects(1, &scissorRect);
 	}
+
+	d3d12GraphicsCommandList->DrawInstanced(packet->m_vertexCountPerInstance, packet->m_instanceCount, packet->m_startVertexLocation, packet->m_startInstanceLocation);
 }
 
 // End Rasterizer

@@ -10,9 +10,8 @@ namespace StravaEngine::Graphics
 {
 struct VertexBufferSpec final
 {
-	Byte* m_data;
-	Size m_sizePerElement;
-	Size m_dataSize;
+	Size m_stride;
+	Size m_size;
 };
 
 class NativeVertexBufferBase
@@ -20,7 +19,7 @@ class NativeVertexBufferBase
 public:
 	NativeVertexBufferBase() {}
 	virtual ~NativeVertexBufferBase() {}
-	virtual bool OnCreate(const VertexBufferSpec& vertexBufferSpec) = 0;
+	virtual bool OnCreate(const VertexBufferSpec& vertexBufferSpec, void* vertexData) = 0;
 };
 
 class VertexBuffer
@@ -28,7 +27,9 @@ class VertexBuffer
 public:
 	VertexBuffer();
 	~VertexBuffer();
-	bool Create(const VertexBufferSpec& vertexBufferSpec);
+	bool Create(const VertexBufferSpec& vertexBufferSpec, void* vertexData);
+
+	NativeVertexBufferBase* GetNativeVertexBuffer() { return m_nativeVertexBuffer.get(); }
 
 private:
 	VertexBufferSpec m_spec = {};

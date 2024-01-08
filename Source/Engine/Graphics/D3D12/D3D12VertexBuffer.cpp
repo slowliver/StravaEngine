@@ -15,14 +15,14 @@ D3D12VertexBuffer::~D3D12VertexBuffer()
 	}
 }
 
-bool D3D12VertexBuffer::OnCreate(const VertexBufferSpec& vertexBufferSpec)
+bool D3D12VertexBuffer::OnCreate(const VertexBufferSpec& vertexBufferSpec, void* vertexData)
 {
 	HRESULT hr = {};
 
 	auto* d3d12Device = D3D12Core::s_instance->GetD3D12Device();
 
 	D3D12_HEAP_PROPERTIES d3d12HeapProperties = CD3DX12_HEAP_PROPERTIES(D3D12_HEAP_TYPE_UPLOAD);
-	D3D12_RESOURCE_DESC vertexBufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSpec.m_dataSize);
+	D3D12_RESOURCE_DESC vertexBufferResourceDesc = CD3DX12_RESOURCE_DESC::Buffer(vertexBufferSpec.m_size);
 	hr = d3d12Device->CreateCommittedResource
 	(
 		&d3d12HeapProperties,
@@ -46,13 +46,13 @@ bool D3D12VertexBuffer::OnCreate(const VertexBufferSpec& vertexBufferSpec)
 	{
 		return false;
 	}
-	memcpy(vertexBufferData, vertexBufferSpec.m_data, sizeof(vertexBufferSpec.m_dataSize));
+	Core::Memcpy(vertexBufferData, vertexData, vertexBufferSpec.m_size);
 	m_resource->Unmap(0, nullptr);
 
 	// Initialize the vertex buffer view.
 	m_view.BufferLocation = m_resource->GetGPUVirtualAddress();
-	m_view.SizeInBytes = static_cast<UINT>(vertexBufferSpec.m_dataSize);
-	m_view.StrideInBytes = static_cast<UINT>(vertexBufferSpec.m_sizePerElement);
+	m_view.SizeInBytes = static_cast<UINT>(vertexBufferSpec.m_size);
+	m_view.StrideInBytes = static_cast<UINT>(vertexBufferSpec.m_stride);
 
 	return true;
 }
