@@ -289,7 +289,6 @@ void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsComma
 	m_commandProcessor->OnSubmitCommandBuffer(graphicsCommandBuffer);
 
 	// Set necessary state.
-	d3d12GraphicsCommandList->SetGraphicsRootSignature(m_rootSignature->GetD3D12RootSignature());
 	d3d12GraphicsCommandList->SetPipelineState(m_pipelineState);
 
 	// Indicate that the back buffer will be used as a render target.

@@ -27,6 +27,8 @@ public:
 	ID3D12Device* GetD3D12Device() { return m_d3d12Device; }
 	ID3D12CommandAllocator* GetD3D12CommandAllocator(UInt32 index = 0) { return m_commandAllocators[index]; }
 
+	STRAVA_FORCE_INLINE D3D12RootSignature* GetRootSignature() { return m_rootSignature.get(); }
+
 public:
 	static std::unique_ptr<D3D12Core> s_instance;
 

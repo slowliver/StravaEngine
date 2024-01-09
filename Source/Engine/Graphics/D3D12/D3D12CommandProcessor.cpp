@@ -5,6 +5,7 @@
 #include "D3D12Core.h"
 #include "D3D12TypeTranslator.h"
 #include "D3D12VertexBuffer.h"
+#include "D3D12RootSignature.h"
 
 namespace StravaEngine::Graphics::D3D12
 {
@@ -16,6 +17,8 @@ struct D3D12CommandProcessor::StateCache final
 		struct
 		{
 			// Root Signature
+			bool m_rootSignature		: 1;
+
 			// Input Assembler
 			bool m_primitiveTopology	: 1;
 			bool m_vertexBuffers		: 1;
@@ -27,6 +30,9 @@ struct D3D12CommandProcessor::StateCache final
 	};
 	DirtyFlag m_dirtyFlags;
 
+	// Root Signature
+	bool m_firstRootSignatureSet;
+
 	// Input Assembler
 	PrimitiveTopology m_primitiveTopology;
 
@@ -37,6 +43,7 @@ struct D3D12CommandProcessor::StateCache final
 	void Reset()
 	{
 		m_dirtyFlags.m_raw = 0xFFFFFFFFFFFFFFFF;
+		m_firstRootSignatureSet = true;
 		m_primitiveTopology = PrimitiveTopology::Unknown;
 		m_viewport = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
 		m_scissor = { INT32_MAX, INT32_MAX, INT32_MAX, INT32_MAX };
@@ -91,7 +98,14 @@ static void D3D12CommandProcessor_on##commandPacketType(D3D12CommandProcessor& c
 // Render Pass
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(BeginPass, commandProcessor, packet, pointer)
-{}
+{
+	auto* stateCache = commandProcessor.GetStateCache();
+	if (stateCache->m_firstRootSignatureSet)
+	{
+		stateCache->m_firstRootSignatureSet = false;
+		stateCache->m_dirtyFlags.m_rootSignature = true;
+	}
+}
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(EndPass, commandProcessor, packet, pointer)
 {}
@@ -159,6 +173,14 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet, pointer)
 {
 	auto* stateCache = commandProcessor.GetStateCache();
 	auto* d3d12GraphicsCommandList = commandProcessor.GetD3D12GraphicsCommandList();
+
+	// Root Signature
+	if (stateCache->m_dirtyFlags.m_rootSignature)
+	{
+		auto* rootSignature = D3D12Core::s_instance->GetRootSignature();
+		d3d12GraphicsCommandList->SetGraphicsRootSignature(rootSignature->GetD3D12RootSignature());
+		stateCache->m_dirtyFlags.m_rootSignature = false;
+	}
 
 	// Input Assembler
 	if (stateCache->m_dirtyFlags.m_primitiveTopology)
