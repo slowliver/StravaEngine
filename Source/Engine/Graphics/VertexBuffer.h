@@ -28,12 +28,13 @@ public:
 	VertexBuffer();
 	~VertexBuffer();
 	bool Create(const VertexBufferSpec& vertexBufferSpec, void* vertexData);
+	void Release();
 
 	NativeVertexBufferBase* GetNativeVertexBuffer() { return m_nativeVertexBuffer.get(); }
 
 private:
+	std::unique_ptr<NativeVertexBufferBase> m_nativeVertexBuffer = nullptr;
 	VertexBufferSpec m_spec = {};
 	Core::ArrayList<Byte> m_data;
-	std::unique_ptr<NativeVertexBufferBase> m_nativeVertexBuffer = nullptr;
 };
 }

@@ -45,14 +45,18 @@ enum class CommandPacketType : UInt32
 	SetVertexBuffers,
 
 	// Vertex Shader
+	SetVertexShader,
 
 	// Hull Shader
 
 	// Tessellator
 
-	// Domain
+	// Domain Shader
 
-	// Geometry
+	// Geometry Shader
+
+	// Pixel Shader
+	SetPixelShader,
 
 	// Stream Output
 
@@ -89,22 +93,24 @@ static constexpr const char8_t* k_commandPacketNames[] =
 	u8"SetVertexBuffers",
 
 	// Vertex Shader
+	u8"SetVertexShader",
 
 	// Hull Shader
 
 	// Tessellator
 
-	// Domain
+	// Domain Shader
 
-	// Geometry
+	// Geometry Shader
+
+	// Pixel Shader
+	u8"SetPixelShader",
 
 	// Stream Output
 
 	// Rasterizer
 	u8"SetViewport",
 	u8"SetScissor",
-
-	// Pixel Shader
 
 	// Output Merger
 	u8"SetRenderTargets",
@@ -258,6 +264,12 @@ public:
 	// Input Assembler
 	void SetPrimitiveTopology(PrimitiveTopology primitiveTopology);
 	void SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers);
+
+	// Vertex Shader
+	void SetVertexShader();
+
+	// Pixel Shader
+	void SetPixelShader();
 
 	// Rasterizer
 	void SetViewport(const Viewport& viewport);

@@ -4,6 +4,7 @@
 #include <Engine/Graphics/Type.h>
 
 #include "VertexBuffer.h"
+#include "Shader.h"
 
 namespace StravaEngine::Graphics
 {
@@ -18,7 +19,7 @@ public:
 	void OnRender();
 
 private:
-	std::unique_ptr<VertexBuffer> m_vertexBuffer = nullptr;
-
+	VertexBuffer m_vertexBuffer;
+	Shader m_vertexShader;
 };
 }

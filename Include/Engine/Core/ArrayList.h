@@ -294,6 +294,32 @@ public:
 	{}
 	ArrayList(std::initializer_list<Type> initializerList) { AddRange(initializerList); }
 
+	ArrayList& operator=(const ArrayList& arrayList)&
+	{
+		if (this != &arrayList)
+		{
+			Clear();
+			Reserve(arrayList.GetCapacity());
+			AddRange(arrayList);
+		}
+		return *this;
+	}
+
+	ArrayList& operator=(ArrayList&& arrayList)&
+	{
+		if (this != &arrayList)
+		{
+			Clear();
+			m_data = std::move(arrayList.m_data);
+			m_count = std::move(arrayList.m_count);
+			m_capacity = std::move(arrayList.m_capacity);
+			arrayList.m_data = nullptr;
+			arrayList.m_count = 0;
+			arrayList.m_capacity = 0;
+		}
+		return *this;
+	}
+
 	iterator begin() { return iterator(m_data, 0); }
 	const_iterator begin() const { return const_iterator(m_data, 0); }
 	iterator end() { return iterator(m_data, m_count); }
@@ -487,7 +513,8 @@ public:
 	void AddRange(ArrayList&& other) { InsertRange(m_count - 1, std::move(other)); }
 	void AddRange(std::initializer_list<Type> other) { InsertRange(m_count - 1, other); }
 	void AddRange(Type* other, Size count) { InsertRange(m_count - 1, other, count); }
-	template <Size k_size> void AddRange(const Array<Type, k_size>& other) { InsertRange(m_count - 1, other); }
+	template <Size k_size>
+	void AddRange(const Array<Type, k_size>& other) { InsertRange(m_count - 1, other); }
 
 	void Clear() { Resize(0); }
 

@@ -7,7 +7,9 @@
 
 namespace StravaEngine::Graphics::D3D12::Translator
 {
-STRAVA_FORCE_INLINE D3D12_PRIMITIVE_TOPOLOGY ToD3D12(const PrimitiveTopology& in)
+namespace ToD3D12
+{
+STRAVA_FORCE_INLINE D3D12_PRIMITIVE_TOPOLOGY ToPrimitiveTopology(const PrimitiveTopology& in)
 {
 	D3D12_PRIMITIVE_TOPOLOGY out;
 	switch (in)
@@ -35,7 +37,31 @@ STRAVA_FORCE_INLINE D3D12_PRIMITIVE_TOPOLOGY ToD3D12(const PrimitiveTopology& in
 	return out;
 }
 
-STRAVA_FORCE_INLINE D3D12_VIEWPORT ToD3D12(const Viewport& in)
+STRAVA_FORCE_INLINE D3D12_PRIMITIVE_TOPOLOGY_TYPE ToPrimitiveTopologyType(const PrimitiveTopology& in)
+{
+	D3D12_PRIMITIVE_TOPOLOGY_TYPE out;
+	switch (in)
+	{
+	case PrimitiveTopology::PointList:
+		out = D3D12_PRIMITIVE_TOPOLOGY_TYPE_POINT;
+		break;
+	case PrimitiveTopology::LineList:
+		out = D3D12_PRIMITIVE_TOPOLOGY_TYPE_LINE;
+		break;
+	case PrimitiveTopology::LineStrip:
+	case PrimitiveTopology::TriangleList:
+	case PrimitiveTopology::TriangleStrip:
+		out = D3D12_PRIMITIVE_TOPOLOGY_TYPE_TRIANGLE;
+		break;
+	default:
+		STRAVA_ASSERT("Not translatable!");
+		out = D3D12_PRIMITIVE_TOPOLOGY_TYPE_UNDEFINED;
+		break;
+	}
+	return out;
+}
+
+STRAVA_FORCE_INLINE D3D12_VIEWPORT ToViewport(const Viewport& in)
 {
 	D3D12_VIEWPORT out = CD3DX12_VIEWPORT
 	(
@@ -49,7 +75,7 @@ STRAVA_FORCE_INLINE D3D12_VIEWPORT ToD3D12(const Viewport& in)
 	return out;
 }
 
-STRAVA_FORCE_INLINE D3D12_RECT ToD3D12(const Core::Int32Rect& in)
+STRAVA_FORCE_INLINE D3D12_RECT ToRect(const Core::Int32Rect& in)
 {
 	D3D12_RECT out = CD3DX12_RECT
 	(
@@ -59,5 +85,6 @@ STRAVA_FORCE_INLINE D3D12_RECT ToD3D12(const Core::Int32Rect& in)
 		in.m_bottom
 	);
 	return out;
+}
 }
 }

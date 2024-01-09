@@ -66,12 +66,12 @@ void Renderer::OnUpdate()
 
 void Renderer::OnPrepareResource()
 {
-	for (auto& resourceCreationFunc : m_resourceCreationQueue)
+	for (auto& func : m_resourceQueueCreate)
 	{
-		resourceCreationFunc();
+		func();
 	}
 	// ‚±‚±‚ÅƒLƒ…[‚ğíœ‚·‚é‚×‚«‚È‚Ì‚©‚Í“ä.
-	m_resourceCreationQueue.Clear();
+	m_resourceQueueCreate.Clear();
 }
 
 void Renderer::OnPreRender()

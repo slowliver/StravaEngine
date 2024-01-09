@@ -17,12 +17,12 @@ bool VertexBuffer::Create(const VertexBufferSpec& vertexBufferSpec, void* vertex
 {
 	m_spec = vertexBufferSpec;
 //	m_data.AddRange(vertexBufferSpec.m_data, vertexBufferSpec.m_dataSize);
-	auto& resourceCreationQueue = Renderer::GetInstance()->GetResourceCreationQueue();
+	auto& resourceQueueCreate = Renderer::GetInstance()->GetResourceQueueCreate();
 	auto* spec = &m_spec;
 	auto* data = new Byte[m_spec.m_size];
 	Core::Memcpy(data, vertexData, m_spec.m_size);
 	auto* nativeVertexBuffer = m_nativeVertexBuffer.get();
-	resourceCreationQueue.Add
+	resourceQueueCreate.Add
 	(
 		[spec, data, nativeVertexBuffer]()
 		{
@@ -33,4 +33,8 @@ bool VertexBuffer::Create(const VertexBufferSpec& vertexBufferSpec, void* vertex
 	return true;
 }
 
+void VertexBuffer::Release()
+{
+
+}
 }

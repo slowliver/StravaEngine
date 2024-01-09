@@ -50,9 +50,9 @@ public:
 	const Type& GetAt(Size index) const { STRAVA_ASSERT(index >= 0 && index < m_count); return m_pointer[index]; }
 	const Type& operator[](Size index) const { return GetAt(index); }
 	const Type* GetData() const { return m_pointer; }
-	Type& GetFront() { return m_pointer[0]; }
+	const Type* GetBegin() const { return m_pointer; }
+	const Type* GetEnd() const { return m_pointer + m_count; }
 	const Type& GetFront() const { return m_pointer[0]; }
-	Type& GetBack() { return m_pointer[m_count - 1]; }
 	const Type& GetBack() const { return m_pointer[m_count - 1]; }
 
 	// C++ STL alias
@@ -62,7 +62,7 @@ public:
 	const Type& back() const { return *(m_pointer + m_count - 1); }
 	bool empty() const { return IsEmpty(); }
 	Size size() const { return GetCount(); }
-	Type* data() const { return GetData(); }
+	const Type* data() const { return GetData(); }
 	const Type& at(Size index) const { return GetAt(index); }
 
 private:

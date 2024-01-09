@@ -31,7 +31,8 @@ public:
 	void OnUpdate();
 
 	GraphicsCommandBuffer* GetGraphicsCommandBuffer() { return m_graphicsCommandBuffer.get(); }
-	Core::ArrayList<std::function<void(void)>>& GetResourceCreationQueue() { return m_resourceCreationQueue; }
+	Core::ArrayList<std::function<void(void)>>& GetResourceQueueCreate() { return m_resourceQueueCreate; }
+	Core::ArrayList<std::function<void(void)>>& GetResourceQueueRelease() { return m_resourceQueueRelease; }
 
 private:
 	void OnPrepareResource();
@@ -42,7 +43,8 @@ private:
 
 private:
 	static std::unique_ptr<Renderer> s_instance;
-	Core::ArrayList<std::function<void(void)>> m_resourceCreationQueue;
+	Core::ArrayList<std::function<void(void)>> m_resourceQueueCreate;
+	Core::ArrayList<std::function<void(void)>> m_resourceQueueRelease;
 	std::unique_ptr<GraphicsCommandBuffer> m_graphicsCommandBuffer;
 	std::unique_ptr<DrawTriangleSamplePass> m_drawTriangleSamplePass;
 };

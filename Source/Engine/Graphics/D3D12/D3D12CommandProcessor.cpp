@@ -174,18 +174,36 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet, pointer)
 	auto* stateCache = commandProcessor.GetStateCache();
 	auto* d3d12GraphicsCommandList = commandProcessor.GetD3D12GraphicsCommandList();
 
+	// Describe and create the graphics pipeline state object (PSO).
+	D3D12_GRAPHICS_PIPELINE_STATE_DESC d3d12GraphicsPipelineStateDesc = {};
+#if 0
+	d3d12GraphicsPipelineStateDesc.InputLayout = { inputElementDescs, _countof(inputElementDescs) };
+	d3d12GraphicsPipelineStateDesc.VS = { g_vertexShader, g_vertexShaderSize };
+	d3d12GraphicsPipelineStateDesc.PS = { g_pixelShader, g_pixelShaderSize };
+	d3d12GraphicsPipelineStateDesc.RasterizerState = CD3DX12_RASTERIZER_DESC(D3D12_DEFAULT);
+	d3d12GraphicsPipelineStateDesc.BlendState = CD3DX12_BLEND_DESC(D3D12_DEFAULT);
+	d3d12GraphicsPipelineStateDesc.DepthStencilState.DepthEnable = FALSE;
+	d3d12GraphicsPipelineStateDesc.DepthStencilState.StencilEnable = FALSE;
+	d3d12GraphicsPipelineStateDesc.SampleMask = UINT_MAX;
+	d3d12GraphicsPipelineStateDesc.NumRenderTargets = 1;
+	d3d12GraphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
+	d3d12GraphicsPipelineStateDesc.SampleDesc.Count = 1;
+#endif
+
 	// Root Signature
 	if (stateCache->m_dirtyFlags.m_rootSignature)
 	{
-		auto* rootSignature = D3D12Core::s_instance->GetRootSignature();
-		d3d12GraphicsCommandList->SetGraphicsRootSignature(rootSignature->GetD3D12RootSignature());
+		auto* d3d12RootSignature = D3D12Core::s_instance->GetRootSignature()->GetD3D12RootSignature();
+		d3d12GraphicsPipelineStateDesc.pRootSignature = d3d12RootSignature;
+		d3d12GraphicsCommandList->SetGraphicsRootSignature(d3d12RootSignature);
 		stateCache->m_dirtyFlags.m_rootSignature = false;
 	}
 
 	// Input Assembler
 	if (stateCache->m_dirtyFlags.m_primitiveTopology)
 	{
-		D3D12_PRIMITIVE_TOPOLOGY d3d12PrimitiveTopology = Translator::ToD3D12(stateCache->m_primitiveTopology);
+		d3d12GraphicsPipelineStateDesc.PrimitiveTopologyType = Translator::ToD3D12::ToPrimitiveTopologyType(stateCache->m_primitiveTopology);
+		D3D12_PRIMITIVE_TOPOLOGY d3d12PrimitiveTopology = Translator::ToD3D12::ToPrimitiveTopology(stateCache->m_primitiveTopology);
 		d3d12GraphicsCommandList->IASetPrimitiveTopology(d3d12PrimitiveTopology);
 		stateCache->m_dirtyFlags.m_primitiveTopology = false;
 	}
@@ -193,13 +211,13 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet, pointer)
 	// Rasterizer
 	if (stateCache->m_dirtyFlags.m_viewport)
 	{
-		D3D12_VIEWPORT viewport = Translator::ToD3D12(stateCache->m_viewport);
+		D3D12_VIEWPORT viewport = Translator::ToD3D12::ToViewport(stateCache->m_viewport);
 		d3d12GraphicsCommandList->RSSetViewports(1, &viewport);
 		stateCache->m_dirtyFlags.m_viewport = false;
 	}
 	if (stateCache->m_dirtyFlags.m_scissor)
 	{
-		D3D12_RECT scissorRect = Translator::ToD3D12(stateCache->m_scissor);
+		D3D12_RECT scissorRect = Translator::ToD3D12::ToRect(stateCache->m_scissor);
 		d3d12GraphicsCommandList->RSSetScissorRects(1, &scissorRect);
 		stateCache->m_dirtyFlags.m_scissor = false;
 	}

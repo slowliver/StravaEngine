@@ -32,8 +32,7 @@ bool DrawTriangleSamplePass::Initialize()
 	spec.m_size = sizeof(triangleVertices);
 	spec.m_stride = sizeof(Vertex);
 
-	m_vertexBuffer.reset(new VertexBuffer());
-	m_vertexBuffer->Create(spec, triangleVertices);
+	m_vertexBuffer.Create(spec, triangleVertices);
 //	std::printf(k_vertexAttributeTypeNames[0]);
 	return true;
 }
@@ -47,7 +46,7 @@ void DrawTriangleSamplePass::OnRender()
 
 	graphicsCmmandBuffer->BeginPass();
 
-	VertexBuffer* vertexBuffers[] = { m_vertexBuffer.get()};
+	VertexBuffer* vertexBuffers[] = { &m_vertexBuffer };
 	graphicsCmmandBuffer->SetVertexBuffers(0, vertexBuffers);
 
 	Viewport viewport = { 0.0f, 0.0f, 800.0f, 600.0f, 0.0f, 1.0f };
