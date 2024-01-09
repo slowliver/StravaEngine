@@ -15,6 +15,7 @@ struct D3D12CommandProcessor::StateCache final
 		UInt64 m_raw;
 		struct
 		{
+			// Root Signature
 			// Input Assembler
 			bool m_primitiveTopology	: 1;
 			bool m_vertexBuffers		: 1;
@@ -24,18 +25,21 @@ struct D3D12CommandProcessor::StateCache final
 			bool m_scissor				: 1;
 		};
 	};
-	DirtyFlag m_dirtyFlags = { 0xFFFFFFFFFFFFFFFF };
+	DirtyFlag m_dirtyFlags;
 
 	// Input Assembler
-	PrimitiveTopology m_primitiveTopology = PrimitiveTopology::PointList;
+	PrimitiveTopology m_primitiveTopology;
 
 	// Rasterizer
-	Viewport m_viewport = Viewport();
-	Core::Int32Rect m_scissor = Core::Int32Rect();
+	Viewport m_viewport;
+	Core::Int32Rect m_scissor;
 
 	void Reset()
 	{
 		m_dirtyFlags.m_raw = 0xFFFFFFFFFFFFFFFF;
+		m_primitiveTopology = PrimitiveTopology::Unknown;
+		m_viewport = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
+		m_scissor = { INT32_MAX, INT32_MAX, INT32_MAX, INT32_MAX };
 	}
 };
 
@@ -84,6 +88,14 @@ void D3D12CommandProcessor::Terminate()
 static void D3D12CommandProcessor_on##commandPacketType(D3D12CommandProcessor& commandProcessor, CommandPacket##commandPacketType* packet, Byte* pointer)
 #endif
 
+// Render Pass
+
+STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(BeginPass, commandProcessor, packet, pointer)
+{}
+
+STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(EndPass, commandProcessor, packet, pointer)
+{}
+
 // Begin Input Assembler
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetPrimitiveTopology, commandProcessor, packet, pointer)
@@ -101,10 +113,20 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetVertexBuffers, commandProcessor, pack
 	auto* d3d12GraphicsCommandList = commandProcessor.GetD3D12GraphicsCommandList();
 	D3D12_VERTEX_BUFFER_VIEW d3d12VertexBufferViews[D3D12_IA_VERTEX_INPUT_RESOURCE_SLOT_COUNT];
 	const auto numViews = Core::Min(Core::GetCount(d3d12VertexBufferViews), static_cast<Size>(packet->m_numBuffers));
+	auto* vertexBuffers = reinterpret_cast<VertexBuffer**>(pointer + sizeof(CommandPacketSetVertexBuffers));
 	for (Size i = 0; i < numViews; ++i)
 	{
-		auto* vertexBuffer = static_cast<D3D12VertexBuffer*>(packet->m_buffers[i]->GetNativeVertexBuffer());
-		d3d12VertexBufferViews[i] = vertexBuffer->GetD3D12VertexBufferView();
+		auto* vertexBuffer = vertexBuffers[i];
+		if (!vertexBuffer)
+		{
+			continue;
+		}
+		auto* nativeVertexBuffer = static_cast<D3D12VertexBuffer*>(vertexBuffer->GetNativeVertexBuffer());
+		if (!nativeVertexBuffer)
+		{
+			continue;
+		}
+		d3d12VertexBufferViews[i] = nativeVertexBuffer->GetD3D12VertexBufferView();
 	}
 	d3d12GraphicsCommandList->IASetVertexBuffers(packet->m_startSlot, static_cast<UINT>(numViews), d3d12VertexBufferViews);
 }
@@ -143,6 +165,7 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet, pointer)
 	{
 		D3D12_PRIMITIVE_TOPOLOGY d3d12PrimitiveTopology = Translator::ToD3D12(stateCache->m_primitiveTopology);
 		d3d12GraphicsCommandList->IASetPrimitiveTopology(d3d12PrimitiveTopology);
+		stateCache->m_dirtyFlags.m_primitiveTopology = false;
 	}
 
 	// Rasterizer
@@ -150,11 +173,13 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet, pointer)
 	{
 		D3D12_VIEWPORT viewport = Translator::ToD3D12(stateCache->m_viewport);
 		d3d12GraphicsCommandList->RSSetViewports(1, &viewport);
+		stateCache->m_dirtyFlags.m_viewport = false;
 	}
 	if (stateCache->m_dirtyFlags.m_scissor)
 	{
 		D3D12_RECT scissorRect = Translator::ToD3D12(stateCache->m_scissor);
 		d3d12GraphicsCommandList->RSSetScissorRects(1, &scissorRect);
+		stateCache->m_dirtyFlags.m_scissor = false;
 	}
 
 	d3d12GraphicsCommandList->DrawInstanced(packet->m_vertexCountPerInstance, packet->m_instanceCount, packet->m_startVertexLocation, packet->m_startInstanceLocation);
@@ -208,7 +233,11 @@ case CommandPacketType::##commandPacketType:										\
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(Draw, gcbCurrent);
 
 		default:
+		{
+			auto* commandPacket = reinterpret_cast<CommandPacketUnknown*>(gcbCurrent);
+			gcbCurrent += commandPacket->m_size;
 			break;
+		}
 		}
 	}
 #if 0

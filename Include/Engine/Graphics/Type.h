@@ -102,6 +102,7 @@ struct VertexLayout : public Core::Array<VertexAttribute, k_attributeCount>
 
 enum class PrimitiveTopology : UInt8
 {
+	Unknown,
 	PointList,
 	LineList,
 	LineStrip,

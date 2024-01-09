@@ -75,12 +75,13 @@ void GraphicsCommandBuffer::SetPrimitiveTopology(PrimitiveTopology primitiveTopo
 
 void GraphicsCommandBuffer::SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers)
 {
-	auto& packet = Push<CommandPacketSetVertexBuffers>();
+	auto& packet = Push<CommandPacketSetVertexBuffers>(sizeof(VertexBuffer*) * buffers.GetCount());
 	packet.m_startSlot = startSlot;
-	packet.m_numBuffers = static_cast<UInt32>(Core::Min(Core::GetCount(packet.m_buffers), buffers.GetCount()));
+	packet.m_numBuffers = static_cast<UInt32>(buffers.GetCount());
+	auto** vertexBuffers = reinterpret_cast<VertexBuffer**>(reinterpret_cast<Byte*>(&packet) + sizeof(CommandPacketSetVertexBuffers));
 	for (Size i = 0; i < packet.m_numBuffers; ++i)
 	{
-		packet.m_buffers[i] = buffers[i];
+		vertexBuffers[i] = buffers[i];
 	}
 }
 

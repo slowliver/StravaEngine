@@ -31,6 +31,7 @@ class VertexBuffer;
 enum class CommandPacketType : UInt32
 {
 	// No Operation.
+	Unknown,
 	NOP,
 
 	ClearRenderTarget,
@@ -74,6 +75,7 @@ enum class CommandPacketType : UInt32
 static constexpr const char8_t* k_commandPacketNames[] =
 {
 	// No Operation.
+	u8"Unknown",
 	u8"NOP",
 
 	u8"ClearRenderTarget",
@@ -125,6 +127,12 @@ struct alignas(sizeof(void*)) CommandPacketBase
 	const UInt32 m_size;
 };
 
+STRAVA_COMMAND_PACKET(Unknown)
+{};
+
+STRAVA_COMMAND_PACKET(NOP)
+{};
+
 #if 0
 STRAVA_COMMAND_PACKET(ClearRenderTarget)
 {
@@ -134,12 +142,10 @@ STRAVA_COMMAND_PACKET(ClearRenderTarget)
 #endif
 
 STRAVA_COMMAND_PACKET(BeginPass)
-{
-};
+{};
 
 STRAVA_COMMAND_PACKET(EndPass)
-{
-};
+{};
 
 STRAVA_COMMAND_PACKET(SetPrimitiveTopology)
 {
@@ -150,7 +156,6 @@ STRAVA_COMMAND_PACKET(SetVertexBuffers)
 {
 	UInt32 m_startSlot;
 	UInt32 m_numBuffers;
-	VertexBuffer* m_buffers[32];
 };
 
 STRAVA_COMMAND_PACKET(SetViewport)

@@ -45,6 +45,8 @@ void DrawTriangleSamplePass::OnRender()
 {
 	auto* graphicsCmmandBuffer = Renderer::GetInstance()->GetGraphicsCommandBuffer();
 
+	graphicsCmmandBuffer->BeginPass();
+
 	VertexBuffer* vertexBuffers[] = { m_vertexBuffer.get()};
 	graphicsCmmandBuffer->SetVertexBuffers(0, vertexBuffers);
 
@@ -57,6 +59,9 @@ void DrawTriangleSamplePass::OnRender()
 	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
 	graphicsCmmandBuffer->Draw(3);
+	graphicsCmmandBuffer->Draw(3);
+
+	graphicsCmmandBuffer->EndPass();
 
 //	graphicsCmmandBuffer->Set
 //	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);
