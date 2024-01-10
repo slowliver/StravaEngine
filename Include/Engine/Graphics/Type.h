@@ -113,12 +113,12 @@ enum class PrimitiveTopology : UInt8
 
 struct Viewport
 {
-	float m_left = 0.0f;
-	float m_top = 0.0f;
-	float m_width = 0.0f;
-	float m_height = 0.0f;
-	float m_minDepth = 0.0f;
-	float m_maxDepth = 1.0f;
+	float m_left;
+	float m_top;
+	float m_width;
+	float m_height;
+	float m_minDepth;
+	float m_maxDepth;
 };
 inline bool operator==(const Viewport& x, const Viewport& y)
 {
