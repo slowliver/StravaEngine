@@ -9,12 +9,11 @@ namespace StravaEngine::Graphics::D3D12
 D3D12Shader::~D3D12Shader()
 {}
 
-bool D3D12Shader::OnCreate(Core::ArrayList<Byte>&& byteCode)
+bool D3D12Shader::OnCreate(Core::ArrayList<Byte>&& bytes)
 {
-	HRESULT hr = {};
-
-	m_byteCode = byteCode;
-
+	m_bytes = bytes;
+	m_shaderByteCode.pShaderBytecode = m_bytes.GetData();
+	m_shaderByteCode.BytecodeLength = m_bytes.GetCount();
 	return true;
 }
 }

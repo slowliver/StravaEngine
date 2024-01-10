@@ -13,13 +13,13 @@ Shader::Shader()
 Shader::~Shader()
 {}
 
-bool Shader::Create(Core::ArrayProxy<Byte> byteCode)
+bool Shader::Create(Core::ArrayProxy<Byte> bytes)
 {
-	auto bytes = Core::ArrayList<Byte>(byteCode.begin(), byteCode.end());
+	auto bytesArray = Core::ArrayList<Byte>(bytes.begin(), bytes.end());
 	auto& resourceQueueCreate = Renderer::GetInstance()->GetResourceQueueCreate();
 	resourceQueueCreate.Add
 	(
-		[nativeShader = m_nativeShader.get(), data = bytes]() mutable
+		[nativeShader = m_nativeShader.get(), data = std::move(bytesArray)]() mutable
 		{
 			nativeShader->OnCreate(std::move(data));
 		}

@@ -11,6 +11,7 @@ namespace StravaEngine::Graphics::D3D12
 {
 class D3D12CommandProcessor;
 class D3D12RootSignature;
+class D3D12PipelineStateManager;
 class D3D12Core
 {
 private:

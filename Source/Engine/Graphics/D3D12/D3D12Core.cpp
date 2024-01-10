@@ -4,6 +4,7 @@
 
 #include "D3D12CommandProcessor.h"
 #include "D3D12RootSignature.h"
+#include "D3D12PipelineState.h"
 
 namespace StravaEngine::Graphics::D3D12
 {
@@ -180,6 +181,19 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 
 	{
 		bool success = m_rootSignature->Initialize(m_d3d12Device);
+		if (!success)
+		{
+			return false;
+		}
+	}
+
+	{
+		auto* pipelineStateManager = D3D12PipelineStateManager::CreateInstance();
+		if (!pipelineStateManager)
+		{
+			return false;
+		}
+		bool success = pipelineStateManager->Initialize();
 		if (!success)
 		{
 			return false;
@@ -393,15 +407,20 @@ void D3D12Core::MoveToNextFrame()
 
 void D3D12Core::Terminate()
 {
-	if (m_rootSignature)
-	{
-		m_rootSignature->Terminate();
-		m_rootSignature.reset();
-	}
 	if (m_commandProcessor)
 	{
 		m_commandProcessor->Terminate();
 		m_commandProcessor.reset();
+	}
+	if (D3D12PipelineStateManager::GetInstance())
+	{
+		D3D12PipelineStateManager::GetInstance()->Terminate();
+		D3D12PipelineStateManager::DestroyInstance();
+	}
+	if (m_rootSignature)
+	{
+		m_rootSignature->Terminate();
+		m_rootSignature.reset();
 	}
 }
 }

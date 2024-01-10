@@ -27,9 +27,6 @@
     <ClCompile Include="D3D12\D3D12Core.cpp">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="D3D12\Shader\Shader_temp.cpp">
-      <Filter>ソース ファイル\D3D12\Shader</Filter>
-    </ClCompile>
     <ClCompile Include="CommandBuffer.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
@@ -48,7 +45,7 @@
     <ClCompile Include="D3D12\D3D12RootSignature.cpp">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="D3D12\D3D12PipelineStateObject.cpp">
+    <ClCompile Include="D3D12\D3D12PipelineState.cpp">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClCompile>
     <ClCompile Include="Shader.cpp">
@@ -56,6 +53,9 @@
     </ClCompile>
     <ClCompile Include="D3D12\D3D12Shader.cpp">
       <Filter>ソース ファイル\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12\Shader\Shader_temp.cpp">
+      <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -89,7 +89,7 @@
     <ClInclude Include="D3D12\D3D12RootSignature.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="D3D12\D3D12PipelineStateObject.h">
+    <ClInclude Include="D3D12\D3D12PipelineState.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
     <ClInclude Include="Shader.h">

@@ -27,9 +27,11 @@ class VertexBuffer
 public:
 	VertexBuffer();
 	~VertexBuffer();
+
 	bool Create(const VertexBufferSpec& vertexBufferSpec, void* vertexData);
 	void Release();
 
+	const NativeVertexBufferBase* GetNativeVertexBuffer() const { return m_nativeVertexBuffer.get(); }
 	NativeVertexBufferBase* GetNativeVertexBuffer() { return m_nativeVertexBuffer.get(); }
 
 private:

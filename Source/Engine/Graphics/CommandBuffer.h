@@ -1,5 +1,6 @@
 #pragma once
 
+#include <memory>
 #include <functional>
 
 #include <Engine/Core/CoreMinimal.h>
@@ -27,10 +28,12 @@ struct CommandPacket##p final : public CommandPacket<CommandPacketType::p>
 #define STRAVA_COMMAND_PACKET(p) struct CommandPacket##p final : public CommandPacketBase<CommandPacketType::p>
 
 class VertexBuffer;
-
+using VertexBufferRef = std::shared_ptr<VertexBuffer>;
+class Shader;
+using ShaderRef = std::shared_ptr<Shader>;
 enum class CommandPacketType : UInt32
 {
-	// No Operation.
+	// No Operation
 	Unknown,
 	NOP,
 
@@ -78,7 +81,7 @@ enum class CommandPacketType : UInt32
 
 static constexpr const char8_t* k_commandPacketNames[] =
 {
-	// No Operation.
+	// No Operation
 	u8"Unknown",
 	u8"NOP",
 
@@ -129,15 +132,19 @@ struct alignas(sizeof(void*)) CommandPacketBase
 {
 	static constexpr CommandPacketType k_type = k_commandPacketType;
 	constexpr const char8_t* ToString() const { k_commandPacketNames[ToUnderlying(k_type)]; }
-	const CommandPacketType m_type;
-	const UInt32 m_size;
+	CommandPacketType m_type;
+	UInt32 m_size;
 };
+
+// Begin No Operation
 
 STRAVA_COMMAND_PACKET(Unknown)
 {};
 
 STRAVA_COMMAND_PACKET(NOP)
 {};
+
+// End No Operation
 
 #if 0
 STRAVA_COMMAND_PACKET(ClearRenderTarget)
@@ -147,11 +154,17 @@ STRAVA_COMMAND_PACKET(ClearRenderTarget)
 };
 #endif
 
+// Begin Render Pass
+
 STRAVA_COMMAND_PACKET(BeginPass)
 {};
 
 STRAVA_COMMAND_PACKET(EndPass)
 {};
+
+// End Render Pass
+
+// Begin Input Assembler
 
 STRAVA_COMMAND_PACKET(SetPrimitiveTopology)
 {
@@ -164,6 +177,28 @@ STRAVA_COMMAND_PACKET(SetVertexBuffers)
 	UInt32 m_numBuffers;
 };
 
+// End Input Assembler
+
+// Begin Vertex Shader
+
+STRAVA_COMMAND_PACKET(SetVertexShader)
+{
+	Shader* m_vertexShader;
+};
+
+// End Vertex Shader
+
+// Begin Pixel Shader
+
+STRAVA_COMMAND_PACKET(SetPixelShader)
+{
+	Shader* m_pixelShader;
+};
+
+// End Pixel Shader
+
+// Begin Rasterizer
+
 STRAVA_COMMAND_PACKET(SetViewport)
 {
 	Viewport m_viewport;
@@ -174,6 +209,8 @@ STRAVA_COMMAND_PACKET(SetScissor)
 	Core::Int32Rect m_scissor;
 };
 
+// End Rasterizer
+
 #if 0
 STRAVA_COMMAND_PACKET(SetRenderTargets)
 {
@@ -181,6 +218,8 @@ STRAVA_COMMAND_PACKET(SetRenderTargets)
 	NativeResouce m_renderTargets[8] = {};
 };
 #endif
+
+// Begin Draw
 
 STRAVA_COMMAND_PACKET(Draw)
 {
@@ -190,9 +229,11 @@ STRAVA_COMMAND_PACKET(Draw)
 	UInt32 m_startInstanceLocation;
 };
 
+// End Draw
+
 STRAVA_COMMAND_PACKET(SetNativeCommand)
 {
-	std::function<void(void)> m_function;
+//	std::function<void(void)> m_function;
 };
 
 class CommandBufferBase
@@ -209,10 +250,8 @@ public:
 	T& Push(const Size additionalSize = 0)
 	{
 		T& commandPacket = reinterpret_cast<T&>(*Push(sizeof(T), additionalSize));
-		auto& type = const_cast<CommandPacketType&>(commandPacket.m_type);
-		auto& size = const_cast<UInt32&>(commandPacket.m_size);
-		type = T::k_type;
-		size = static_cast<UInt32>(std::intptr_t(m_back) - std::intptr_t(&commandPacket));
+		commandPacket.m_type = T::k_type;
+		commandPacket.m_size = static_cast<UInt32>(std::intptr_t(m_back) - std::intptr_t(&commandPacket));
 		return commandPacket;
 	}
 
@@ -266,10 +305,10 @@ public:
 	void SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers);
 
 	// Vertex Shader
-	void SetVertexShader();
+	void SetVertexShader(Shader* vertexShader);
 
 	// Pixel Shader
-	void SetPixelShader();
+	void SetPixelShader(Shader* pixelShader);
 
 	// Rasterizer
 	void SetViewport(const Viewport& viewport);

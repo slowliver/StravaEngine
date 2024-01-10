@@ -11,7 +11,7 @@ namespace StravaEngine::Graphics
 class DrawTriangleSamplePass
 {
 public:
-	DrawTriangleSamplePass() {}
+	DrawTriangleSamplePass();
 	~DrawTriangleSamplePass() {}
 
 	bool Initialize();
@@ -21,5 +21,6 @@ public:
 private:
 	VertexBuffer m_vertexBuffer;
 	Shader m_vertexShader;
+	Shader m_pixelShader;
 };
 }

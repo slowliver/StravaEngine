@@ -3,8 +3,16 @@
 #include <Engine/Graphics/Renderer.h>
 #include "CommandBuffer.h"
 
+extern "C" Byte g_vertexShader[];
+extern "C" Size g_vertexShaderSize;
+extern "C" Byte g_pixelShader[];
+extern "C" Size g_pixelShaderSize;
+
 namespace StravaEngine::Graphics
 {
+DrawTriangleSamplePass::DrawTriangleSamplePass()
+{}
+
 bool DrawTriangleSamplePass::Initialize()
 {
 	auto vertexLayout =
@@ -33,6 +41,10 @@ bool DrawTriangleSamplePass::Initialize()
 	spec.m_stride = sizeof(Vertex);
 
 	m_vertexBuffer.Create(spec, triangleVertices);
+
+	m_vertexShader.Create(Core::ArrayProxy<Byte>(g_vertexShader, g_vertexShaderSize));
+	m_pixelShader.Create(Core::ArrayProxy<Byte>(g_pixelShader, g_pixelShaderSize));
+
 //	std::printf(k_vertexAttributeTypeNames[0]);
 	return true;
 }
@@ -56,6 +68,9 @@ void DrawTriangleSamplePass::OnRender()
 	graphicsCmmandBuffer->SetScissor(scissor);
 
 	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+
+	graphicsCmmandBuffer->SetVertexShader(&m_vertexShader);
+	graphicsCmmandBuffer->SetPixelShader(&m_pixelShader);
 
 	graphicsCmmandBuffer->Draw(3);
 	graphicsCmmandBuffer->Draw(3);

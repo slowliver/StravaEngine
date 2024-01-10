@@ -37,17 +37,23 @@ Byte* CommandBufferBase::Push(Size commandSize, Size additionalSize)
 	if (diff < commandSize + additionalSize)
 	{
 		STRAVA_ASSERT(!"Can't allocate command!")
-		return nullptr;
+			return nullptr;
 	}
 	auto* previousPosition = m_back;
 	m_back += commandSize + additionalSize;
 	return previousPosition;
 }
 
+#define STRAVA_COMMAND_BUFFER_FUNC(type, p)				\
+static_assert(std::is_trivial_v<CommandPacket##p>);		\
+void type##CommandBuffer::p
+#define STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(p)			\
+STRAVA_COMMAND_BUFFER_FUNC(Graphics, p)
+
 void CommandBufferBase::SetNativeCommand(std::function<void(void)> func)
 {
 	auto& packet = Push<CommandPacketSetNativeCommand>();
-	packet.m_function = func;
+//	packet.m_function = func;
 }
 
 #if 0
@@ -56,24 +62,24 @@ void CommandBufferBase::End(Size commandSize, Size additionalSize)
 #endif
 
 // Render Pass
-void GraphicsCommandBuffer::BeginPass()
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(BeginPass)()
 {
 	auto& packet = Push<CommandPacketBeginPass>();
 }
 
-void GraphicsCommandBuffer::EndPass()
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(EndPass)()
 {
 	auto& packet = Push<CommandPacketEndPass>();
 }
 
 // Input Assembler
-void GraphicsCommandBuffer::SetPrimitiveTopology(PrimitiveTopology primitiveTopology)
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetPrimitiveTopology)(PrimitiveTopology primitiveTopology)
 {
 	auto& packet = Push<CommandPacketSetPrimitiveTopology>();
 	packet.m_primitiveTopology = primitiveTopology;
 }
 
-void GraphicsCommandBuffer::SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers)
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetVertexBuffers)(UInt8 startSlot, Core::ArrayProxy<VertexBuffer*> buffers)
 {
 	auto& packet = Push<CommandPacketSetVertexBuffers>(sizeof(VertexBuffer*) * buffers.GetCount());
 	packet.m_startSlot = startSlot;
@@ -85,25 +91,39 @@ void GraphicsCommandBuffer::SetVertexBuffers(UInt8 startSlot, Core::ArrayProxy<V
 	}
 }
 
+// Vertex Shader
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetVertexShader)(Shader* vertexShader)
+{
+	auto& packet = Push<CommandPacketSetVertexShader>();
+	packet.m_vertexShader = vertexShader;
+}
+
+// Pixel Shader
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetPixelShader)(Shader* pixelShader)
+{
+	auto& packet = Push<CommandPacketSetPixelShader>();
+	packet.m_pixelShader = pixelShader;
+}
+
 // Rasterizer
-void GraphicsCommandBuffer::SetViewport(const Viewport& viewport)
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetViewport)(const Viewport& viewport)
 {
 	auto& packet = Push<CommandPacketSetViewport>();
 	packet.m_viewport = viewport;
 }
 
-void GraphicsCommandBuffer::SetScissor(const Core::Int32Rect& scissor)
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetScissor)(const Core::Int32Rect& scissor)
 {
 	auto& packet = Push<CommandPacketSetScissor>();
 	packet.m_scissor = scissor;
 }
 
-void GraphicsCommandBuffer::Draw(UInt32 vertexCount)
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(Draw)(UInt32 vertexCount)
 {
 	Draw(vertexCount, 1, 0, 0);
 }
 
-void GraphicsCommandBuffer::Draw(UInt32 vertexCountPerInstance, UInt32 instanceCount, UInt32 startVertexLocation, UInt32 startInstanceLocation)
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(Draw)(UInt32 vertexCountPerInstance, UInt32 instanceCount, UInt32 startVertexLocation, UInt32 startInstanceLocation)
 {
 	auto& packet = Push<CommandPacketDraw>();
 	packet.m_vertexCountPerInstance = vertexCountPerInstance;

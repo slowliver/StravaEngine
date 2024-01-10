@@ -17,10 +17,12 @@ class D3D12Shader : public NativeShaderBase
 public:
 	D3D12Shader() {}
 	virtual ~D3D12Shader() override;
-	virtual bool OnCreate(Core::ArrayList<Byte>&& byteCode) override;
+	virtual bool OnCreate(Core::ArrayList<Byte>&& bytes) override;
+
+	const D3D12_SHADER_BYTECODE& GetShaderByteCode() const { return m_shaderByteCode; }
 
 private:
-	Core::ArrayList<Byte> m_byteCode;
+	Core::ArrayList<Byte> m_bytes;
 	D3D12_SHADER_BYTECODE m_shaderByteCode;
 };
 }

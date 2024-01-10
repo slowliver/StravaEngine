@@ -13,7 +13,7 @@
   <ItemGroup>
     <ClCompile Include="D3D12\D3D12CommandProcessor.cpp" />
     <ClCompile Include="D3D12\D3D12Core.cpp" />
-    <ClCompile Include="D3D12\D3D12PipelineStateObject.cpp" />
+    <ClCompile Include="D3D12\D3D12PipelineState.cpp" />
     <ClCompile Include="D3D12\D3D12RootSignature.cpp" />
     <ClCompile Include="D3D12\D3D12Shader.cpp" />
     <ClCompile Include="D3D12\D3D12VertexBuffer.cpp" />
@@ -30,7 +30,7 @@
     <ClInclude Include="D3D12\D3D12CommandProcessor.h" />
     <ClInclude Include="D3D12\D3D12Core.h" />
     <ClInclude Include="CommandBuffer.h" />
-    <ClInclude Include="D3D12\D3D12PipelineStateObject.h" />
+    <ClInclude Include="D3D12\D3D12PipelineState.h" />
     <ClInclude Include="D3D12\D3D12RootSignature.h" />
     <ClInclude Include="D3D12\D3D12Shader.h" />
     <ClInclude Include="D3D12\D3D12TypeTranslator.h" />
