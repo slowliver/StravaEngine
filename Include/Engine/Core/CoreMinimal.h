@@ -45,13 +45,16 @@ using Size = UInt64;
 
 using NativeHandle = UInt64;
 
+struct Default {};
+constexpr Default k_default;
+
 template <class Type>
 struct RectBase
 {
-	Type m_left = {};
-	Type m_top = {};
-	Type m_right = {};
-	Type m_bottom = {};
+	Type m_left;
+	Type m_top;
+	Type m_right;
+	Type m_bottom;
 	RectBase& SetWidth(Type width) { m_right = m_left + width; return this; }
 	RectBase& SetHeight(Type height) { m_right = m_left + height; return this; }
 	Type GetWidth(Type width) const { return m_right - m_left; }

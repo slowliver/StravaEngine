@@ -505,16 +505,17 @@ public:
 	void InsertRange(Size index, ArrayList&& other) { InsertRange(index, other.cbegin(), other.cend()); }
 	void InsertRange(Size index, std::initializer_list<Type> other) { InsertRange(index, other.begin(), other.end()); }
 	void InsertRange(Size index, Type* other, Size count) { InsertRange(index, &other[0], &other[count]); }
-	template <Size k_size> void InsertRange(Size index, const Array<Type, k_size>& other) { InsertRange(index, other.cbegin(), other.cend()); }
+	template <Size k_size>
+	void InsertRange(Size index, const Array<Type, k_size>& other) { InsertRange(index, other.cbegin(), other.cend()); }
 
 	template <class IteratorType>
-	void AddRange(IteratorType first, IteratorType last) { InsertRange(m_count - 1, first, last); }
-	void AddRange(const ArrayList& other) { InsertRange(m_count - 1, other); }
-	void AddRange(ArrayList&& other) { InsertRange(m_count - 1, std::move(other)); }
-	void AddRange(std::initializer_list<Type> other) { InsertRange(m_count - 1, other); }
-	void AddRange(Type* other, Size count) { InsertRange(m_count - 1, other, count); }
+	void AddRange(IteratorType first, IteratorType last) { InsertRange(m_count, first, last); }
+	void AddRange(const ArrayList& other) { InsertRange(m_count, other); }
+	void AddRange(ArrayList&& other) { InsertRange(m_count, std::move(other)); }
+	void AddRange(std::initializer_list<Type> other) { InsertRange(m_count, other); }
+	void AddRange(Type* other, Size count) { InsertRange(m_count, other, count); }
 	template <Size k_size>
-	void AddRange(const Array<Type, k_size>& other) { InsertRange(m_count - 1, other); }
+	void AddRange(const Array<Type, k_size>& other) { InsertRange(m_count, other); }
 
 	void Clear() { Resize(0); }
 

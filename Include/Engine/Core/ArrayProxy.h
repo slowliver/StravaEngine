@@ -42,7 +42,7 @@ public:
 	ArrayProxy(std::remove_const_t<OtherType> (&&pointer)[k_count]) = delete;
 	template <class OtherType, std::enable_if_t<std::is_convertible_v<decltype(std::declval<OtherType>().data()), Type*> && std::is_convertible_v<decltype(std::declval<OtherType>().size()), Size>, std::nullptr_t> = nullptr>
 	ArrayProxy(OtherType& other) : m_pointer(other.data()), m_count(other.size()) {}
-	template <class OtherType, std::enable_if_t<std::is_convertible_v<decltype(std::declval<OtherType>().data()), Type*>&& std::is_convertible_v<decltype(std::declval<OtherType>().size()), Size>, std::nullptr_t> = nullptr>
+	template <class OtherType, std::enable_if_t<std::is_convertible_v<decltype(std::declval<OtherType>().data()), Type*> && std::is_convertible_v<decltype(std::declval<OtherType>().size()), Size>, std::nullptr_t> = nullptr>
 	ArrayProxy(OtherType&& other) = delete;
 	
 	Size GetCount() const { return m_count; }
