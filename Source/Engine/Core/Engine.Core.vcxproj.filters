@@ -45,6 +45,9 @@
     <ClInclude Include="..\..\..\Include\Engine\Core\ArrayProxy.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Engine\Core\String.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Diagnostics\Debugger.cpp">

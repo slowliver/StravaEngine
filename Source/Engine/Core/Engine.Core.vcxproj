@@ -19,6 +19,7 @@
     <ClInclude Include="..\..\..\Include\Engine\Core\Diagnostics\Debugger.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\List.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\Pointer.h" />
+    <ClInclude Include="..\..\..\Include\Engine\Core\String.h" />
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Diagnostics\Debugger.cpp" />
