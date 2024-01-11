@@ -47,7 +47,7 @@ private:
 	ID3D12CommandQueue* m_d3d12CmmandQueue = nullptr;
 	ID3D12DescriptorHeap* m_d3d12RTVHeap = nullptr;
 	ID3D12Resource* m_renderTargets[k_frameCount] = {};
-	ID3D12PipelineState* m_pipelineState = nullptr;
+//	ID3D12PipelineState* m_pipelineState = nullptr;
 	ID3D12CommandAllocator* m_commandAllocators[k_frameCount] = {};
 	UInt32 m_frameIndex = 0;
 	HANDLE m_fenceEvent = {};

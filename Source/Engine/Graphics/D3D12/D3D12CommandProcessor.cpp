@@ -246,6 +246,8 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet)
 	d3d12GraphicsPipelineStateDesc.RTVFormats[0] = DXGI_FORMAT_R8G8B8A8_UNORM;
 	d3d12GraphicsPipelineStateDesc.SampleDesc.Count = 1;
 
+	bool setPipelineState = false;
+
 	// Root Signature
 	if (stateCache->m_dirtyFlags.m_rootSignature)
 	{
@@ -253,6 +255,7 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet)
 		d3d12GraphicsPipelineStateDesc.pRootSignature = d3d12RootSignature;
 		d3d12GraphicsCommandList->SetGraphicsRootSignature(d3d12RootSignature);
 		stateCache->m_dirtyFlags.m_rootSignature = false;
+		setPipelineState = true;
 	}
 
 	// Vertex Shader
@@ -268,6 +271,7 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet)
 			}
 		}
 		stateCache->m_dirtyFlags.m_vertexShader = false;
+		setPipelineState = true;
 	}
 
 	// Pixel Shader
@@ -283,6 +287,7 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet)
 			}
 		}
 		stateCache->m_dirtyFlags.m_pixelShader = false;
+		setPipelineState = true;
 	}
 	
 	// Input Assembler
@@ -292,6 +297,7 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet)
 		D3D12_PRIMITIVE_TOPOLOGY d3d12PrimitiveTopology = Translator::ToD3D12::ToPrimitiveTopology(stateCache->m_primitiveTopology);
 		d3d12GraphicsCommandList->IASetPrimitiveTopology(d3d12PrimitiveTopology);
 		stateCache->m_dirtyFlags.m_primitiveTopology = false;
+		setPipelineState = true;
 	}
 
 	// Rasterizer
@@ -308,11 +314,18 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet)
 		stateCache->m_dirtyFlags.m_scissor = false;
 	}
 
-	auto* pipelineStateManager = D3D12PipelineStateManager::GetInstance();
-	auto* pso = pipelineStateManager->FindOrCreate(d3d12GraphicsPipelineStateDesc);
-	if (!pso)
+	if (setPipelineState)
 	{
-		STRAVA_ASSERT(0);
+		auto* pipelineStateManager = D3D12PipelineStateManager::GetInstance();
+		auto* pso = pipelineStateManager->FindOrCreate(d3d12GraphicsPipelineStateDesc);
+		if (pso)
+		{
+			d3d12GraphicsCommandList->SetPipelineState(pso);
+		}
+		else
+		{
+			STRAVA_ASSERT(0);
+		}
 	}
 
 	d3d12GraphicsCommandList->DrawInstanced(packet->m_vertexCountPerInstance, packet->m_instanceCount, packet->m_startVertexLocation, packet->m_startInstanceLocation);

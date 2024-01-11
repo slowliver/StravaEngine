@@ -73,6 +73,13 @@ void DrawTriangleSamplePass::OnRender()
 	graphicsCmmandBuffer->SetPixelShader(&m_pixelShader);
 
 	graphicsCmmandBuffer->Draw(3);
+
+
+	viewport = { 0.0f, 0.0f, 400.0f, 300.0f, 0.0f, 1.0f };
+	graphicsCmmandBuffer->SetViewport(viewport);
+
+	scissor = { 0, 0, 400, 300 };
+	graphicsCmmandBuffer->SetScissor(scissor);
 	graphicsCmmandBuffer->Draw(3);
 
 	graphicsCmmandBuffer->EndPass();
