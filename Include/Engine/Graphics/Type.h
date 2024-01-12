@@ -361,11 +361,48 @@ struct Format
 		Count						= BC7_UNormSRGB + 1
 	};
 	static_assert(Core::GetCount(Internal::k_formatSpecTable) == static_cast<Size>(Raw::Count));
-	static Size GetSizeOf(Raw type)
-	{
-		return 0;
-	}
+	STRAVA_FORCE_INLINE static Size GetSizePerPixelOf(Raw type) { return Internal::k_formatSpecTable[type].m_sizePerPixel; }
+	STRAVA_FORCE_INLINE static Size GetBitsOfROf(Raw type) { return Internal::k_formatSpecTable[type].m_bitsPerChannel.m_r; }
+	STRAVA_FORCE_INLINE static Size GetBitsOfGOf(Raw type) { return Internal::k_formatSpecTable[type].m_bitsPerChannel.m_g; }
+	STRAVA_FORCE_INLINE static Size GetBitsOfBOf(Raw type) { return Internal::k_formatSpecTable[type].m_bitsPerChannel.m_b; }
+	STRAVA_FORCE_INLINE static Size GetBitsOfAOf(Raw type) { return Internal::k_formatSpecTable[type].m_bitsPerChannel.m_a; }
+	STRAVA_FORCE_INLINE static Size GetBitsOfExponentOf(Raw type) { return Internal::k_formatSpecTable[type].m_bitsPerChannel.m_e; }
+	STRAVA_FORCE_INLINE static Size GetBitsOfDepthOf(Raw type) { return Internal::k_formatSpecTable[type].m_bitsPerChannel.m_d; }
+	STRAVA_FORCE_INLINE static Size GetBitsOfStencilOf(Raw type) { return Internal::k_formatSpecTable[type].m_bitsPerChannel.m_s; }
+	STRAVA_FORCE_INLINE Size GetSizePerPixel() const { return GetSizePerPixelOf(static_cast<Raw>(m_raw)); }
+	STRAVA_FORCE_INLINE UInt8 GetBitsOfR() const { return Internal::k_formatSpecTable[static_cast<Raw>(m_raw)].m_bitsPerChannel.m_r; }
+	STRAVA_FORCE_INLINE UInt8 GetBitsOfG() const { return Internal::k_formatSpecTable[static_cast<Raw>(m_raw)].m_bitsPerChannel.m_g; }
+	STRAVA_FORCE_INLINE UInt8 GetBitsOfB() const { return Internal::k_formatSpecTable[static_cast<Raw>(m_raw)].m_bitsPerChannel.m_b; }
+	STRAVA_FORCE_INLINE UInt8 GetBitsOfA() const { return Internal::k_formatSpecTable[static_cast<Raw>(m_raw)].m_bitsPerChannel.m_a; }
+	STRAVA_FORCE_INLINE UInt8 GetBitsOfExponent() const { return Internal::k_formatSpecTable[static_cast<Raw>(m_raw)].m_bitsPerChannel.m_e; }
+	STRAVA_FORCE_INLINE UInt8 GetBitsOfDepth() const { return Internal::k_formatSpecTable[static_cast<Raw>(m_raw)].m_bitsPerChannel.m_d; }
+	STRAVA_FORCE_INLINE UInt8 GetBitsOfStencil() const { return Internal::k_formatSpecTable[static_cast<Raw>(m_raw)].m_bitsPerChannel.m_s; }
 	UInt32 m_raw;
+};
+
+enum class TextureDimension : UInt8
+{
+	Unknown,
+	k1D,
+	k1DArray,
+	k2D,
+	k2DArray,
+	k2DMultisample,
+	k2DMultisampleArray,
+	k3D,
+	Cube,
+	CubeArray,
+	Count
+};
+
+enum class Multisample : UInt8
+{
+	k1x,
+	k2x,
+	k4x,
+	k8x,
+	k16x,
+	Count
 };
 
 enum class VertexAttributeType : UInt8
