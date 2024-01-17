@@ -19,8 +19,8 @@ bool D3D12RenderTexture::OnCreate(const RenderTextureSpec& renderTextureSpec)
 	D3D12_HEAP_FLAGS d3d12HeapFlags = D3D12_HEAP_FLAG_NONE;
 	d3d12HeapFlags |= D3D12_HEAP_FLAG_CREATE_NOT_ZEROED;
 
-	const bool isDepthStencil = renderTextureSpec.m_format.GetIsDepthStencil();
-	Format format = (!isDepthStencil) ? renderTextureSpec.m_format : renderTextureSpec.m_format.ToTypeless();
+	const bool isDepthStencil = FormatUtility::GetIsDepthStencil(renderTextureSpec.m_format);
+	Format format = (!isDepthStencil) ? renderTextureSpec.m_format : FormatUtility::ToTypeless(renderTextureSpec.m_format);
 
 	D3D12_RESOURCE_DESC d3d12ResourceDesc;
 	d3d12ResourceDesc.Dimension = Translator::ToD3D12::ToResourceDimension(renderTextureSpec.m_dimension);

@@ -49,9 +49,9 @@ public:
 	const NativeRenderTextureBase* GetNativeRenderTexture() const { return m_nativeRenderTexture.get(); }
 	NativeRenderTextureBase* GetNativeRenderTexture() { return m_nativeRenderTexture.get(); }
 	template <class NativeShaderType>
-	const NativeShaderType* GetNativeRenderTexture() const { return static_cast<const NativeShaderType*>(GetNativeShader()); }
+	const NativeShaderType* GetNativeRenderTexture() const { return static_cast<const NativeShaderType*>(GetNativeRenderTexture()); }
 	template <class NativeShaderType>
-	NativeShaderType* GetNativeRenderTexture() { return static_cast<NativeShaderType*>(GetNativeShader()); }
+	NativeShaderType* GetNativeRenderTexture() { return static_cast<NativeShaderType*>(GetNativeRenderTexture()); }
 
 private:
 	std::unique_ptr<NativeRenderTextureBase> m_nativeRenderTexture = nullptr;

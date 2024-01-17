@@ -150,8 +150,8 @@ STRAVA_FORCE_INLINE DXGI_FORMAT ToFormat(Format in)
 		DXGI_FORMAT_BC7_UNORM,
 		DXGI_FORMAT_BC7_UNORM_SRGB,
 	};
-	static_assert(Format::Count == Core::GetCount(k_dxgiFormatTable));
-	return k_dxgiFormatTable[in.m_raw];
+	static_assert(Core::ToUnderlying(Format::Count) == Core::GetCount(k_dxgiFormatTable));
+	return k_dxgiFormatTable[Core::ToUnderlying(in)];
 }
 }
 
