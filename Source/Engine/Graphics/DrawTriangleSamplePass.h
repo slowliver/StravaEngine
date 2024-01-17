@@ -4,6 +4,7 @@
 #include <Engine/Graphics/Type.h>
 
 #include "VertexBuffer.h"
+#include "RenderTexture.h"
 #include "Shader.h"
 
 namespace StravaEngine::Graphics
@@ -20,6 +21,7 @@ public:
 
 private:
 	VertexBuffer m_vertexBuffer;
+	RenderTexture m_renderTexture;
 	Shader m_vertexShader;
 	Shader m_pixelShader;
 };

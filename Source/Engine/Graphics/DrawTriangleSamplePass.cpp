@@ -42,6 +42,8 @@ bool DrawTriangleSamplePass::Initialize()
 
 	m_vertexBuffer.Create(spec, triangleVertices);
 
+	m_renderTexture.Create2D(800, 600, Format::R8G8B8A8_UNorm);
+	
 	m_vertexShader.Create(Core::ArrayProxy<Byte>(g_vertexShader, g_vertexShaderSize));
 	m_pixelShader.Create(Core::ArrayProxy<Byte>(g_pixelShader, g_pixelShaderSize));
 

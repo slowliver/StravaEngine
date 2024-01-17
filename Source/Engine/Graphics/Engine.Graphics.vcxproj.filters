@@ -57,6 +57,12 @@
     <ClCompile Include="D3D12\Shader\Shader_temp.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
+    <ClCompile Include="RenderTexture.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12\D3D12RenderTexture.cpp">
+      <Filter>ソース ファイル\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h">
@@ -96,6 +102,12 @@
       <Filter>ソース ファイル</Filter>
     </ClInclude>
     <ClInclude Include="D3D12\D3D12Shader.h">
+      <Filter>ソース ファイル\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="RenderTexture.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12\D3D12RenderTexture.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
   </ItemGroup>

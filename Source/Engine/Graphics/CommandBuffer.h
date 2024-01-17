@@ -315,7 +315,7 @@ public:
 	void SetScissor(const Core::Int32Rect& scissor);
 
 	// Output Merger
-//	void SetRenderTargets(const Kernel::Size numRenderTargets, NativeResouce* const renderTargets);
+	void SetRenderTargets(const Size numRenderTargets, NativeResouce* const renderTargets);
 
 	// Draw
 	void Draw(UInt32 vertexCount);
