@@ -13,6 +13,7 @@
   <ItemGroup>
     <ClCompile Include="D3D12\D3D12CommandProcessor.cpp" />
     <ClCompile Include="D3D12\D3D12Core.cpp" />
+    <ClCompile Include="D3D12\D3D12DescriptorHeap.cpp" />
     <ClCompile Include="D3D12\D3D12PipelineState.cpp" />
     <ClCompile Include="D3D12\D3D12RootSignature.cpp" />
     <ClCompile Include="D3D12\D3D12Shader.cpp" />
@@ -32,6 +33,7 @@
     <ClInclude Include="D3D12\D3D12CommandProcessor.h" />
     <ClInclude Include="D3D12\D3D12Core.h" />
     <ClInclude Include="CommandBuffer.h" />
+    <ClInclude Include="D3D12\D3D12DescriptorHeap.h" />
     <ClInclude Include="D3D12\D3D12PipelineState.h" />
     <ClInclude Include="D3D12\D3D12RootSignature.h" />
     <ClInclude Include="D3D12\D3D12Shader.h" />

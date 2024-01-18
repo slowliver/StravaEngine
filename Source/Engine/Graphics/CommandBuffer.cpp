@@ -61,6 +61,16 @@ void CommandBufferBase::End(Size commandSize, Size additionalSize)
 {}
 #endif
 
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(ClearRenderTarget)(RenderTexture* renderTarget, float* color)
+{
+	auto& packet = Push<CommandPacketClearRenderTarget>();
+	packet.m_renderTarget = renderTarget;
+	packet.m_color[0] = color[0];
+	packet.m_color[1] = color[1];
+	packet.m_color[2] = color[2];
+	packet.m_color[3] = color[3];
+}
+
 // Render Pass
 STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(BeginPass)()
 {
@@ -116,6 +126,28 @@ STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetScissor)(const Core::Int32Rect& scissor)
 {
 	auto& packet = Push<CommandPacketSetScissor>();
 	packet.m_scissor = scissor;
+}
+
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetRenderTargets)(UInt8 index, RenderTexture* target)
+{
+	auto& packet = Push<CommandPacketSetRenderTargets>(sizeof(RenderTexture*));
+	packet.m_startSlot = index;
+	packet.m_numRenderTargets = 1;
+	auto** renderTargets = reinterpret_cast<RenderTexture**>(reinterpret_cast<Byte*>(&packet) + sizeof(CommandPacketSetRenderTargets));
+	renderTargets[0] = target;
+}
+
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetRenderTargets)(Core::ArrayProxy<RenderTexture*> targets)
+{
+	const auto numRenderTargets = Core::Clamp(static_cast<UInt32>(targets.GetCount()), 1u, 8u);
+	auto& packet = Push<CommandPacketSetRenderTargets>(sizeof(RenderTexture*) * targets.GetCount());
+	packet.m_startSlot = 0;
+	packet.m_numRenderTargets = numRenderTargets;
+	auto** renderTargets = reinterpret_cast<RenderTexture**>(reinterpret_cast<Byte*>(&packet) + sizeof(CommandPacketSetRenderTargets));
+	for (Size i = 0; i < packet.m_numRenderTargets; ++i)
+	{
+		renderTargets[i] = targets[i];
+	}
 }
 
 STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(Draw)(UInt32 vertexCount)

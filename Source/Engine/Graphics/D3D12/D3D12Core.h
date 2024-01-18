@@ -12,6 +12,8 @@ namespace StravaEngine::Graphics::D3D12
 class D3D12CommandProcessor;
 class D3D12RootSignature;
 class D3D12PipelineStateManager;
+class D3D12DescriptorHeapCBVSRVUAV;
+class D3D12DescriptorPool;
 class D3D12Core
 {
 private:
@@ -29,6 +31,7 @@ public:
 	ID3D12CommandAllocator* GetD3D12CommandAllocator(UInt32 index = 0) { return m_commandAllocators[index]; }
 
 	STRAVA_FORCE_INLINE D3D12RootSignature* GetRootSignature() { return m_rootSignature.get(); }
+	STRAVA_FORCE_INLINE D3D12DescriptorPool* GetDescriptorPoolRTV() { return m_descriptorPoolRTV.get(); }
 
 public:
 	static std::unique_ptr<D3D12Core> s_instance;
@@ -40,6 +43,9 @@ private:
 private:
 	std::unique_ptr<D3D12CommandProcessor> m_commandProcessor = nullptr;
 	std::unique_ptr<D3D12RootSignature> m_rootSignature = nullptr;
+	std::unique_ptr<D3D12DescriptorPool> m_descriptorPoolRTV = nullptr;
+//	std::unique_ptr<D3D12DescriptorHeapCBVSRVUAV> m_descriptorHeapCBVSRVUAV = nullptr;
+//	std::unique_ptr<D3D12DescriptorHeapRTV> m_descriptorHeapRTV = nullptr;
 	IDXGIFactory7* m_dxgiFactory7 = nullptr;
 	IDXGIAdapter4* m_dxgiAdapter4 = nullptr;
 	ID3D12Device* m_d3d12Device = nullptr;
@@ -53,7 +59,6 @@ private:
 	HANDLE m_fenceEvent = {};
 	ID3D12Fence* m_fence = nullptr;
 	UINT64 m_fenceValues[k_frameCount] = {};
-	UInt32 m_d3d12RTVDescriptorSize = 0;
-
+	D3D12_CPU_DESCRIPTOR_HANDLE m_d3d12RTVHandles[k_frameCount] = {};
 };
 }

@@ -5,6 +5,7 @@
 #include "D3D12Core.h"
 #include "D3D12TypeTranslator.h"
 #include "D3D12VertexBuffer.h"
+#include "D3D12RenderTexture.h"
 #include "D3D12RootSignature.h"
 #include "D3D12Shader.h"
 #include "D3D12PipelineState.h"
@@ -115,6 +116,27 @@ void D3D12CommandProcessor::Terminate()
 #define STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(commandPacketType, commandProcessor, packet)	\
 static void D3D12CommandProcessor_on##commandPacketType(D3D12CommandProcessor& commandProcessor, const CommandPacket##commandPacketType* packet)
 #endif
+
+STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(ClearRenderTarget, commandProcessor, packet)
+{
+	auto* d3d12GraphicsCommandList = commandProcessor.GetD3D12GraphicsCommandList();
+	auto* renderTexture = packet->m_renderTarget->GetNativeRenderTexture<D3D12RenderTexture>();
+	if (!renderTexture)
+	{
+		return;
+	}
+	const auto d3d12CPUDescriptorHandle = renderTexture->GetD3D12CPUDescriptorHandle();
+	if (d3d12CPUDescriptorHandle.ptr)
+	{
+		d3d12GraphicsCommandList->ClearRenderTargetView
+		(
+			d3d12CPUDescriptorHandle,
+			packet->m_color,
+			0,
+			nullptr
+		);
+	}
+}
 
 // Render Pass
 
@@ -362,6 +384,7 @@ case CommandPacketType::##commandPacketType:										\
 				break;
 		}
 #endif
+		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(ClearRenderTarget, gcbCurrent);
 
 		// Render Pass
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(BeginPass, gcbCurrent);
@@ -386,6 +409,7 @@ case CommandPacketType::##commandPacketType:										\
 
 		default:
 		{
+			STRAVA_ASSERT(!"Unimplemeted command packet is required!");
 			auto* commandPacket = reinterpret_cast<CommandPacketUnknown*>(gcbCurrent);
 			gcbCurrent += commandPacket->m_size;
 			break;

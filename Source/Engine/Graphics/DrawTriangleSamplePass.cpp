@@ -58,6 +58,9 @@ void DrawTriangleSamplePass::OnRender()
 {
 	auto* graphicsCmmandBuffer = Renderer::GetInstance()->GetGraphicsCommandBuffer();
 
+	float color[4] = { 0.0f, 0.0f, 0.5f, 1.0f };
+	graphicsCmmandBuffer->ClearRenderTarget(&m_renderTexture, color);
+
 	graphicsCmmandBuffer->BeginPass();
 
 	VertexBuffer* vertexBuffers[] = { &m_vertexBuffer };

@@ -5,6 +5,7 @@
 #include "D3D12CommandProcessor.h"
 #include "D3D12RootSignature.h"
 #include "D3D12PipelineState.h"
+#include "D3D12DescriptorHeap.h"
 
 namespace StravaEngine::Graphics::D3D12
 {
@@ -18,6 +19,7 @@ extern "C" Size g_pixelShaderSize;
 D3D12Core::D3D12Core()
 	: m_commandProcessor(new D3D12CommandProcessor())
 	, m_rootSignature(new D3D12RootSignature())
+	, m_descriptorPoolRTV(new D3D12DescriptorPool(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1000))
 {}
 
 D3D12Core::~D3D12Core()
@@ -144,23 +146,12 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 
 	// Create descriptor heaps.
 	{
-		// Describe and create a render target view (RTV) descriptor heap.
-		D3D12_DESCRIPTOR_HEAP_DESC rtvHeapDesc = {};
-		rtvHeapDesc.NumDescriptors = k_frameCount;
-		rtvHeapDesc.Type = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
-		rtvHeapDesc.Flags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-		hr = m_d3d12Device->CreateDescriptorHeap(&rtvHeapDesc, IID_PPV_ARGS(&m_d3d12RTVHeap));
-		if (FAILED(hr))
-		{
-			return false;
-		}
-		m_d3d12RTVDescriptorSize = m_d3d12Device->GetDescriptorHandleIncrementSize(D3D12_DESCRIPTOR_HEAP_TYPE_RTV);
+//		m_descriptorHeapCBVSRVUAV->Initialize(m_d3d12Device, 10);
+		m_descriptorPoolRTV->Initialize(m_d3d12Device);
 	}
 
 	// Create frame resources.
 	{
-		D3D12_CPU_DESCRIPTOR_HANDLE rtvHandle = { m_d3d12RTVHeap->GetCPUDescriptorHandleForHeapStart() };
-
 		// Create a RTV and a command allocator for each frame.
 		for (UINT n = 0; n < k_frameCount; n++)
 		{
@@ -169,8 +160,11 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 			{
 				return false;
 			}
-			m_d3d12Device->CreateRenderTargetView(m_renderTargets[n], nullptr, rtvHandle);
-			rtvHandle.ptr += m_d3d12RTVDescriptorSize;
+			m_d3d12RTVHandles[n] = m_descriptorPoolRTV->CreateRenderTargetView(m_renderTargets[n], nullptr);
+		}
+
+		for (UINT n = 0; n < k_frameCount; n++)
+		{
 			hr = m_d3d12Device->CreateCommandAllocator(D3D12_COMMAND_LIST_TYPE_DIRECT, IID_PPV_ARGS(&m_commandAllocators[n]));
 			if (FAILED(hr))
 			{
@@ -282,12 +276,11 @@ void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsComma
 		d3d12GraphicsCommandList->ResourceBarrier(1, &barrier);
 	}
 
-	CD3DX12_CPU_DESCRIPTOR_HANDLE rtvHandle(m_d3d12RTVHeap->GetCPUDescriptorHandleForHeapStart(), m_frameIndex, m_d3d12RTVDescriptorSize);
-	d3d12GraphicsCommandList->OMSetRenderTargets(1, &rtvHandle, FALSE, nullptr);
+	d3d12GraphicsCommandList->OMSetRenderTargets(1, &m_d3d12RTVHandles[m_frameIndex], FALSE, nullptr);
 
 	// Record commands.
 	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	d3d12GraphicsCommandList->ClearRenderTargetView(rtvHandle, clearColor, 0, nullptr);
+	d3d12GraphicsCommandList->ClearRenderTargetView(m_d3d12RTVHandles[m_frameIndex], clearColor, 0, nullptr);
 	d3d12GraphicsCommandList->DrawInstanced(3, 1, 0, 0);
 
 	// Indicate that the back buffer will now be used to present.

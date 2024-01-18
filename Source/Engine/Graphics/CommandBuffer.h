@@ -27,10 +27,9 @@ struct CommandPacket##p final : public CommandPacket<CommandPacketType::p>
 #endif
 #define STRAVA_COMMAND_PACKET(p) struct CommandPacket##p final : public CommandPacketBase<CommandPacketType::p>
 
-class VertexBuffer;
-using VertexBufferRef = std::shared_ptr<VertexBuffer>;
+class RenderTexture;
 class Shader;
-using ShaderRef = std::shared_ptr<Shader>;
+class VertexBuffer;
 enum class CommandPacketType : UInt32
 {
 	// No Operation
@@ -146,13 +145,11 @@ STRAVA_COMMAND_PACKET(NOP)
 
 // End No Operation
 
-#if 0
 STRAVA_COMMAND_PACKET(ClearRenderTarget)
 {
-	NativeResouce m_renderTarget = nullptr;
-	Kernel::Color m_clearColor = Kernel::Color();
+	RenderTexture* m_renderTarget;
+	float m_color[4];
 };
-#endif
 
 // Begin Render Pass
 
@@ -211,13 +208,11 @@ STRAVA_COMMAND_PACKET(SetScissor)
 
 // End Rasterizer
 
-#if 0
 STRAVA_COMMAND_PACKET(SetRenderTargets)
 {
-	Kernel::Size m_numRenderTargets = 0;
-	NativeResouce m_renderTargets[8] = {};
+	UInt32 m_startSlot;
+	UInt32 m_numRenderTargets;
 };
-#endif
 
 // Begin Draw
 
@@ -294,7 +289,7 @@ public:
 	bool Initialize();
 	void Terminate();
 
-//	void ClearRenderTarget(NativeResouce* const renderTarget, const Kernel::Color clearColor);
+	void ClearRenderTarget(RenderTexture* renderTarget, float* color);
 
 	// Render Pass
 	void BeginPass();
@@ -315,7 +310,8 @@ public:
 	void SetScissor(const Core::Int32Rect& scissor);
 
 	// Output Merger
-	void SetRenderTargets(const Size numRenderTargets, NativeResouce* const renderTargets);
+	void SetRenderTargets(UInt8 index, RenderTexture* target);
+	void SetRenderTargets(Core::ArrayProxy<RenderTexture*> targets);
 
 	// Draw
 	void Draw(UInt32 vertexCount);
