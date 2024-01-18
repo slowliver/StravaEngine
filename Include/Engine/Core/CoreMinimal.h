@@ -113,6 +113,13 @@ constexpr const Type& Max(const Type& lhs, const Type& rhs)
 	return lhs > rhs ? lhs : rhs;
 }
 
+template <class Type>
+[[nodiscard]]
+constexpr const Type& Clamp(const Type& x, const Type& min, const Type& max)
+{
+	return Max(Min(x, max), min);
+}
+
 STRAVA_FORCE_INLINE void* Memcpy(void* dst, const void* src, Size size)
 {
 	return std::memcpy(dst, src, size);
