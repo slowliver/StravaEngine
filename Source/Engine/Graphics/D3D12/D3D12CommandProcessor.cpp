@@ -40,9 +40,15 @@ struct D3D12CommandProcessor::StateCache final
 			// Rasterizer
 			bool m_viewport				: 1;
 			bool m_scissor				: 1;
+
+			// Output Merger
+			bool m_renderTargets		: 1;
 		};
 	};
 	DirtyFlag m_dirtyFlags;
+
+	// Render Pass
+	bool m_onPass;
 
 	// Root Signature
 	bool m_firstRootSignatureSet;
@@ -60,15 +66,22 @@ struct D3D12CommandProcessor::StateCache final
 	Viewport m_viewport;
 	Core::Int32Rect m_scissor;
 
+	// Output Merger
+	UInt8 m_numRenderTargets;
+	RenderTexture* m_renderTargets[8];
+
 	void Reset()
 	{
 		m_dirtyFlags.m_raw = 0xFFFFFFFFFFFFFFFF;
+		m_onPass = false;
 		m_firstRootSignatureSet = true;
 		m_primitiveTopology = PrimitiveTopology::Unknown;
 		m_vertexShader = nullptr;
 		m_pixelShader = nullptr;
 		m_viewport = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
 		m_scissor = { INT32_MAX, INT32_MAX, INT32_MAX, INT32_MAX };
+		m_numRenderTargets = 0;
+		std::memset(m_renderTargets, 0, sizeof(m_renderTargets));
 	}
 };
 
@@ -143,15 +156,42 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(ClearRenderTarget, commandProcessor, pac
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(BeginPass, commandProcessor, packet)
 {
 	auto* stateCache = commandProcessor.GetStateCache();
+	if (stateCache->m_onPass)
+	{
+		STRAVA_ASSERT(!stateCache->m_onPass);
+		return;
+	}
+	stateCache->m_onPass = true;
 	if (stateCache->m_firstRootSignatureSet)
 	{
 		stateCache->m_firstRootSignatureSet = false;
 		stateCache->m_dirtyFlags.m_rootSignature = true;
 	}
+	if (stateCache->m_dirtyFlags.m_renderTargets)
+	{
+		auto* d3d12GraphicsCommandList = commandProcessor.GetD3D12GraphicsCommandList();
+		D3D12_CPU_DESCRIPTOR_HANDLE renderTargetHandles[8];
+		for (Size i = 0; i < stateCache->m_numRenderTargets; ++i)
+		{
+			auto* renderTexture = stateCache->m_renderTargets[i]->GetNativeRenderTexture<D3D12RenderTexture>();
+			renderTargetHandles[i] = renderTexture->GetD3D12CPUDescriptorHandle();
+		}
+		// Depth Stencil ‚Í‚Ð‚Æ‚Ü‚¸–³Ž‹.
+		d3d12GraphicsCommandList->OMSetRenderTargets(stateCache->m_numRenderTargets, renderTargetHandles, FALSE, nullptr);
+		stateCache->m_dirtyFlags.m_renderTargets = false;
+	}
 }
 
 STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(EndPass, commandProcessor, packet)
-{}
+{
+	auto* stateCache = commandProcessor.GetStateCache();
+	if (!stateCache->m_onPass)
+	{
+		STRAVA_ASSERT(stateCache->m_onPass);
+		return;
+	}
+	stateCache->m_onPass = false;
+}
 
 // Begin Input Assembler
 
@@ -241,6 +281,39 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetScissor, commandProcessor, packet)
 }
 
 // End Rasterizer
+
+// Begin Output Merger
+
+STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetRenderTargets, commandProcessor, packet)
+{
+	auto* stateCache = commandProcessor.GetStateCache();
+	if (stateCache->m_onPass)
+	{
+		STRAVA_ASSERT(!stateCache->m_onPass);
+		return;
+	}
+	const auto numRenderTargets = Core::Min(8u, static_cast<UInt32>(packet->m_numRenderTargets));
+	bool isAnyChanged = false;
+	if (numRenderTargets != stateCache->m_numRenderTargets)
+	{
+		stateCache->m_numRenderTargets = numRenderTargets;
+		isAnyChanged = true;
+	}
+	for (Size i = 0; i < numRenderTargets; ++i)
+	{
+		if (packet->m_renderTargets[i] != stateCache->m_renderTargets[i])
+		{
+			stateCache->m_renderTargets[i] = packet->m_renderTargets[i];
+			isAnyChanged = true;
+		}
+	}
+	if (isAnyChanged)
+	{
+		stateCache->m_dirtyFlags.m_renderTargets = true;
+	}
+}
+
+// End Output Merger
 
 // Begin Draw
 
@@ -403,6 +476,9 @@ case CommandPacketType::##commandPacketType:										\
 		// Rasterizer
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetViewport, gcbCurrent);
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetScissor, gcbCurrent);
+
+		// Output Merger
+		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetRenderTargets, gcbCurrent);
 
 		// Draw
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(Draw, gcbCurrent);

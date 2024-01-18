@@ -128,25 +128,14 @@ STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetScissor)(const Core::Int32Rect& scissor)
 	packet.m_scissor = scissor;
 }
 
-STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetRenderTargets)(UInt8 index, RenderTexture* target)
-{
-	auto& packet = Push<CommandPacketSetRenderTargets>(sizeof(RenderTexture*));
-	packet.m_startSlot = index;
-	packet.m_numRenderTargets = 1;
-	auto** renderTargets = reinterpret_cast<RenderTexture**>(reinterpret_cast<Byte*>(&packet) + sizeof(CommandPacketSetRenderTargets));
-	renderTargets[0] = target;
-}
-
 STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetRenderTargets)(Core::ArrayProxy<RenderTexture*> targets)
 {
-	const auto numRenderTargets = Core::Clamp(static_cast<UInt32>(targets.GetCount()), 1u, 8u);
-	auto& packet = Push<CommandPacketSetRenderTargets>(sizeof(RenderTexture*) * targets.GetCount());
-	packet.m_startSlot = 0;
+	const auto numRenderTargets = Core::Min(static_cast<UInt32>(targets.GetCount()), 8u);
+	auto& packet = Push<CommandPacketSetRenderTargets>();
 	packet.m_numRenderTargets = numRenderTargets;
-	auto** renderTargets = reinterpret_cast<RenderTexture**>(reinterpret_cast<Byte*>(&packet) + sizeof(CommandPacketSetRenderTargets));
 	for (Size i = 0; i < packet.m_numRenderTargets; ++i)
 	{
-		renderTargets[i] = targets[i];
+		packet.m_renderTargets[i] = targets[i];
 	}
 }
 

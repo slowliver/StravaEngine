@@ -61,6 +61,9 @@ void DrawTriangleSamplePass::OnRender()
 	float color[4] = { 0.0f, 0.0f, 0.5f, 1.0f };
 	graphicsCmmandBuffer->ClearRenderTarget(&m_renderTexture, color);
 
+	RenderTexture* rts[] = {&m_renderTexture};
+	graphicsCmmandBuffer->SetRenderTargets(rts);
+
 	graphicsCmmandBuffer->BeginPass();
 
 	VertexBuffer* vertexBuffers[] = { &m_vertexBuffer };

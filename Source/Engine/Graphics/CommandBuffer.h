@@ -210,8 +210,8 @@ STRAVA_COMMAND_PACKET(SetScissor)
 
 STRAVA_COMMAND_PACKET(SetRenderTargets)
 {
-	UInt32 m_startSlot;
 	UInt32 m_numRenderTargets;
+	RenderTexture* m_renderTargets[8];
 };
 
 // Begin Draw
@@ -310,7 +310,6 @@ public:
 	void SetScissor(const Core::Int32Rect& scissor);
 
 	// Output Merger
-	void SetRenderTargets(UInt8 index, RenderTexture* target);
 	void SetRenderTargets(Core::ArrayProxy<RenderTexture*> targets);
 
 	// Draw
