@@ -30,6 +30,9 @@ public:
 class RenderTexture
 {
 public:
+	using SystemManageable = std::true_type;
+
+public:
 	RenderTexture();
 	~RenderTexture();
 
@@ -56,5 +59,23 @@ public:
 private:
 	std::unique_ptr<NativeRenderTextureBase> m_nativeRenderTexture = nullptr;
 	RenderTextureSpec m_spec = {};
+};
+
+class RenderTexturePool
+{
+public:
+	static RenderTexturePool* CreateInstance();
+	static RenderTexturePool* GetInstance();
+	static void DestroyInstance();
+
+	bool Initialize();
+	void Terminate();
+
+private:
+	RenderTexturePool() {}
+	~RenderTexturePool() {}
+
+private:
+	static RenderTexturePool* s_instance;
 };
 }

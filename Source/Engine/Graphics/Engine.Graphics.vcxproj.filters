@@ -66,6 +66,12 @@
     <ClCompile Include="D3D12\D3D12DescriptorHeap.cpp">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClCompile>
+    <ClCompile Include="Texture.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="D3D12\D3D12Texture.cpp">
+      <Filter>ソース ファイル\D3D12</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h">
@@ -116,6 +122,18 @@
     <ClInclude Include="D3D12\D3D12DescriptorHeap.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
+    <ClInclude Include="ResidentResource.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="SystemResourceManager.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="Texture.h">
+      <Filter>ソース ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="D3D12\D3D12Texture.h">
+      <Filter>ソース ファイル\D3D12</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <None Include="D3D12\Shader\PixelShader.cso">
@@ -124,10 +142,10 @@
     <None Include="D3D12\Shader\VertexShader.cso">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
     </None>
-    <None Include="D3D12\Shader\Shader.y">
+    <None Include="D3D12\Shader\Shader.hlsl">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
     </None>
-    <None Include="D3D12\Shader\Shader.hlsl">
+    <None Include="D3D12\Shader\Shader.y">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
     </None>
   </ItemGroup>

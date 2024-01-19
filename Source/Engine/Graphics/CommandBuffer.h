@@ -30,6 +30,7 @@ struct CommandPacket##p final : public CommandPacket<CommandPacketType::p>
 class RenderTexture;
 class Shader;
 class VertexBuffer;
+class Texture;
 enum class CommandPacketType : UInt32
 {
 	// No Operation
@@ -59,6 +60,7 @@ enum class CommandPacketType : UInt32
 
 	// Pixel Shader
 	SetPixelShader,
+	SetPSShaderResources,
 
 	// Stream Output
 
@@ -107,6 +109,7 @@ static constexpr const char8_t* k_commandPacketNames[] =
 
 	// Pixel Shader
 	u8"SetPixelShader",
+	u8"SetPSShaderResources",
 
 	// Stream Output
 
@@ -192,6 +195,11 @@ STRAVA_COMMAND_PACKET(SetPixelShader)
 	Shader* m_pixelShader;
 };
 
+STRAVA_COMMAND_PACKET(SetPSShaderResources)
+{
+	Texture* m_texture;
+};
+
 // End Pixel Shader
 
 // Begin Rasterizer
@@ -228,7 +236,8 @@ STRAVA_COMMAND_PACKET(Draw)
 
 STRAVA_COMMAND_PACKET(SetNativeCommand)
 {
-//	std::function<void(void)> m_function;
+	void* m_arguments;
+	void (*m_function)(void*, void*);
 };
 
 class CommandBufferBase
@@ -263,7 +272,7 @@ public:
 	Byte* GetBack() const { return m_back; }
 
 	// Native Command
-	void SetNativeCommand(std::function<void(void)> func);
+	void SetNativeCommand(void (*function)(void*, void*), void* arguments);
 
 private:
 	Byte* Push(Size commandSize, Size additionalSize);
@@ -304,6 +313,7 @@ public:
 
 	// Pixel Shader
 	void SetPixelShader(Shader* pixelShader);
+	void SetPSShaderResources(Texture* texture);
 
 	// Rasterizer
 	void SetViewport(const Viewport& viewport);
@@ -315,6 +325,7 @@ public:
 	// Draw
 	void Draw(UInt32 vertexCount);
 	void Draw(UInt32 vertexCountPerInstance, UInt32 instanceCount, UInt32 startVertexLocation, UInt32 startInstanceLocation);
+	void DrawIndexed();
 
 //	CommandBuffer* GetCommandBuffer() { return m_commandBuffer; }
 

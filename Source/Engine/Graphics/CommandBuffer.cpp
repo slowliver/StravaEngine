@@ -50,10 +50,11 @@ void type##CommandBuffer::p
 #define STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(p)			\
 STRAVA_COMMAND_BUFFER_FUNC(Graphics, p)
 
-void CommandBufferBase::SetNativeCommand(std::function<void(void)> func)
+void CommandBufferBase::SetNativeCommand(void (*function)(void*, void*), void* arguments)
 {
 	auto& packet = Push<CommandPacketSetNativeCommand>();
-//	packet.m_function = func;
+	packet.m_arguments = arguments;
+	packet.m_function = function;
 }
 
 #if 0
@@ -113,6 +114,12 @@ STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetPixelShader)(Shader* pixelShader)
 {
 	auto& packet = Push<CommandPacketSetPixelShader>();
 	packet.m_pixelShader = pixelShader;
+}
+
+STRAVA_GRAPHICS_COMMAND_BUFFER_FUNC(SetPSShaderResources)(Texture* texture)
+{
+	auto& packet = Push<CommandPacketSetPSShaderResources>();
+	packet.m_texture = texture;
 }
 
 // Rasterizer

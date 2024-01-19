@@ -18,6 +18,7 @@
     <ClCompile Include="D3D12\D3D12RootSignature.cpp" />
     <ClCompile Include="D3D12\D3D12Shader.cpp" />
     <ClCompile Include="D3D12\D3D12RenderTexture.cpp" />
+    <ClCompile Include="D3D12\D3D12Texture.cpp" />
     <ClCompile Include="D3D12\D3D12VertexBuffer.cpp" />
     <ClCompile Include="D3D12\Shader\Shader_temp.cpp" />
     <ClCompile Include="CommandBuffer.cpp" />
@@ -25,6 +26,7 @@
     <ClCompile Include="Renderer.cpp" />
     <ClCompile Include="RenderTexture.cpp" />
     <ClCompile Include="Shader.cpp" />
+    <ClCompile Include="Texture.cpp" />
     <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
@@ -38,11 +40,15 @@
     <ClInclude Include="D3D12\D3D12RootSignature.h" />
     <ClInclude Include="D3D12\D3D12Shader.h" />
     <ClInclude Include="D3D12\D3D12RenderTexture.h" />
+    <ClInclude Include="D3D12\D3D12Texture.h" />
     <ClInclude Include="D3D12\D3D12TypeTranslator.h" />
     <ClInclude Include="D3D12\D3D12VertexBuffer.h" />
     <ClInclude Include="DrawTriangleSamplePass.h" />
     <ClInclude Include="RenderTexture.h" />
+    <ClInclude Include="ResidentResource.h" />
     <ClInclude Include="Shader.h" />
+    <ClInclude Include="SystemResourceManager.h" />
+    <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>

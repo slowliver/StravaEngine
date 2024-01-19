@@ -136,4 +136,39 @@ void RenderTexture::Release()
 {
 
 }
+
+RenderTexturePool* RenderTexturePool::s_instance = nullptr;
+
+RenderTexturePool* RenderTexturePool::CreateInstance()
+{
+	if (!s_instance)
+	{
+		s_instance = new RenderTexturePool();
+	}
+	return GetInstance();
+}
+
+RenderTexturePool* RenderTexturePool::GetInstance()
+{
+	return s_instance;
+}
+
+void RenderTexturePool::DestroyInstance()
+{
+	if (s_instance)
+	{
+		delete s_instance;
+		s_instance = nullptr;
+	}
+}
+
+bool RenderTexturePool::Initialize()
+{
+	return true;
+}
+
+void RenderTexturePool::Terminate()
+{
+
+}
 }

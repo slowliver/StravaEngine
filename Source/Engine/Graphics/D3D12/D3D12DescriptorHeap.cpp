@@ -44,12 +44,15 @@ bool D3D12DescriptorHeapBase::Initialize(ID3D12Device* d3d12Device, Size numDesc
 
 	m_cpuBegin = m_d3d12DescriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr;
 	m_gpuBegin = m_d3d12DescriptorHeap->GetGPUDescriptorHandleForHeapStart().ptr;
+#if 0
 	m_cpuEnd = m_cpuBegin + m_d3d12DescriptorSize * m_numDescriptors;
 	m_gpuEnd = m_gpuBegin + m_d3d12DescriptorSize * m_numDescriptors;
 	m_cpuEndForBinding = m_cpuBegin + m_d3d12DescriptorSize * m_numForBinding;
 	m_gpuEndForBinding = m_gpuBegin + m_d3d12DescriptorSize * m_numForBinding;
 	m_cpuTail = m_cpuBegin;
 	m_gpuTail = m_gpuBegin;
+#endif
+	m_offset = 0;
 
 	return true;
 }
@@ -63,32 +66,61 @@ void D3D12DescriptorHeapBase::Terminate()
 	}
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE* D3D12DescriptorHeapBase::Push()
+D3D12_GPU_DESCRIPTOR_HANDLE D3D12DescriptorHeapBase::Push(D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
-	return nullptr;
-}
+	auto* d3d12Device = D3D12Core::s_instance->GetD3D12Device();
 
-D3D12_CPU_DESCRIPTOR_HANDLE** D3D12DescriptorHeapBase::PushMultiple(UInt32 count)
-{
-	UInt64 current;
+	UInt64 currentOffset;
 
 	// Ring-buffer “à‚ÉŽû‚Ü‚Á‚Ä‚¢‚é.
-	if (m_cpuTail + m_d3d12DescriptorSize * count < m_numForBinding)
+	if (m_offset + 1 < m_numForBinding)
 	{
-		current = m_cpuTail;
-		m_cpuTail += m_d3d12DescriptorSize * count;
+		currentOffset = m_offset;
+		m_offset += 1;
 	}
 	// Ring-buffer ‚Ì––’[‚ð’´‚¦‚½.
 	else
 	{
-		current = m_cpuBegin;
-		m_cpuBegin = m_cpuBegin + m_d3d12DescriptorSize * count;
+		currentOffset = 0;
+		m_offset = 1;
 	}
 
-	D3D12_CPU_DESCRIPTOR_HANDLE handle;
-	handle.ptr = current;
+	D3D12_CPU_DESCRIPTOR_HANDLE dest = { m_cpuBegin + m_d3d12DescriptorSize * currentOffset };
+	d3d12Device->CopyDescriptorsSimple(1, dest, handle, m_d3d12DescriptorHeapType);
+
+	D3D12_GPU_DESCRIPTOR_HANDLE d3d12GPUDescriptorHandle = { m_gpuBegin + m_d3d12DescriptorSize * currentOffset };
+	return d3d12GPUDescriptorHandle;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE** D3D12DescriptorHeapBase::PushMultiple(UInt32 count)
+{
+	UInt64 currentOffset;
+
+	// Ring-buffer “à‚ÉŽû‚Ü‚Á‚Ä‚¢‚é.
+	if (m_offset + count < m_numForBinding)
+	{
+		currentOffset = m_offset;
+		m_offset += count;
+	}
+	// Ring-buffer ‚Ì––’[‚ð’´‚¦‚½.
+	else
+	{
+		currentOffset = 0;
+		m_offset = count;
+	}
+
+//	D3D12_CPU_DESCRIPTOR_HANDLE handle;
+//	handle.ptr = current;
 	return nullptr;
 }
+
+#if 0
+D3D12_GPU_DESCRIPTOR_HANDLE D3D12DescriptorHeapBase::GetD3D12GPUDescriptorHandle() const
+{
+	D3D12_GPU_DESCRIPTOR_HANDLE d3d12GPUDescriptorHandle = { m_gpuBegin + m_d3d12DescriptorSize * m_offset };
+	return d3d12GPUDescriptorHandle;
+}
+#endif
 
 D3D12DescriptorHeapCBVSRVUAV::D3D12DescriptorHeapCBVSRVUAV()
 	: D3D12DescriptorHeapBase()
@@ -97,6 +129,15 @@ D3D12DescriptorHeapCBVSRVUAV::D3D12DescriptorHeapCBVSRVUAV()
 }
 
 D3D12DescriptorHeapCBVSRVUAV::~D3D12DescriptorHeapCBVSRVUAV()
+{}
+
+D3D12DescriptorHeapSampler::D3D12DescriptorHeapSampler()
+	: D3D12DescriptorHeapBase()
+{
+	m_d3d12DescriptorHeapType = D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER;
+}
+
+D3D12DescriptorHeapSampler::~D3D12DescriptorHeapSampler()
 {}
 
 #if 0
@@ -122,7 +163,7 @@ bool D3D12DescriptorPool::Initialize(ID3D12Device* d3d12Device)
 	if (m_d3d12DescriptorHeapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV ||
 		m_d3d12DescriptorHeapType == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
 	{
-		d3d12DescriptorHeapFlags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
+//		d3d12DescriptorHeapFlags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
 	}
 
 	D3D12_DESCRIPTOR_HEAP_DESC d3d12DescriptorHeapDesc = {};
@@ -138,6 +179,24 @@ bool D3D12DescriptorPool::Initialize(ID3D12Device* d3d12Device)
 	}
 
 	return true;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE D3D12DescriptorPool::CreateShaderResourceView(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc)
+{
+	D3D12_CPU_DESCRIPTOR_HANDLE d3d12CPUDescriptorHandle = {};
+	if (m_d3d12DescriptorHeapType != D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
+	{
+		return d3d12CPUDescriptorHandle;
+	}
+	if (m_offset >= m_numDescriptors)
+	{
+		return d3d12CPUDescriptorHandle;
+	}
+	d3d12CPUDescriptorHandle.ptr = m_d3d12DescriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr + m_d3d12DescriptorSize * m_offset;
+	auto* d3d12Device = D3D12Core::s_instance->GetD3D12Device();
+	d3d12Device->CreateShaderResourceView(resource, desc, d3d12CPUDescriptorHandle);
+	m_offset++;
+	return d3d12CPUDescriptorHandle;
 }
 
 D3D12_CPU_DESCRIPTOR_HANDLE D3D12DescriptorPool::CreateRenderTargetView(ID3D12Resource* resource, const D3D12_RENDER_TARGET_VIEW_DESC* desc)

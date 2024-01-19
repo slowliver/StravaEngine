@@ -19,7 +19,11 @@ extern "C" Size g_pixelShaderSize;
 D3D12Core::D3D12Core()
 	: m_commandProcessor(new D3D12CommandProcessor())
 	, m_rootSignature(new D3D12RootSignature())
+	, m_descriptorPoolCBVSRVUAV(new D3D12DescriptorPool(D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1000))
+	, m_descriptorPoolSampler(new D3D12DescriptorPool(D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 1000))
 	, m_descriptorPoolRTV(new D3D12DescriptorPool(D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1000))
+	, m_descriptorHeapCBVSRVUAV(new D3D12DescriptorHeapCBVSRVUAV())
+	, m_descriptorHeapSampler(new D3D12DescriptorHeapSampler())
 {}
 
 D3D12Core::~D3D12Core()
@@ -146,8 +150,11 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 
 	// Create descriptor heaps.
 	{
-//		m_descriptorHeapCBVSRVUAV->Initialize(m_d3d12Device, 10);
+		m_descriptorPoolCBVSRVUAV->Initialize(m_d3d12Device);
+		m_descriptorPoolSampler->Initialize(m_d3d12Device);
 		m_descriptorPoolRTV->Initialize(m_d3d12Device);
+		m_descriptorHeapCBVSRVUAV->Initialize(m_d3d12Device, 100, 100);
+		m_descriptorHeapSampler->Initialize(m_d3d12Device, 100, 100);
 	}
 
 	// Create frame resources.
@@ -380,6 +387,31 @@ void D3D12Core::Terminate()
 	{
 		m_rootSignature->Terminate();
 		m_rootSignature.reset();
+	}
+	if (m_descriptorHeapSampler)
+	{
+		m_descriptorHeapSampler->Terminate();
+		m_descriptorHeapSampler.reset();
+	}
+	if (m_descriptorHeapCBVSRVUAV)
+	{
+		m_descriptorHeapCBVSRVUAV->Terminate();
+		m_descriptorHeapCBVSRVUAV.reset();
+	}
+	if (m_descriptorPoolRTV)
+	{
+		m_descriptorPoolRTV->Terminate();
+		m_descriptorPoolRTV.reset();
+	}
+	if (m_descriptorPoolSampler)
+	{
+		m_descriptorPoolSampler->Terminate();
+		m_descriptorPoolSampler.reset();
+	}
+	if (m_descriptorPoolCBVSRVUAV)
+	{
+		m_descriptorPoolCBVSRVUAV->Terminate();
+		m_descriptorPoolCBVSRVUAV.reset();
 	}
 }
 }

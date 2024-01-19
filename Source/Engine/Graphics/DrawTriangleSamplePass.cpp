@@ -7,9 +7,32 @@ extern "C" Byte g_vertexShader[];
 extern "C" Size g_vertexShaderSize;
 extern "C" Byte g_pixelShader[];
 extern "C" Size g_pixelShaderSize;
+extern "C" Byte g_fullTriangleVS[];
+extern "C" Size g_fullTriangleVSSize;
+extern "C" Byte g_fullTrianglePS[];
+extern "C" Size g_fullTrianglePSSize;
 
 namespace StravaEngine::Graphics
 {
+static Byte* DrawTriangleSamplePass_CreateTexture()
+{
+	static constexpr UInt32 width = 128;
+	static constexpr UInt32 height = 128;
+	static UInt32 data[width * height];
+	for (UInt32 x = 0; x < width; ++x)
+	{
+		for (UInt32 y = 0; y < height; ++y)
+		{
+			UInt32 color = 0;
+			color |= (UInt32)(((float)x / width) * 0xFF);
+			color |= (UInt32)(((float)y / height) * 0xFF) << 8;
+			color |= 0xFF000000;
+			data[x + y * width] = color;
+		}
+	}
+	return reinterpret_cast<Byte*>(data);
+}
+
 DrawTriangleSamplePass::DrawTriangleSamplePass()
 {}
 
@@ -43,9 +66,14 @@ bool DrawTriangleSamplePass::Initialize()
 	m_vertexBuffer.Create(spec, triangleVertices);
 
 	m_renderTexture.Create2D(800, 600, Format::R8G8B8A8_UNorm);
+
+	m_testTexture.Create2D(128, 128, Format::R8G8B8A8_UNorm, Core::ArrayProxy<Byte>(DrawTriangleSamplePass_CreateTexture(), 128 * 128 * 4), 1);
 	
 	m_vertexShader.Create(Core::ArrayProxy<Byte>(g_vertexShader, g_vertexShaderSize));
 	m_pixelShader.Create(Core::ArrayProxy<Byte>(g_pixelShader, g_pixelShaderSize));
+
+	m_fullTriangleVertexShader.Create(Core::ArrayProxy<Byte>(g_fullTriangleVS, g_fullTriangleVSSize));
+	m_fullTrianglePixelShader.Create(Core::ArrayProxy<Byte>(g_fullTrianglePS, g_fullTrianglePSSize));
 
 //	std::printf(k_vertexAttributeTypeNames[0]);
 	return true;
@@ -65,31 +93,31 @@ void DrawTriangleSamplePass::OnRender()
 	graphicsCmmandBuffer->SetRenderTargets(rts);
 
 	graphicsCmmandBuffer->BeginPass();
+	{
+		VertexBuffer* vertexBuffers[] = { &m_vertexBuffer };
+		graphicsCmmandBuffer->SetVertexBuffers(0, vertexBuffers);
 
-	VertexBuffer* vertexBuffers[] = { &m_vertexBuffer };
-	graphicsCmmandBuffer->SetVertexBuffers(0, vertexBuffers);
+		Viewport viewport = { 0.0f, 0.0f, 800.0f, 600.0f, 0.0f, 1.0f };
+		graphicsCmmandBuffer->SetViewport(viewport);
 
-	Viewport viewport = { 0.0f, 0.0f, 800.0f, 600.0f, 0.0f, 1.0f };
-	graphicsCmmandBuffer->SetViewport(viewport);
+		Core::Int32Rect scissor = { 0, 0, 800, 600 };
+		graphicsCmmandBuffer->SetScissor(scissor);
 
-	Core::Int32Rect scissor = { 0, 0, 800, 600 };
-	graphicsCmmandBuffer->SetScissor(scissor);
+		graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
-	graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+		graphicsCmmandBuffer->SetVertexShader(&m_vertexShader);
+		graphicsCmmandBuffer->SetPixelShader(&m_pixelShader);
+		graphicsCmmandBuffer->SetPSShaderResources(&m_testTexture);
 
-	graphicsCmmandBuffer->SetVertexShader(&m_vertexShader);
-	graphicsCmmandBuffer->SetPixelShader(&m_pixelShader);
+		graphicsCmmandBuffer->Draw(3);
 
-	graphicsCmmandBuffer->Draw(3);
+		viewport = { 0.0f, 0.0f, 400.0f, 300.0f, 0.0f, 1.0f };
+		graphicsCmmandBuffer->SetViewport(viewport);
 
-
-	viewport = { 0.0f, 0.0f, 400.0f, 300.0f, 0.0f, 1.0f };
-	graphicsCmmandBuffer->SetViewport(viewport);
-
-	scissor = { 0, 0, 400, 300 };
-	graphicsCmmandBuffer->SetScissor(scissor);
-	graphicsCmmandBuffer->Draw(3);
-
+		scissor = { 0, 0, 400, 300 };
+		graphicsCmmandBuffer->SetScissor(scissor);
+		graphicsCmmandBuffer->Draw(3);
+	}
 	graphicsCmmandBuffer->EndPass();
 
 //	graphicsCmmandBuffer->Set

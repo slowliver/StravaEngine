@@ -5,10 +5,12 @@
 #include "D3D12Core.h"
 #include "D3D12TypeTranslator.h"
 #include "D3D12VertexBuffer.h"
+#include "D3D12Texture.h"
 #include "D3D12RenderTexture.h"
 #include "D3D12RootSignature.h"
 #include "D3D12Shader.h"
 #include "D3D12PipelineState.h"
+#include "D3D12DescriptorHeap.h"
 
 extern "C" Byte g_vertexShader[];
 extern "C" Size g_vertexShaderSize;
@@ -36,6 +38,7 @@ struct D3D12CommandProcessor::StateCache final
 
 			// Pixel Shader
 			bool m_pixelShader			: 1;
+			bool m_psTexture			: 1;
 
 			// Rasterizer
 			bool m_viewport				: 1;
@@ -61,6 +64,7 @@ struct D3D12CommandProcessor::StateCache final
 
 	// Pixel Shader
 	Shader* m_pixelShader;
+	Texture* m_psTexture;
 
 	// Rasterizer
 	Viewport m_viewport;
@@ -78,6 +82,7 @@ struct D3D12CommandProcessor::StateCache final
 		m_primitiveTopology = PrimitiveTopology::Unknown;
 		m_vertexShader = nullptr;
 		m_pixelShader = nullptr;
+		m_psTexture = nullptr;
 		m_viewport = { FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX, FLT_MAX };
 		m_scissor = { INT32_MAX, INT32_MAX, INT32_MAX, INT32_MAX };
 		m_numRenderTargets = 0;
@@ -256,6 +261,16 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetPixelShader, commandProcessor, packet
 	}
 }
 
+STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetPSShaderResources, commandProcessor, packet)
+{
+	auto* stateCache = commandProcessor.GetStateCache();
+	if (packet->m_texture != stateCache->m_psTexture)
+	{
+		stateCache->m_psTexture = packet->m_texture;
+		stateCache->m_dirtyFlags.m_psTexture = true;
+	}
+}
+
 // End Pixel Shader
 
 // Begin Rasterizer
@@ -423,10 +438,32 @@ STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(Draw, commandProcessor, packet)
 		}
 	}
 
+	if (stateCache->m_dirtyFlags.m_psTexture)
+	{
+		auto* descriptorHeapCBVSRVUAV = D3D12Core::s_instance->GetDescriptorHeapCBVSRVUAV();
+		auto* texture = stateCache->m_psTexture->GetNativeTexture<D3D12Texture>();
+		D3D12_GPU_DESCRIPTOR_HANDLE d3d12GPUDescriptorHandle = descriptorHeapCBVSRVUAV->Push(texture->GetD3D12CPUDescriptorHandle());
+		ID3D12DescriptorHeap* d3d12DescriptorHeaps[] =
+		{
+			descriptorHeapCBVSRVUAV->GetD3D12DescriptorHeap(),
+		};
+		d3d12GraphicsCommandList->SetDescriptorHeaps(1, d3d12DescriptorHeaps);
+		d3d12GraphicsCommandList->SetGraphicsRootDescriptorTable(5, d3d12GPUDescriptorHandle);
+	}
+
 	d3d12GraphicsCommandList->DrawInstanced(packet->m_vertexCountPerInstance, packet->m_instanceCount, packet->m_startVertexLocation, packet->m_startInstanceLocation);
 }
 
 // End Draw
+
+STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK(SetNativeCommand, commandProcessor, packet)
+{
+	auto* d3d12GraphicsCommandList = commandProcessor.GetD3D12GraphicsCommandList();
+	if (packet->m_function)
+	{
+		(packet->m_function)(d3d12GraphicsCommandList, packet->m_arguments);
+	}
+}
 
 #undef STRAVA_D3D12_COMMAND_PROCESSOR_CALLBACK
 
@@ -468,6 +505,7 @@ case CommandPacketType::##commandPacketType:										\
 
 		// Pixel Shader
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetPixelShader, gcbCurrent);
+		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetPSShaderResources, gcbCurrent);
 
 		// Input Assembler
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetPrimitiveTopology, gcbCurrent);
@@ -482,6 +520,8 @@ case CommandPacketType::##commandPacketType:										\
 
 		// Draw
 		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(Draw, gcbCurrent);
+
+		STRAVA_D3D12_COMMAND_PROCESSOR_CASE(SetNativeCommand, gcbCurrent);
 
 		default:
 		{

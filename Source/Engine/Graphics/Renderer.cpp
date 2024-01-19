@@ -5,6 +5,7 @@
 #include "D3D12/D3D12Core.h"
 #include "CommandBuffer.h"
 #include "DrawTriangleSamplePass.h"
+#include "RenderTexture.h"
 
 namespace StravaEngine::Graphics
 {
@@ -57,11 +58,17 @@ void Renderer::Terminate()
 
 void Renderer::OnUpdate()
 {
+	m_graphicsCommandBuffer->Reset();
 	OnPrepareResource();
 	OnPreRender();
 	OnRender();
 	OnPostRender();
 	OnExecuteCommandBuffer();
+}
+
+void Renderer::SetFinalOutput(RenderTexture* renderTexture)
+{
+	m_finalOutputRenderTexture = renderTexture;
 }
 
 void Renderer::OnPrepareResource()
@@ -76,7 +83,6 @@ void Renderer::OnPrepareResource()
 
 void Renderer::OnPreRender()
 {
-	m_graphicsCommandBuffer->Reset();
 }
 
 void Renderer::OnRender()

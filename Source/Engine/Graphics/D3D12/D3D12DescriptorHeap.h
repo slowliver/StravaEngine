@@ -15,8 +15,14 @@ public:
 	virtual bool Initialize(ID3D12Device* d3d12Device, Size numDescriptors, Size numForBinding);
 	virtual void Terminate();
 
-	virtual D3D12_CPU_DESCRIPTOR_HANDLE* Push();
+	virtual D3D12_GPU_DESCRIPTOR_HANDLE Push(D3D12_CPU_DESCRIPTOR_HANDLE handle);
 	virtual D3D12_CPU_DESCRIPTOR_HANDLE** PushMultiple(UInt32 count);
+
+	ID3D12DescriptorHeap* GetD3D12DescriptorHeap() { return m_d3d12DescriptorHeap; }
+
+#if 0
+	virtual D3D12_GPU_DESCRIPTOR_HANDLE GetD3D12GPUDescriptorHandle() const;
+#endif
 
 protected:
 	Size m_numDescriptors;
@@ -24,12 +30,13 @@ protected:
 	Size m_numForBindless;
 	UInt64 m_cpuBegin;
 	UInt64 m_gpuBegin;
+#if 0
 	UInt64 m_cpuEnd;
 	UInt64 m_gpuEnd;
 	UInt64 m_cpuEndForBinding;
 	UInt64 m_gpuEndForBinding;
-	UInt64 m_cpuTail;
-	UInt64 m_gpuTail;
+#endif
+	UInt64 m_offset;
 	D3D12_DESCRIPTOR_HEAP_TYPE m_d3d12DescriptorHeapType;
 	UInt32 m_d3d12DescriptorSize;
 	ID3D12DescriptorHeap* m_d3d12DescriptorHeap = nullptr;
@@ -40,11 +47,13 @@ class D3D12DescriptorHeapCBVSRVUAV : public D3D12DescriptorHeapBase
 public:
 	D3D12DescriptorHeapCBVSRVUAV();
 	virtual ~D3D12DescriptorHeapCBVSRVUAV() override;
+};
 
-//	bool Initialize(ID3D12Device* d3d12Device);
-//	void Terminate();
-
-private:
+class D3D12DescriptorHeapSampler : public D3D12DescriptorHeapBase
+{
+public:
+	D3D12DescriptorHeapSampler();
+	virtual ~D3D12DescriptorHeapSampler() override;
 };
 
 class D3D12DescriptorPool
@@ -60,6 +69,7 @@ public:
 	bool Initialize(ID3D12Device* d3d12Device);
 	void Terminate();
 
+	D3D12_CPU_DESCRIPTOR_HANDLE CreateShaderResourceView(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc);
 	D3D12_CPU_DESCRIPTOR_HANDLE CreateRenderTargetView(ID3D12Resource* resource, const D3D12_RENDER_TARGET_VIEW_DESC* desc);
 
 private:
