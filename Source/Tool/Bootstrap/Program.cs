@@ -52,20 +52,41 @@ namespace Bootstrap
 
 		static void Main(string[] args)
 		{
-			var dxcZipPath = temporaryDirectory + "DirectXShaderCompiler.zip";
-			if (!File.Exists(dxcZipPath))
+			// vswhere
 			{
-				using (var directXShaderCompilerWebClient = new WebClient())
+				var vswhereDirectory = packageDirectory + "Microsoft\\vswhere\\";
+				if (!Directory.Exists(vswhereDirectory))
 				{
-					var directXShaderCompilerURL = "https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.7.2308/dxc_2023_08_14.zip";
-					directXShaderCompilerWebClient.DownloadFile(directXShaderCompilerURL, dxcZipPath);
+					Directory.CreateDirectory(vswhereDirectory);
+				}
+
+				var vswherePath = vswhereDirectory + "vswhere.exe";
+				if (!File.Exists(vswherePath))
+				{
+					using (var vswhereWebClient = new WebClient())
+					{
+						var vswhereURL = "https://github.com/microsoft/vswhere/releases/download/3.1.7/vswhere.exe";
+						vswhereWebClient.DownloadFile(vswhereURL, vswherePath);
+					}
 				}
 			}
-
-			var dxcZipExtractedDirectory = packageDirectory + "Microsoft\\DirectXShaderCompiler\\";
-			if (!Directory.Exists(dxcZipExtractedDirectory))
+			// DXC
 			{
-				ZipFile.ExtractToDirectory(dxcZipPath, dxcZipExtractedDirectory);
+				var dxcZipPath = temporaryDirectory + "DirectXShaderCompiler.zip";
+				if (!File.Exists(dxcZipPath))
+				{
+					using (var directXShaderCompilerWebClient = new WebClient())
+					{
+						var directXShaderCompilerURL = "https://github.com/microsoft/DirectXShaderCompiler/releases/download/v1.7.2308/dxc_2023_08_14.zip";
+						directXShaderCompilerWebClient.DownloadFile(directXShaderCompilerURL, dxcZipPath);
+					}
+				}
+
+				var dxcZipExtractedDirectory = packageDirectory + "Microsoft\\DirectXShaderCompiler\\";
+				if (!Directory.Exists(dxcZipExtractedDirectory))
+				{
+					ZipFile.ExtractToDirectory(dxcZipPath, dxcZipExtractedDirectory);
+				}
 			}
 		}
 	}
