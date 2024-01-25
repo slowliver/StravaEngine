@@ -105,8 +105,8 @@ void DrawTriangleSamplePass::OnRender()
 
 		graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
-		graphicsCmmandBuffer->SetVertexShader(&m_vertexShader);
-		graphicsCmmandBuffer->SetPixelShader(&m_pixelShader);
+		graphicsCmmandBuffer->SetVertexShader(&m_fullTriangleVertexShader);
+		graphicsCmmandBuffer->SetPixelShader(&m_fullTrianglePixelShader);
 		graphicsCmmandBuffer->SetPSShaderResources(&m_testTexture);
 
 		graphicsCmmandBuffer->Draw(3);

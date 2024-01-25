@@ -142,11 +142,15 @@
     <None Include="D3D12\Shader\VertexShader.cso">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
     </None>
-    <None Include="D3D12\Shader\Shader.hlsl">
+  </ItemGroup>
+  <ItemGroup>
+    <Bison Include="D3D12\Shader\Shader.y">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
-    </None>
-    <None Include="D3D12\Shader\Shader.y">
+    </Bison>
+  </ItemGroup>
+  <ItemGroup>
+    <ShaderBuilder Include="D3D12\Shader\Shader.hlsl">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
-    </None>
+    </ShaderBuilder>
   </ItemGroup>
 </Project>

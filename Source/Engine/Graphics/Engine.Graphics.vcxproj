@@ -52,14 +52,26 @@
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="D3D12\Shader\Shader.y">
+    <Bison Include="D3D12\Shader\Shader.y">
       <FileType>Document</FileType>
-    </None>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6_5</ShaderModel>
+      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6_5</ShaderModel>
+    </Bison>
   </ItemGroup>
   <ItemGroup>
-    <None Include="D3D12\Shader\Shader.hlsl">
+    <ShaderBuilder Include="D3D12\Shader\Shader.hlsl">
       <FileType>Document</FileType>
-    </None>
+      <OptimizationLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Od</OptimizationLevel>
+      <EnableDebugInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebugInformation>
+      <OptimizationLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Od</OptimizationLevel>
+      <EnableDebugInformation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</EnableDebugInformation>
+      <VSEntryName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</VSEntryName>
+      <VSEntryName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</VSEntryName>
+      <HSEntryName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
+      </HSEntryName>
+      <HSEntryName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
+      </HSEntryName>
+    </ShaderBuilder>
   </ItemGroup>
   <ItemGroup>
     <None Include="D3D12\Shader\PixelShader.cso" />

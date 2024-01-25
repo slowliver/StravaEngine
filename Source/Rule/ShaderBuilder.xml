@@ -1,83 +1,69 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ProjectSchemaDefinitions xmlns="clr-namespace:Microsoft.Build.Framework.XamlTypes;assembly=Microsoft.Build.Framework" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" xmlns:sys="clr-namespace:System;assembly=mscorlib" xmlns:transformCallback="Microsoft.Cpp.Dev10.ConvertPropertyCallback">
-  <Rule Name="Bison" PageTemplate="tool" DisplayName="シェーダビルダ" Order="200">
-    <Rule.DataSource>
-      <DataSource Persistence="ProjectFile" ItemType="Bison" />
-    </Rule.DataSource>
-    <Rule.Categories>
-      <Category Name="General">
-        <Category.DisplayName>
-          <sys:String>全般</sys:String>
-        </Category.DisplayName>
-      </Category>
-      <Category Name="Command Line" Subtype="CommandLine">
-        <Category.DisplayName>
-          <sys:String>コマンドライン</sys:String>
-        </Category.DisplayName>
-      </Category>
-    </Rule.Categories>
+	<Rule
+		Name			= "ShaderBuilder"
+		PageTemplate	= "tool"
+		DisplayName		= "シェーダビルダ"
+		SwitchPrefix	= "--"
+		Order			= "200">
+		
+	<Rule.DataSource>
+		<DataSource Persistence="ProjectFile" ItemType="ShaderBuilder" />
+	</Rule.DataSource>
+		
+	<Rule.Categories>
+		<Category Name="General" DisplayName="全般"/>
+		<Category Name="Command Line" DisplayName="コマンドライン" Subtype="CommandLine"/>
+	</Rule.Categories>
 
-    <StringListProperty
-      Name="VSEntryName"
-      Category="General"
-      IsRequired="false"
-      HelpUrl="https://www.google.com/"
-      DisplayName="VS エントリポイント名"
-      Description="頂点シェーダのエントリポイントの名前を指定します"
-      Default="VSMain"
-      Switch="output=&quot;[value]&quot;"
-      />
-
-    <StringListProperty
-      Name="PSEntryName"
-      Category="General"
-      IsRequired="false"
-      HelpUrl="https://www.google.com/"
-      DisplayName="PS エントリポイント名"
-      Description="ピクセルシェーダのエントリポイントの名前を指定します"
-      Default="PSMain"
-      Switch="output=&quot;[value]&quot;"
-      />
-
-    <StringListProperty
-      Name="DSEntryName"
-      Category="General"
-      IsRequired="false"
-      HelpUrl="https://www.google.com/"
-      DisplayName="DS エントリポイント名"
-      Description="ドメインシェーダのエントリポイントの名前を指定します"
-      Switch="output=&quot;[value]&quot;"
-      />
-
-    <StringListProperty
-      Name="HSEntryName"
-      Category="General"
-      IsRequired="false"
-      HelpUrl="https://www.google.com/"
-      DisplayName="HS エントリポイント名"
-      Description="ハルシェーダのエントリポイントの名前を指定します"
-      Switch="output=&quot;[value]&quot;"
-      />
-
-    <StringListProperty
-      Name="GSEntryName"
-      Category="General"
-      IsRequired="false"
-      HelpUrl="https://www.google.com/"
-      DisplayName="GS エントリポイント名"
-      Description="ジオメトリシェーダのエントリポイントの名前を指定します"
-      Switch="output=&quot;[value]&quot;"
-      />
-
-    <StringListProperty
-      Name="CSEntryName"
-      Category="General"
-      IsRequired="false"
-      HelpUrl="https://www.google.com/"
-      DisplayName="CS エントリポイント名"
-      Description="コンピュートシェーダのエントリポイントの名前を指定します"
-      Switch="output=&quot;[value]&quot;"
-      />
+	<StringListProperty
+		Name		= "VSEntryName"
+		Category	= "General"
+		IsRequired	= "false"
+		HelpUrl		= "https://www.google.com/"
+		DisplayName	= "VS エントリポイント名"
+		Description	= "頂点シェーダのエントリポイントの名前を指定します"
+		Switch		= "vs-entry-name=&quot;[value]&quot;" />
+	<StringListProperty
+		Name		= "PSEntryName"
+		Category	= "General"
+		IsRequired	= "false"
+		HelpUrl		= "https://www.google.com/"
+		DisplayName	= "PS エントリポイント名"
+		Description	= "ピクセルシェーダのエントリポイントの名前を指定します"
+		Switch		= "ps-entry-name=&quot;[value]&quot;" />
+	<StringListProperty
+		Name		= "HSEntryName"
+		Category	= "General"
+		IsRequired	= "false"
+		HelpUrl		= "https://www.google.com/"
+		DisplayName	= "HS エントリポイント名"
+		Description	= "ハルシェーダのエントリポイントの名前を指定します"
+		Switch		= "hs-entry-name=&quot;[value]&quot;" />
+	<StringListProperty
+		Name		= "DSEntryName"
+		Category	= "General"
+		IsRequired	= "false"
+		HelpUrl		= "https://www.google.com/"
+		DisplayName	= "DS エントリポイント名"
+		Description	= "ドメインシェーダのエントリポイントの名前を指定します"
+		Switch		= "ds-entry-name=&quot;[value]&quot;" />
+	<StringListProperty
+		Name		="GSEntryName"
+		Category	="General"
+		IsRequired	="false"
+		HelpUrl		="https://www.google.com/"
+		DisplayName	="GS エントリポイント名"
+		Description	="ジオメトリシェーダのエントリポイントの名前を指定します"
+		Switch		="gs-entry-name=&quot;[value]&quot;" />
+	<StringListProperty
+		Name		="CSEntryName"
+		Category	="General"
+		IsRequired	="false"
+		HelpUrl		="https://www.google.com/"
+		DisplayName	="CS エントリポイント名"
+		Description	="コンピュートシェーダのエントリポイントの名前を指定します"
+		Switch		="cs-entry-name=&quot;[value]&quot;" />
 
     <EnumProperty
       Name="OptimizationLevel"
@@ -94,30 +80,27 @@
       <EnumValue Name="O3" DisplayName="最適化レベル 3" Switch="O3"/>
     </EnumProperty>
 
-    <EnumProperty
+    <BoolProperty
       Name="EnableDebugInformation"
       Category="General"
       IsRequired="false"
       HelpUrl="https://www.google.com/"
       DisplayName="デバッグ情報を有効にする"
       Description="デバッグ情報を有効にします"
-      Switch="output=&quot;[value]&quot;" >
-      <EnumValue Name="False" DisplayName="いいえ" Switch=""/>
-      <EnumValue Name="True" DisplayName="はい" Switch="-Zi"/>
-    </EnumProperty>
+      Switch="enable-debug" >
+    </BoolProperty>
 
-    <EnumProperty
-      Name="ShaderModel"
-      Category="General"
-      IsRequired="false"
-      HelpUrl="https://www.google.com/"
-      DisplayName="シェーダモデル"
-      Description="シェーダモデルを指定します"
-      Switch="output=&quot;[value]&quot;" >
-      <EnumValue Name="6_5" DisplayName="6.5" Switch=""/>
-      <EnumValue Name="6_6" DisplayName="6.6" Switch="-Zi"/>
-      <EnumValue Name="6_7" DisplayName="6.7" Switch="-Zi"/>
-    </EnumProperty>
+	<EnumProperty
+		Name		= "ShaderModel"
+		Category	= "General"
+		IsRequired	= "false"
+		HelpUrl		= "https://www.google.com/"
+		DisplayName	= "シェーダモデル"
+		Description	= "シェーダモデルを指定します" >
+		<EnumValue Name="6_5" DisplayName="6.5" Switch="shader-model=6_5"/>
+		<EnumValue Name="6_6" DisplayName="6.6" Switch="shader-model=6_6"/>
+		<EnumValue Name="6_7" DisplayName="6.7" Switch="shader-model=6_7"/>
+	</EnumProperty>
 
     <StringListProperty
       Name="DefinesFile"
@@ -344,14 +327,7 @@
       </StringProperty.Description>
     </StringProperty>
   </Rule>
-  <ItemType
-    Name="Bison"
-    DisplayName="Bison files" />
-  <FileExtension
-    Name="*.y"
-    ContentType="Bison" />
-  <ContentType
-    Name="Bison"
-    DisplayName="Bison files"
-    ItemType="Bison" />
+  <ItemType Name="ShaderBuilder" DisplayName="シェーダビルダ" />
+  <FileExtension Name="*.hlsl" ContentType="ShaderBuilder" />
+  <ContentType Name="ShaderBuilder" DisplayName="シェーダビルダ" ItemType="ShaderBuilder" />
 </ProjectSchemaDefinitions>

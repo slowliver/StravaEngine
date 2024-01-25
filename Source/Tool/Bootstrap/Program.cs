@@ -24,16 +24,16 @@ namespace Bootstrap
 			}
 		}
 
-		static string externalDirectory
+		static string packageDirectory
 		{
 			get
 			{
-				var externalDirectory = rootDirectory + "External\\";
-				if (!Directory.Exists(externalDirectory))
+				var packageDirectory = rootDirectory + "Package\\";
+				if (!Directory.Exists(packageDirectory))
 				{
-					Directory.CreateDirectory(externalDirectory);
+					Directory.CreateDirectory(packageDirectory);
 				}
-				return externalDirectory;
+				return packageDirectory;
 			}
 		}
 
@@ -62,7 +62,7 @@ namespace Bootstrap
 				}
 			}
 
-			var dxcZipExtractedDirectory = externalDirectory + "Microsoft\\DirectXShaderCompiler\\";
+			var dxcZipExtractedDirectory = packageDirectory + "Microsoft\\DirectXShaderCompiler\\";
 			if (!Directory.Exists(dxcZipExtractedDirectory))
 			{
 				ZipFile.ExtractToDirectory(dxcZipPath, dxcZipExtractedDirectory);
