@@ -17,10 +17,11 @@
 			<VSEntryName>VSMain</VSEntryName>
 			<PSEntryName>PSMain</PSEntryName>
 			<ShaderModel>6_5</ShaderModel>
+			<OutputDirectory>$(IntDir)%(Identity)\..\%(Filename)</OutputDirectory>
 			<OutputFile>%(Filename).tab.cpp</OutputFile>
-			<DefinesFile>%(Filename).tab.h</DefinesFile>
-			<CommandLineTemplate>"$(SolutionDir)..\Tool\ShaderBuilder\ShaderBuilder.exe" [AllOptions] [AdditionalOptions] %(FullPath)</CommandLineTemplate>
-			<Outputs>%(RootDir)%(Directory)%(OutputFile);</Outputs>
+<!--<DefinesFile>%(Filename).tab.h</DefinesFile>-->
+			<CommandLineTemplate>"$(SolutionDir)..\Tool\ShaderBuilder\ShaderBuilder.exe" --output-directory=%(OutputDirectory) [AllOptions] [AdditionalOptions] %(FullPath)</CommandLineTemplate>
+<!--<Outputs>%(RootDir)%(Directory)%(OutputFile);</Outputs>-->
 			<ExecutionDescription>Process "%(Filename)%(Extension)" bison file</ExecutionDescription>
 		</ShaderBuilder>
 	</ItemDefinitionGroup>
