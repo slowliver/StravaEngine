@@ -8,7 +8,7 @@
 #include <windows.h>
 #include <wrl/client.h>
 
-#include "./../../../External/Microsoft/DirectXShaderCompiler/inc/dxcapi.h"
+#include "./../../../Package/Microsoft/DirectXShaderCompiler/inc/dxcapi.h"
 
 #if defined(_MSC_VER )
 #pragma warning(disable : 4996)
@@ -78,7 +78,7 @@ enum class ShaderModel
 struct ShaderCompileArguments
 {
 	std::string m_inputPathString;
-	std::string m_outputPathString;
+	std::string m_outputDirectoryString;
 	std::vector<std::pair<Stage, std::string>> m_stageAndEntryNameStrings;
 	std::string m_shaderModelString = "6.5";
 
@@ -87,9 +87,9 @@ struct ShaderCompileArguments
 		return m_inputPathString;
 	}
 
-	const std::string& GetOutputPath() const
+	const std::string GetOutputDirectory() const
 	{
-		return m_outputPathString;
+		return std::filesystem::path(std::filesystem::weakly_canonical(m_outputDirectoryString).string() + "/").make_preferred().string();
 	}
 
 	const std::vector<std::pair<Stage, std::string>>& GetStageAndEntryNameStrings() const
@@ -165,9 +165,9 @@ int main(int argc, const char* argv[])
 
 		if (i < argc - 1)
 		{
-			if (key == "--output")
+			if (key == "--output-directory")
 			{
-				shaderCompileArguments.m_outputPathString = value;
+				shaderCompileArguments.m_outputDirectoryString = value.ends_with("/") ? value : value + "/";
 			}
 			else if (key == "--vs-entry-name")
 			{
@@ -302,7 +302,10 @@ int main(int argc, const char* argv[])
 	DXCCompilerArguments dxcCompilerArguments;
 	dxcCompilerArguments.SetShaderModel(shaderCompileArguments.GetShaderModel());
 
-	::MessageBoxA(nullptr, "Test", "Test", MB_OK);
+	if (!std::filesystem::exists(shaderCompileArguments.GetOutputDirectory()))
+	{
+		std::filesystem::create_directories(shaderCompileArguments.GetOutputDirectory());
+	}
 
 	for (const auto& stageAndEntryNameString : shaderCompileArguments.GetStageAndEntryNameStrings())
 	{
@@ -323,7 +326,7 @@ int main(int argc, const char* argv[])
 		hr = dxcCompileResult->GetOutput(DXC_OUT_OBJECT, IID_PPV_ARGS(dxil.GetAddressOf()), nullptr);
 		if (SUCCEEDED(hr) && dxil && dxil->GetBufferSize() > 0)
 		{
-			std::string outputFilePath = shaderCompileArguments.GetInputPath() + "." + stageAndEntryNameString.second + ".cso";
+			std::string outputFilePath = shaderCompileArguments.GetOutputDirectory() + stageAndEntryNameString.second + ".cso";
 			FILE* output = nullptr;
 			output = std::fopen(outputFilePath.c_str(), "wb+");
 			if (!output)
