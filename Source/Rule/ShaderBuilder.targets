@@ -7,30 +7,213 @@
 		</AvailableItemName>
 	</ItemGroup>
 	<UsingTask
-		TaskName		= "ShaderBuilder"
-		TaskFactory		= "XamlTaskFactory"
-		AssemblyName	= "Microsoft.Build.Tasks.v4.0">
-		<Task>$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml</Task>
+		TaskName="ShaderBuilder"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+		<ParameterGroup>
+			<RootDirectory ParameterType="System.String" Required="true"/>
+			<OutputDirectory ParameterType="System.String" Required="true"/>
+			<VSEntryNames ParameterType="System.String[]"/>
+			<PSEntryNames ParameterType="System.String[]"/>
+			<HSEntryNames ParameterType="System.String[]"/>
+			<DSEntryNames ParameterType="System.String[]"/>
+			<GSEntryNames ParameterType="System.String[]"/>
+			<CSEntryNames ParameterType="System.String[]"/>
+			<OptimizationLevel ParameterType="System.String"/>
+			<EnableDebugInformation ParameterType="System.String"/>
+			<ShaderModel ParameterType="System.String"/>
+			<Input ParameterType="System.String" Required="true"/>
+			<Outputs ParameterType="System.String[]" Output="true"/>
+		</ParameterGroup>
+		<Task>
+			<Reference Include="System.Xml"/>
+			<Reference Include="System.Windows.Forms"/>
+			<Using Namespace="System"/>
+			<Using Namespace="System.IO"/>
+			<Using Namespace="System.Windows.Forms"/>
+			<Using Namespace="System.Diagnostics"/>
+			<Code Type="Fragment" Language="cs">
+<![CDATA[
+var inputPath = Path.GetFullPath(Input);
+var shaderBuilderPath = Path.GetFullPath(Path.Combine(RootDirectory, "Tool/ShaderBuilder/ShaderBuilder.exe"));
+var bin2ObjPath = Path.GetFullPath(Path.Combine(RootDirectory, "Tool/Bin2Obj/Bin2Obj.exe"));
+
+if (!File.Exists(Input))
+{
+	Log.LogError(string.Format("The input file ({0}) does not exist.", inputPath));
+	return false;
+}
+
+// Add stage and entry name to list.
+var stageAndEntryNames = new List<KeyValuePair<string, string>>();
+{
+	if (VSEntryNames != null)
+	{
+		foreach (var vsEntryName in VSEntryNames)
+		{
+			stageAndEntryNames.Add(new KeyValuePair<string, string>("vs", vsEntryName));
+		}
+	}
+	if (PSEntryNames != null)
+	{
+		foreach (var psEntryName in PSEntryNames)
+		{
+			stageAndEntryNames.Add(new KeyValuePair<string, string>("ps", psEntryName));
+		}
+	}
+	if (HSEntryNames != null)
+	{
+		foreach (var hsEntryName in HSEntryNames)
+		{
+			stageAndEntryNames.Add(new KeyValuePair<string, string>("hs", hsEntryName));
+		}
+	}
+	if (DSEntryNames != null)
+	{
+		foreach (var dsEntryName in DSEntryNames)
+		{
+			stageAndEntryNames.Add(new KeyValuePair<string, string>("ds", dsEntryName));
+		}
+	}
+	if (GSEntryNames != null)
+	{
+		foreach (var gsEntryName in GSEntryNames)
+		{
+			stageAndEntryNames.Add(new KeyValuePair<string, string>("gs", gsEntryName));
+		}
+	}
+	if (CSEntryNames != null)
+	{
+		foreach (var csEntryName in CSEntryNames)
+		{
+			stageAndEntryNames.Add(new KeyValuePair<string, string>("cs", csEntryName));
+		}
+	}
+}
+
+// Get dependencies and check whether recompile.
+bool needsRecompile = false;
+{
+	string meta = Path.GetFullPath(OutputDirectory + ".meta");
+	if (!File.Exists(meta))
+	{
+		needsRecompile = true;
+		var directory = Path.GetFullPath(Path.GetDirectoryName(OutputDirectory));
+		if (!Directory.Exists(directory))
+		{
+			Directory.CreateDirectory(directory);
+		}
+		File.WriteAllText(meta, DateTime.MinValue.ToString());
+	}
+	var lastDateTime = DateTime.Parse(File.ReadAllText(meta));
+	lastDateTime = new DateTime
+	(
+		lastDateTime.Year,
+		lastDateTime.Month,
+		lastDateTime.Day,
+		lastDateTime.Hour,
+		lastDateTime.Minute,
+		lastDateTime.Second
+	);
+	var inputFileDateTime = File.GetLastWriteTime(inputPath);
+	inputFileDateTime = new DateTime
+	(
+		inputFileDateTime.Year,
+		inputFileDateTime.Month,
+		inputFileDateTime.Day,
+		inputFileDateTime.Hour,
+		inputFileDateTime.Minute,
+		inputFileDateTime.Second
+	);
+	if (inputFileDateTime > lastDateTime)
+	{
+		File.WriteAllText(meta, inputFileDateTime.ToString());
+		lastDateTime = inputFileDateTime;
+		needsRecompile = true;
+	}
+	foreach (var stageAndEntryName in stageAndEntryNames)
+	{
+		var entryName = stageAndEntryName.Value;
+		var outputPath = Path.GetFullPath(Path.Combine(OutputDirectory, entryName + ".cso"));
+		if (!File.Exists(outputPath))
+		{
+			needsRecompile = true;
+			break;
+		}
+	}
+}
+
+if (!needsRecompile)
+{
+	return true;
+}
+
+var outputList = new List<string>();
+{
+	foreach (var stageAndEntryName in stageAndEntryNames)
+	{
+		var stage = stageAndEntryName.Key;
+		var entryName = stageAndEntryName.Value;
+		var arguments = string.Empty;
+		arguments += string.Format("--output-directory=\"{0}\" ", OutputDirectory);
+		arguments += string.Format("--{0}-entry-name={1} ", stage, entryName);
+		arguments += string.Format("--shader-model={0} ", ShaderModel);
+		arguments += string.Format("\"{0}\"", inputPath);
+		int shaderCompilerExitCode = 0;
+		var shaderCompilerOutput = string.Empty;
+		var shaderCompilerError = string.Empty;
+		using (var shaderCompilerProcess = new Process())
+		{
+			shaderCompilerProcess.StartInfo.FileName = shaderBuilderPath;
+			shaderCompilerProcess.StartInfo.Arguments = arguments;
+			shaderCompilerProcess.StartInfo.UseShellExecute = false;
+			shaderCompilerProcess.StartInfo.RedirectStandardOutput = true;
+			shaderCompilerProcess.StartInfo.RedirectStandardError = true;
+			shaderCompilerProcess.Start();
+			shaderCompilerOutput = shaderCompilerProcess.StandardOutput.ReadLine();
+			shaderCompilerError = shaderCompilerProcess.StandardError.ReadLine();
+			shaderCompilerProcess.WaitForExit();
+			shaderCompilerExitCode = shaderCompilerProcess.ExitCode;
+		}
+		if (shaderCompilerExitCode != 0)
+		{
+			Log.LogError(shaderCompilerError);
+			throw new Exception();
+		}
+		var outputPath = Path.GetFullPath(Path.Combine(OutputDirectory, entryName + ".cso"));
+		MessageBox.Show(outputPath);
+		outputList.Add(outputPath);
+	}
+}
+
+Outputs = outputList.ToArray();
+]]>
+			</Code>
+		</Task>
 	</UsingTask>
 	<Target
 		Name				= "Shader"
 		BeforeTargets		= "ClCompile"
-		Condition			= "'@(ShaderBuilder)' != ''" >
+		Condition			= "'@(ShaderBuilder)' != ''"
+		DependsOnTargets	= "_SelectedFiles">
 		<ItemGroup Condition="'@(SelectedFiles)' != ''">
-			<ShaderBuilder Remove="@(ShaderBuilder)" Condition="'%(Identity)' != '@(SelectedFiles)'" />
+			<ShaderBuilder
+				Remove="@(ShaderBuilder)"
+				Condition="'%(Identity)' != '@(SelectedFiles)'" />
 		</ItemGroup>
 		<ShaderBuilder
 			Condition				="'@(ShaderBuilder)' != '' and '%(ShaderBuilder.ExcludedFromBuild)' != 'true'"
-			VSEntryName				= "%(ShaderBuilder.VSEntryName)"
-			PSEntryName				= "%(ShaderBuilder.PSEntryName)"
-			HSEntryName				= "%(ShaderBuilder.HSEntryName)"
-			DSEntryName				= "%(ShaderBuilder.DSEntryName)"
-			GSEntryName				= "%(ShaderBuilder.GSEntryName)"
-			CSEntryName				= "%(ShaderBuilder.CSEntryName)"
+			RootDirectory			= "$(SolutionDir)..\"
+			OutputDirectory			= "$(IntDir)%(Identity)\..\%(Filename)"
+			VSEntryNames			= "%(ShaderBuilder.VSEntryNames)"
+			PSEntryNames			= "%(ShaderBuilder.PSEntryNames)"
+			HSEntryNames			= "%(ShaderBuilder.HSEntryNames)"
+			DSEntryNames			= "%(ShaderBuilder.DSEntryNames)"
+			GSEntryNames			= "%(ShaderBuilder.GSEntryNames)"
+			CSEntryNames			= "%(ShaderBuilder.CSEntryNames)"
 			OptimizationLevel		= "%(ShaderBuilder.OptimizationLevel)"
 			EnableDebugInformation	= "%(ShaderBuilder.EnableDebugInformation)"
 			ShaderModel				= "%(ShaderBuilder.ShaderModel)"
-			CommandLineTemplate		= "%(ShaderBuilder.CommandLineTemplate)"
-			Inputs					= "%(ShaderBuilder.Identity)" />
+			Input					= "%(FullPath)"/>
 	</Target>
 </Project>

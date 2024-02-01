@@ -17,7 +17,7 @@
 	</Rule.Categories>
 
 	<StringListProperty
-		Name		= "VSEntryName"
+		Name		= "VSEntryNames"
 		Category	= "General"
 		IsRequired	= "false"
 		HelpUrl		= "https://www.google.com/"
@@ -25,7 +25,7 @@
 		Description	= "頂点シェーダのエントリポイントの名前を指定します"
 		Switch		= "vs-entry-name=&quot;[value]&quot;" />
 	<StringListProperty
-		Name		= "PSEntryName"
+		Name		= "PSEntryNames"
 		Category	= "General"
 		IsRequired	= "false"
 		HelpUrl		= "https://www.google.com/"
@@ -33,7 +33,7 @@
 		Description	= "ピクセルシェーダのエントリポイントの名前を指定します"
 		Switch		= "ps-entry-name=&quot;[value]&quot;" />
 	<StringListProperty
-		Name		= "HSEntryName"
+		Name		= "HSEntryNames"
 		Category	= "General"
 		IsRequired	= "false"
 		HelpUrl		= "https://www.google.com/"
@@ -41,7 +41,7 @@
 		Description	= "ハルシェーダのエントリポイントの名前を指定します"
 		Switch		= "hs-entry-name=&quot;[value]&quot;" />
 	<StringListProperty
-		Name		= "DSEntryName"
+		Name		= "DSEntryNames"
 		Category	= "General"
 		IsRequired	= "false"
 		HelpUrl		= "https://www.google.com/"
@@ -49,7 +49,7 @@
 		Description	= "ドメインシェーダのエントリポイントの名前を指定します"
 		Switch		= "ds-entry-name=&quot;[value]&quot;" />
 	<StringListProperty
-		Name		="GSEntryName"
+		Name		="GSEntryNames"
 		Category	="General"
 		IsRequired	="false"
 		HelpUrl		="https://www.google.com/"
@@ -57,7 +57,7 @@
 		Description	="ジオメトリシェーダのエントリポイントの名前を指定します"
 		Switch		="gs-entry-name=&quot;[value]&quot;" />
 	<StringListProperty
-		Name		="CSEntryName"
+		Name		="CSEntryNames"
 		Category	="General"
 		IsRequired	="false"
 		HelpUrl		="https://www.google.com/"

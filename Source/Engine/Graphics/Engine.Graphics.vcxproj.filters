@@ -54,9 +54,6 @@
     <ClCompile Include="D3D12\D3D12Shader.cpp">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClCompile>
-    <ClCompile Include="D3D12\Shader\Shader_temp.cpp">
-      <Filter>ソース ファイル</Filter>
-    </ClCompile>
     <ClCompile Include="RenderTexture.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
