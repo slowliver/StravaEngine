@@ -1,3 +1,6 @@
 [submodule "External/Microsoft/DirectX-Headers"]
 	path = External/Microsoft/DirectX-Headers
 	url = https://github.com/microsoft/DirectX-Headers.git
+[submodule "External/masyos/xxhash_cx"]
+	path = External/masyos/xxhash_cx
+	url = https://github.com/masyos/xxhash_cx.git
