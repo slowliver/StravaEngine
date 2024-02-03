@@ -1,6 +1,6 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- .props は各ファイルのプロパティに結びつく情報を記述ファイル -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-	<!-- .props は各ファイルのプロパティに結びつく情報を記述ファイル -->
 	<PropertyGroup Condition="'$(ShaderBuilderBeforeTargets)' == '' and '$(ShaderBuilderAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
 		<ShaderBuilderBeforeTargets>Midl</ShaderBuilderBeforeTargets>
 		<ShaderBuilderAfterTargets>CustomBuild</ShaderBuilderAfterTargets>

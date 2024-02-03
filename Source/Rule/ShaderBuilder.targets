@@ -1,4 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
+<!-- .targets は各ファイルのビルド方法を記述ファイル -->
+<!-- https://learn.microsoft.com/ja-jp/visualstudio/msbuild/msbuild-dot-targets-files -->
+<!-- https://learn.microsoft.com/ja-jp/visualstudio/msbuild/msbuild-project-file-schema-reference -->
+<!-- MSBuild には、項目、プロパティ、ターゲット、および一般的なシナリオ用のタスクが含まれているいくつかの .targets ファイルが含まれます。 -->
+<!-- これらのファイルは、保守を簡素化し読みやすくするために、ほとんどの Visual Studio プロジェクト ファイルに自動的にインポートされます。 -->
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
 	<ItemGroup>
 		<PropertyPageSchema Include="$(MSBuildThisFileDirectory)$(MSBuildThisFileName).xml" />
