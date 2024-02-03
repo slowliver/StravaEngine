@@ -34,6 +34,7 @@
 			<Using Namespace="System.Diagnostics"/>
 			<Code Type="Fragment" Language="cs">
 <![CDATA[
+
 var inputPath = Path.GetFullPath(Input);
 var shaderBuilderPath = Path.GetFullPath(Path.Combine(RootDirectory, "Tool/ShaderBuilder/ShaderBuilder.exe"));
 var bin2ObjPath = Path.GetFullPath(Path.Combine(RootDirectory, "Tool/Bin2Obj/Bin2Obj.exe"));
@@ -134,7 +135,7 @@ bool needsRecompile = false;
 	foreach (var stageAndEntryName in stageAndEntryNames)
 	{
 		var entryName = stageAndEntryName.Value;
-		var outputPath = Path.GetFullPath(Path.Combine(OutputDirectory, entryName + ".cso"));
+		var outputPath = Path.GetFullPath(Path.Combine(OutputDirectory, entryName + ".obj"));
 		if (!File.Exists(outputPath))
 		{
 			needsRecompile = true;
@@ -148,7 +149,13 @@ if (!needsRecompile)
 	return true;
 }
 
-var outputList = new List<string>();
+// Output input file.
+{
+	Log.LogMessage(MessageImportance.High, inputPath);
+}
+
+// ShaderBuilder
+var csoOutputList = new List<string>();
 {
 	foreach (var stageAndEntryName in stageAndEntryNames)
 	{
@@ -178,15 +185,46 @@ var outputList = new List<string>();
 		if (shaderCompilerExitCode != 0)
 		{
 			Log.LogError(shaderCompilerError);
-			throw new Exception();
+			return false;
 		}
 		var outputPath = Path.GetFullPath(Path.Combine(OutputDirectory, entryName + ".cso"));
-		MessageBox.Show(outputPath);
-		outputList.Add(outputPath);
+		csoOutputList.Add(outputPath);
 	}
 }
 
-Outputs = outputList.ToArray();
+// Bin2Obj
+{
+	foreach (var csoOutput in csoOutputList)
+	{
+		var arguments = string.Empty;
+		arguments += string.Format("--output-directory=\"{0}\" ", OutputDirectory);
+		arguments += string.Format("--variable-name={0} ", Path.GetFileNameWithoutExtension(csoOutput));
+		arguments += string.Format("\"{0}\"", csoOutput);
+		int bin2ObjExitCode = 0;
+		var bin2ObjOutput = string.Empty;
+		var bin2ObjError = string.Empty;
+		using (var bin2ObjProcess = new Process())
+		{
+			bin2ObjProcess.StartInfo.FileName = bin2ObjPath;
+			bin2ObjProcess.StartInfo.Arguments = arguments;
+			bin2ObjProcess.StartInfo.UseShellExecute = false;
+			bin2ObjProcess.StartInfo.RedirectStandardOutput = true;
+			bin2ObjProcess.StartInfo.RedirectStandardError = true;
+			bin2ObjProcess.Start();
+			bin2ObjOutput = bin2ObjProcess.StandardOutput.ReadLine();
+			bin2ObjError = bin2ObjProcess.StandardError.ReadLine();
+			bin2ObjProcess.WaitForExit();
+			bin2ObjExitCode = bin2ObjProcess.ExitCode;
+		}
+		if (bin2ObjExitCode != 0)
+		{
+			Log.LogError(bin2ObjError);
+			return false;
+		}
+	}
+}
+
+Outputs = csoOutputList.ToArray();
 ]]>
 			</Code>
 		</Task>
@@ -195,7 +233,7 @@ Outputs = outputList.ToArray();
 		Name				= "Shader"
 		BeforeTargets		= "ClCompile"
 		Condition			= "'@(ShaderBuilder)' != ''"
-		DependsOnTargets	= "_SelectedFiles">
+		DependsOnTargets	= "$(ShaderBuilderDependsOn)">
 		<ItemGroup Condition="'@(SelectedFiles)' != ''">
 			<ShaderBuilder
 				Remove="@(ShaderBuilder)"
@@ -215,5 +253,26 @@ Outputs = outputList.ToArray();
 			EnableDebugInformation	= "%(ShaderBuilder.EnableDebugInformation)"
 			ShaderModel				= "%(ShaderBuilder.ShaderModel)"
 			Input					= "%(FullPath)"/>
+	</Target>
+	<PropertyGroup>
+		<ComputeLinkInputsTargets>$(ComputeLinkInputsTargets);ComputeShaderBuilderOutput;</ComputeLinkInputsTargets>
+		<ComputeLibInputsTargets>$(ComputeLibInputsTargets);ComputeShaderBuilderOutput;</ComputeLibInputsTargets>
+	</PropertyGroup>
+	<Target
+		Name="ComputeShaderBuilderOutput"
+		Condition="'@(ShaderBuilder)' != ''">
+		<ItemGroup>
+			<ShaderBuilderDirsToMake
+				Condition="'@(ShaderBuilder)' != '' and '%(ShaderBuilder.ExcludedFromBuild)' != 'true'"
+				Include="%(ShaderBuilder.OutputDirectory)" />
+		</ItemGroup>
+		<MakeDir
+		Directories="@(TestRuleDirsToMake->'%(RootDir)%(Directory)')" />
+		<FindUnderPath
+			Files="@(MyFiles)"
+			Path="$(SearchPath)">
+		<Message
+			Importance="High"
+			Text="Aiueo %(ShaderBuilder.OutputDirectory)" />
 	</Target>
 </Project>

@@ -328,6 +328,6 @@
     </StringProperty>
   </Rule>
   <ItemType Name="ShaderBuilder" DisplayName="シェーダビルダ" />
-  <FileExtension Name="*.hlsl" ContentType="ShaderBuilder" />
+  <FileExtension Name="*.hlsl;*shader" ContentType="ShaderBuilder" />
   <ContentType Name="ShaderBuilder" DisplayName="シェーダビルダ" ItemType="ShaderBuilder" />
 </ProjectSchemaDefinitions>

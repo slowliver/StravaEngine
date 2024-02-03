@@ -1,15 +1,13 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <PropertyGroup
-    Condition="'$(BisonBeforeTargets)' == '' and '$(BisonAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
-    <BisonBeforeTargets>Midl</BisonBeforeTargets>
-    <BisonAfterTargets>CustomBuild</BisonAfterTargets>
-  </PropertyGroup>
-  <PropertyGroup>
-    <BisonDependsOn
-      Condition="'$(ConfigurationType)' != 'Makefile'">_SelectedFiles;$(BisonDependsOn)</BisonDependsOn>
-  </PropertyGroup>
-	
+	<!-- .props は各ファイルのプロパティに結びつく情報を記述ファイル -->
+	<PropertyGroup Condition="'$(ShaderBuilderBeforeTargets)' == '' and '$(ShaderBuilderAfterTargets)' == '' and '$(ConfigurationType)' != 'Makefile'">
+		<ShaderBuilderBeforeTargets>Midl</ShaderBuilderBeforeTargets>
+		<ShaderBuilderAfterTargets>CustomBuild</ShaderBuilderAfterTargets>
+	</PropertyGroup>
+	<PropertyGroup>
+		<ShaderBuilderDependsOn Condition="'$(ConfigurationType)' != 'Makefile'">_SelectedFiles;$(ShaderBuilderDependsOn)</ShaderBuilderDependsOn>
+	</PropertyGroup>
 	<ItemDefinitionGroup>
 		<ShaderBuilder>
 			<!--Enter Defaults Here-->
@@ -17,7 +15,6 @@
 			<VSEntryNames>VSMain</VSEntryNames>
 			<PSEntryNames>PSMain</PSEntryNames>
 			<ShaderModel>6_5</ShaderModel>
-			<OutputFile>[VSEntryName].cpp</OutputFile>
 <!--<DefinesFile>%(Filename).tab.h</DefinesFile>-->
 			<CommandLineTemplate>%(OutputFile)    "$(SolutionDir)..\Tool\ShaderBuilder\ShaderBuilder.exe" --output-directory=%(OutputDirectory) [AllOptions] [AdditionalOptions] %(FullPath)</CommandLineTemplate>
 <!--<Outputs>%(RootDir)%(Directory)%(OutputFile);</Outputs>-->

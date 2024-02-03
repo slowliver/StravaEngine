@@ -188,7 +188,7 @@ int main(int argc, const char* argv[])
 			"extern \"C\" unsigned char g_"
 		);
 		writeString(bin2ObjArguments.GetVariableName().c_str());
-		writeString("[] = \n{ ");
+		writeString("[] = \n{\n");
 
 		static constexpr int k_numColumns = 8;
 		for (std::uint32_t i = 0;; ++i)
