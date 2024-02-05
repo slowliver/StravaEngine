@@ -51,13 +51,6 @@
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
-    <Bison Include="D3D12\Shader\Shader.y">
-      <FileType>Document</FileType>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">6_5</ShaderModel>
-      <ShaderModel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">6_5</ShaderModel>
-    </Bison>
-  </ItemGroup>
-  <ItemGroup>
     <ShaderBuilder Include="D3D12\Shader\Shader.hlsl">
       <FileType>Document</FileType>
       <OptimizationLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Od</OptimizationLevel>
