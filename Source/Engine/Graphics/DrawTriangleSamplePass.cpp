@@ -1,16 +1,15 @@
 #include "DrawTriangleSamplePass.h"
 
+#include <Engine/Graphics/Type.h>
 #include <Engine/Graphics/Renderer.h>
 #include "CommandBuffer.h"
 
-extern "C" unsigned char g_vertexShader[];
-extern "C" size_t g_vertexShaderSize;
-extern "C" unsigned char g_pixelShader[];
-extern "C" size_t g_pixelShaderSize;
-extern "C" unsigned char g_fullTriangleVS[];
-extern "C" size_t g_fullTriangleVSSize;
-extern "C" unsigned char g_fullTrianglePS[];
-extern "C" size_t g_fullTrianglePSSize;
+#include <Engine/../../External/masyos/xxhash_cx/include/xxhash_cx.h>
+
+STRAVA_SHADER_DECLARATION(D3D12::Shader, Shader, VSMain);
+STRAVA_SHADER_DECLARATION(D3D12::Shader, Shader, PSMain);
+STRAVA_SHADER_DECLARATION(D3D12::Shader, Shader, VSMainFull);
+STRAVA_SHADER_DECLARATION(D3D12::Shader, Shader, PSMainFull);
 
 namespace StravaEngine::Graphics
 {
@@ -69,11 +68,11 @@ bool DrawTriangleSamplePass::Initialize()
 
 	m_testTexture.Create2D(128, 128, Format::R8G8B8A8_UNorm, Core::ArrayProxy<Byte>(DrawTriangleSamplePass_CreateTexture(), 128 * 128 * 4), 1);
 	
-	m_vertexShader.Create(Core::ArrayProxy<Byte>(reinterpret_cast<Byte*>(g_vertexShader), g_vertexShaderSize));
-	m_pixelShader.Create(Core::ArrayProxy<Byte>(reinterpret_cast<Byte*>(g_pixelShader), g_pixelShaderSize));
+	m_vertexShader.Create(Core::ArrayProxy<Byte>(reinterpret_cast<Byte*>(STRAVA_GET_SHADER_BINARY_ARRAY(D3D12::Shader, Shader, VSMain)), STRAVA_GET_SHADER_BINARY_SIZE(D3D12::Shader, Shader, VSMain)));
+	m_pixelShader.Create(Core::ArrayProxy<Byte>(reinterpret_cast<Byte*>(STRAVA_GET_SHADER_BINARY_ARRAY(D3D12::Shader, Shader, PSMain)), STRAVA_GET_SHADER_BINARY_SIZE(D3D12::Shader, Shader, PSMain)));
 
-	m_fullTriangleVertexShader.Create(Core::ArrayProxy<Byte>(reinterpret_cast<Byte*>(g_fullTriangleVS), g_fullTriangleVSSize));
-	m_fullTrianglePixelShader.Create(Core::ArrayProxy<Byte>(reinterpret_cast<Byte*>(g_fullTrianglePS), g_fullTrianglePSSize));
+	m_fullTriangleVertexShader.Create(Core::ArrayProxy<Byte>(reinterpret_cast<Byte*>(STRAVA_GET_SHADER_BINARY_ARRAY(D3D12::Shader, Shader, VSMainFull)), STRAVA_GET_SHADER_BINARY_SIZE(D3D12::Shader, Shader, VSMainFull)));
+	m_fullTrianglePixelShader.Create(Core::ArrayProxy<Byte>(reinterpret_cast<Byte*>(STRAVA_GET_SHADER_BINARY_ARRAY(D3D12::Shader, Shader, PSMainFull)), STRAVA_GET_SHADER_BINARY_SIZE(D3D12::Shader, Shader, PSMainFull)));
 
 //	std::printf(k_vertexAttributeTypeNames[0]);
 	return true;

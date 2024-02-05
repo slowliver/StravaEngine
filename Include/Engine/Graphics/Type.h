@@ -642,3 +642,13 @@ inline bool operator!=(const Viewport& x, const Viewport& y) { return !(x == y);
 
 using NativeResouce = std::intptr_t;
 }
+
+#define STRAVA_SHADER_DECLARATION(ns, filename, entryPoint)				\
+namespace StravaEngine::##ns											\
+{																		\
+	extern unsigned char g_stravaEngineShader##filename##entryPoint[];	\
+	extern size_t g_stravaEngineShader##filename##entryPoint##Size;		\
+}
+
+#define STRAVA_GET_SHADER_BINARY_ARRAY(ns, filename, entryPoint) (StravaEngine::##ns::g_stravaEngineShader##filename##entryPoint)
+#define STRAVA_GET_SHADER_BINARY_SIZE(ns, filename, entryPoint) (StravaEngine::##ns::g_stravaEngineShader##filename##entryPoint##Size)

@@ -5,6 +5,7 @@
 #include <algorithm>
 #include <filesystem>
 #include <cstdio>
+#include <cinttypes>
 
 #include <windows.h>
 
@@ -27,6 +28,7 @@ struct Bin2ObjArguments
 {
 	std::string m_inputPathString;
 	std::string m_outputDirectoryString;
+	std::string m_namespaceString;
 	std::string m_variableNameString = "data";
 	bool m_suppressObj = false;
 
@@ -44,6 +46,28 @@ struct Bin2ObjArguments
 	const std::string GetOutputDirectory() const
 	{
 		return std::filesystem::path(std::filesystem::weakly_canonical(m_outputDirectoryString).string() + "/").make_preferred().string();
+	}
+
+	const std::string GetNamespace() const
+	{
+		std::string ns;
+		for (std::size_t i = 0; i < m_namespaceString.size(); ++i)
+		{
+			const char c = m_namespaceString[i];
+			if (c == '/' || c == '\\' || c == ':')
+			{
+				if (i != 0 && (m_namespaceString[i - 1] == '/' || m_namespaceString[i - 1] == '\\' || m_namespaceString[i - 1] == ':'))
+				{
+					continue;
+				}
+				ns += "::";
+			}
+			else if ((c >= '0' && c <= '9') || (c >= 'A' && c <= 'Z') || (c >= 'a' && c <= 'z'))
+			{
+				ns += c;
+			}
+		}
+		return ns;
 	}
 
 	const std::string& GetVariableName() const { return m_variableNameString; }
@@ -94,6 +118,10 @@ int main(int argc, const char* argv[])
 			if (key == "--output-directory")
 			{
 				bin2ObjArguments.m_outputDirectoryString = value.ends_with("/") ? value : value + "/";
+			}
+			else if (key == "--namespace")
+			{
+				bin2ObjArguments.m_namespaceString = value;
 			}
 			else if (key == "--variable-name")
 			{
@@ -174,7 +202,7 @@ int main(int argc, const char* argv[])
 			OnError("Output file (%s) cannot create.", cppPath.c_str());
 		}
 
-		auto writeString = [&cppPath,&cppOutput](const char* str)
+		auto writeString = [&cppPath, &cppOutput](const char* str)
 		{
 			if (std::fputs(str, *cppOutput) < 0)
 			{
@@ -185,13 +213,20 @@ int main(int argc, const char* argv[])
 		(
 			"namespace StravaEngine\n"
 			"{\n"
-			"extern \"C\" unsigned char g_"
 		);
+		if (bin2ObjArguments.GetNamespace().size() > 0)
+		{
+			writeString("namespace ");
+			writeString(bin2ObjArguments.GetNamespace().c_str());
+			writeString("\n{\n");
+		}
+		writeString("unsigned char g_");
 		writeString(bin2ObjArguments.GetVariableName().c_str());
 		writeString("[] = \n{\n");
 
-		static constexpr int k_numColumns = 8;
-		for (std::uint32_t i = 0;; ++i)
+		static constexpr std::uint32_t k_numColumns = 16;
+		std::uint32_t i = 0;
+		for (;; ++i)
 		{
 			char fs[32] = {};
 			int c = std::fgetc(*input);
@@ -211,7 +246,24 @@ int main(int argc, const char* argv[])
 			}
 		}
 
-		writeString("\n};\n} // namespace StravaEngine");
+		char sizeString[32] = {};
+		std::sprintf(sizeString, "%" PRIu32, i);
+		writeString
+		(
+			"\n};\n"
+//			"extern \"C\" size_t g_"
+			"size_t g_"
+		);
+		writeString(bin2ObjArguments.GetVariableName().c_str());
+		writeString("Size = ");
+		writeString(sizeString);
+		writeString(";");
+
+		if (bin2ObjArguments.GetNamespace().size() > 0)
+		{
+			writeString("\n}");
+		}
+		writeString("\n} // namespace StravaEngine");
 	}
 
 	// Write obj file.

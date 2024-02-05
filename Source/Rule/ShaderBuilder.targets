@@ -12,6 +12,49 @@
 		</AvailableItemName>
 	</ItemGroup>
 	<UsingTask
+		TaskName="GetShaderBuilderOutputs"
+		TaskFactory="CodeTaskFactory"
+		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
+		<ParameterGroup>
+			<RootDirectory ParameterType="System.String" Required="true"/>
+			<OutputDirectory ParameterType="System.String" Required="true"/>
+			<EntryNames ParameterType="System.String[]"/>
+			<Input ParameterType="System.String" Required="true"/>
+			<Outputs ParameterType="System.String[]" Output="true"/>
+		</ParameterGroup>
+		<Task>
+			<Reference Include="System.Xml"/>
+			<Reference Include="System.Windows.Forms"/>
+			<Using Namespace="System"/>
+			<Using Namespace="System.IO"/>
+			<Using Namespace="System.Windows.Forms"/>
+			<Code Type="Fragment" Language="cs">
+<![CDATA[
+var inputPath = Path.GetFullPath(Input);
+
+if (!File.Exists(inputPath))
+{
+	Log.LogError(string.Format("The input file ({0}) does not exist.", inputPath));
+	return false;
+}
+
+var outputPaths = new List<string>();
+if (EntryNames != null)
+{
+	foreach (var entryName in EntryNames)
+	{
+		var basePath = Path.GetFullPath(Path.Combine(OutputDirectory, entryName));
+		outputPaths.Add(basePath + ".obj");
+		MessageBox.Show(basePath + ".obj");
+	}
+}
+
+Outputs = outputPaths.ToArray();
+]]>
+			</Code>
+		</Task>
+	</UsingTask>
+	<UsingTask
 		TaskName="ShaderBuilder"
 		TaskFactory="CodeTaskFactory"
 		AssemblyFile="$(MSBuildToolsPath)\Microsoft.Build.Tasks.Core.dll" >
@@ -27,6 +70,7 @@
 			<OptimizationLevel ParameterType="System.String"/>
 			<EnableDebugInformation ParameterType="System.String"/>
 			<ShaderModel ParameterType="System.String"/>
+			<Namespace ParameterType="System.String"/>
 			<Input ParameterType="System.String" Required="true"/>
 			<Outputs ParameterType="System.String[]" Output="true"/>
 		</ParameterGroup>
@@ -39,12 +83,11 @@
 			<Using Namespace="System.Diagnostics"/>
 			<Code Type="Fragment" Language="cs">
 <![CDATA[
-
 var inputPath = Path.GetFullPath(Input);
 var shaderBuilderPath = Path.GetFullPath(Path.Combine(RootDirectory, "Tool/ShaderBuilder/ShaderBuilder.exe"));
 var bin2ObjPath = Path.GetFullPath(Path.Combine(RootDirectory, "Tool/Bin2Obj/Bin2Obj.exe"));
 
-if (!File.Exists(Input))
+if (!File.Exists(inputPath))
 {
 	Log.LogError(string.Format("The input file ({0}) does not exist.", inputPath));
 	return false;
@@ -203,7 +246,11 @@ var csoOutputList = new List<string>();
 	{
 		var arguments = string.Empty;
 		arguments += string.Format("--output-directory=\"{0}\" ", OutputDirectory);
-		arguments += string.Format("--variable-name={0} ", Path.GetFileNameWithoutExtension(csoOutput));
+		arguments += string.Format("--variable-name={0} ", "stravaEngineShader" + Path.GetFileNameWithoutExtension(inputPath) + Path.GetFileNameWithoutExtension(csoOutput));
+		if (!string.IsNullOrEmpty(Namespace))
+		{
+			arguments += string.Format("--namespace={0} ", Namespace);
+		}
 		arguments += string.Format("\"{0}\"", csoOutput);
 		int bin2ObjExitCode = 0;
 		var bin2ObjOutput = string.Empty;
@@ -257,6 +304,7 @@ Outputs = csoOutputList.ToArray();
 			OptimizationLevel		= "%(ShaderBuilder.OptimizationLevel)"
 			EnableDebugInformation	= "%(ShaderBuilder.EnableDebugInformation)"
 			ShaderModel				= "%(ShaderBuilder.ShaderModel)"
+			Namespace				= "$([System.IO.Path]::GetDirectoryName('%(Identity)'))"
 			Input					= "%(FullPath)"/>
 	</Target>
 	<PropertyGroup>
@@ -267,17 +315,12 @@ Outputs = csoOutputList.ToArray();
 		Name="ComputeShaderBuilderOutput"
 		Condition="'@(ShaderBuilder)' != ''">
 		<ItemGroup>
-			<ShaderBuilderDirsToMake
+			<ShaderBuilderOutputs
 				Condition="'@(ShaderBuilder)' != '' and '%(ShaderBuilder.ExcludedFromBuild)' != 'true'"
-				Include="%(ShaderBuilder.OutputDirectory)" />
+				Include="$([MSBuild]::NormalizePath('%(ShaderBuilder.OutputDirectory)'))\*.obj" />
+			<Link Include="%(ShaderBuilderOutputs.Identity)" />
+			<Lib Include="%(ShaderBuilderOutputs.Identity)" />
+			<ImpLib Include="%(ShaderBuilderOutputs.Identity)" />
 		</ItemGroup>
-		<MakeDir
-		Directories="@(TestRuleDirsToMake->'%(RootDir)%(Directory)')" />
-		<FindUnderPath
-			Files="@(MyFiles)"
-			Path="$(SearchPath)">
-		<Message
-			Importance="High"
-			Text="Aiueo %(ShaderBuilder.OutputDirectory)" />
 	</Target>
 </Project>

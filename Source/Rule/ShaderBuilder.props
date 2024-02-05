@@ -15,6 +15,7 @@
 			<VSEntryNames>VSMain</VSEntryNames>
 			<PSEntryNames>PSMain</PSEntryNames>
 			<ShaderModel>6_5</ShaderModel>
+			<OutputDirectory>$(IntDir)%(Identity)\..\%(Filename)</OutputDirectory>
 <!--<DefinesFile>%(Filename).tab.h</DefinesFile>-->
 			<CommandLineTemplate>%(OutputFile)    "$(SolutionDir)..\Tool\ShaderBuilder\ShaderBuilder.exe" --output-directory=%(OutputDirectory) [AllOptions] [AdditionalOptions] %(FullPath)</CommandLineTemplate>
 <!--<Outputs>%(RootDir)%(Directory)%(OutputFile);</Outputs>-->

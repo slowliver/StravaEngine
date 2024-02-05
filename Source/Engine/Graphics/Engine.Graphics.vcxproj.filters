@@ -133,14 +133,6 @@
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <None Include="D3D12\Shader\PixelShader.cso">
-      <Filter>ソース ファイル\D3D12\Shader</Filter>
-    </None>
-    <None Include="D3D12\Shader\VertexShader.cso">
-      <Filter>ソース ファイル\D3D12\Shader</Filter>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Bison Include="D3D12\Shader\Shader.y">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
     </Bison>

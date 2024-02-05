@@ -64,17 +64,17 @@
       <EnableDebugInformation Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">true</EnableDebugInformation>
       <OptimizationLevel Condition="'$(Configuration)|$(Platform)'=='Release|x64'">Od</OptimizationLevel>
       <EnableDebugInformation Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</EnableDebugInformation>
-      <VSEntryName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain</VSEntryName>
+      <VSEntryName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain;Hogehoge</VSEntryName>
       <VSEntryName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain</VSEntryName>
       <HSEntryName Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
       </HSEntryName>
       <HSEntryName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
       </HSEntryName>
+      <VSEntryNames Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">VSMain;VSMainFull</VSEntryNames>
+      <VSEntryNames Condition="'$(Configuration)|$(Platform)'=='Release|x64'">VSMain;VSMainFull</VSEntryNames>
+      <PSEntryNames Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">PSMain;PSMainFull</PSEntryNames>
+      <PSEntryNames Condition="'$(Configuration)|$(Platform)'=='Release|x64'">PSMain;PSMainFull</PSEntryNames>
     </ShaderBuilder>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="D3D12\Shader\PixelShader.cso" />
-    <None Include="D3D12\Shader\VertexShader.cso" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
     <VCProjectVersion>16.0</VCProjectVersion>
