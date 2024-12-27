@@ -22,6 +22,7 @@
     <ClInclude Include="..\..\..\Include\Engine\Core\String.h" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="Allocator.cpp" />
     <ClCompile Include="Diagnostics\Debugger.cpp" />
   </ItemGroup>
   <ItemGroup>

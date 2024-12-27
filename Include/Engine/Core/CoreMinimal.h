@@ -12,9 +12,9 @@
 #endif
 
 #if defined(_WIN32) || defined(_WIN64)
-#define STRAVA_WINDOWS 1
+#define ST_PLATFORM_WINDOWS 1
 #else
-#define STRAVA_WINDOWS 0
+#define ST_PLATFORM_WINDOWS 0
 #endif
 
 #define STRAVA_BREAK do { ::DebugBreak(); } while(false);
@@ -23,7 +23,7 @@
 #define STRAVA_VERIFY(condition)
 #define STRAVA_VERIFYM(condition, message)
 
-#if STRAVA_WINDOWS
+#if ST_PLATFORM_WINDOWS
 #define STRAVA_FORCE_INLINE __forceinline
 #else
 #define STRAVA_FORCE_INLINE inline

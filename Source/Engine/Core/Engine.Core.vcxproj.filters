@@ -53,6 +53,9 @@
     <ClCompile Include="Diagnostics\Debugger.cpp">
       <Filter>ソース ファイル\Diagnostics</Filter>
     </ClCompile>
+    <ClCompile Include="Allocator.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <Natvis Include="Engine.Core.natvis">

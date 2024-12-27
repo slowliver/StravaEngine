@@ -14,16 +14,15 @@ void GraphicsCommandBuffer::Terminate()
 
 CommandBufferBase::CommandBufferBase(Size size)
 {
-	auto allocator = Core::Allocator<Byte>();
-	m_begin = allocator.Allocate(size);
+	auto allocator = Core::TAllocator<Byte>();
+	m_begin = static_cast<Byte*>(Core::Allocator::Allocate(size));
 	m_end = m_begin + size;
 	m_back = m_begin;
 }
 
 CommandBufferBase::~CommandBufferBase()
 {
-	auto allocator = Core::Allocator<Byte>();
-	allocator.Deallocate(m_begin);
+	Core::Allocator::Free(m_begin);
 }
 
 void CommandBufferBase::Reset()
