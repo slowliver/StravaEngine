@@ -77,9 +77,6 @@
     <ClInclude Include="D3D12\D3D12Core.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
-    <ClInclude Include="CommandBuffer.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Type.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
@@ -130,6 +127,9 @@
     </ClInclude>
     <ClInclude Include="D3D12\D3D12Texture.h">
       <Filter>ソース ファイル\D3D12</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Engine\Graphics\CommandBuffer.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

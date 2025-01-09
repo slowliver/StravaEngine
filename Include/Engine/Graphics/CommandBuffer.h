@@ -6,7 +6,7 @@
 #include <Engine/Core/CoreMinimal.h>
 #include <Engine/Core/ArrayProxy.h>
 #include <Engine/Graphics/Type.h>
-#include "D3D12/D3D12Core.h"
+//#include "D3D12/D3D12Core.h"
 
 namespace StravaEngine::Graphics
 {
@@ -332,6 +332,7 @@ public:
 private:
 //	CommandBuffer* m_commandBuffer = nullptr;
 };
+using GraphicsCommandBufferRef = GraphicsCommandBuffer&;
 
 #if defined(STRAVA_COMMAND_PACKET)
 #undef STRAVA_COMMAND_PACKET

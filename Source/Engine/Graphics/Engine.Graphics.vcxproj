@@ -29,11 +29,11 @@
     <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\Include\Engine\Graphics\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Type.h" />
     <ClInclude Include="D3D12\D3D12CommandProcessor.h" />
     <ClInclude Include="D3D12\D3D12Core.h" />
-    <ClInclude Include="CommandBuffer.h" />
     <ClInclude Include="D3D12\D3D12DescriptorHeap.h" />
     <ClInclude Include="D3D12\D3D12PipelineState.h" />
     <ClInclude Include="D3D12\D3D12RootSignature.h" />

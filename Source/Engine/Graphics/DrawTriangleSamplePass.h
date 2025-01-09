@@ -2,6 +2,7 @@
 
 #include <Engine/Core/CoreMinimal.h>
 #include <Engine/Graphics/Type.h>
+#include <Engine/Graphics/CommandBuffer.h>
 
 #include "VertexBuffer.h"
 #include "RenderTexture.h"
@@ -18,7 +19,7 @@ public:
 
 	bool Initialize();
 	void Terminate();
-	void OnRender();
+	void OnRender(GraphicsCommandBufferRef graphicsCmmandBuffer);
 
 private:
 	VertexBuffer m_vertexBuffer;

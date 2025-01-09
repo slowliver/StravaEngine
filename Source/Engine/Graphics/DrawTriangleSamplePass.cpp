@@ -2,7 +2,7 @@
 
 #include <Engine/Graphics/Type.h>
 #include <Engine/Graphics/Renderer.h>
-#include "CommandBuffer.h"
+#include <Engine/Graphics/CommandBuffer.h>
 
 #include <Engine/../../External/masyos/xxhash_cx/include/xxhash_cx.h>
 
@@ -81,43 +81,43 @@ bool DrawTriangleSamplePass::Initialize()
 void DrawTriangleSamplePass::Terminate()
 {}
 
-void DrawTriangleSamplePass::OnRender()
+void DrawTriangleSamplePass::OnRender(GraphicsCommandBufferRef graphicsCmmandBuffer)
 {
-	auto* graphicsCmmandBuffer = Renderer::GetInstance()->GetGraphicsCommandBuffer();
+//	auto* graphicsCmmandBuffer = Renderer::GetInstance()->GetGraphicsCommandBuffer();
 
 	float color[4] = { 0.0f, 0.0f, 0.5f, 1.0f };
-	graphicsCmmandBuffer->ClearRenderTarget(&m_renderTexture, color);
+	graphicsCmmandBuffer.ClearRenderTarget(&m_renderTexture, color);
 
 	RenderTexture* rts[] = {&m_renderTexture};
-	graphicsCmmandBuffer->SetRenderTargets(rts);
+	graphicsCmmandBuffer.SetRenderTargets(rts);
 
-	graphicsCmmandBuffer->BeginPass();
+	graphicsCmmandBuffer.BeginPass();
 	{
 		VertexBuffer* vertexBuffers[] = { &m_vertexBuffer };
-		graphicsCmmandBuffer->SetVertexBuffers(0, vertexBuffers);
+		graphicsCmmandBuffer.SetVertexBuffers(0, vertexBuffers);
 
 		Viewport viewport = { 0.0f, 0.0f, 800.0f, 600.0f, 0.0f, 1.0f };
-		graphicsCmmandBuffer->SetViewport(viewport);
+		graphicsCmmandBuffer.SetViewport(viewport);
 
 		Core::Int32Rect scissor = { 0, 0, 800, 600 };
-		graphicsCmmandBuffer->SetScissor(scissor);
+		graphicsCmmandBuffer.SetScissor(scissor);
 
-		graphicsCmmandBuffer->SetPrimitiveTopology(PrimitiveTopology::TriangleList);
+		graphicsCmmandBuffer.SetPrimitiveTopology(PrimitiveTopology::TriangleList);
 
-		graphicsCmmandBuffer->SetVertexShader(&m_fullTriangleVertexShader);
-		graphicsCmmandBuffer->SetPixelShader(&m_fullTrianglePixelShader);
-		graphicsCmmandBuffer->SetPSShaderResources(&m_testTexture);
+		graphicsCmmandBuffer.SetVertexShader(&m_fullTriangleVertexShader);
+		graphicsCmmandBuffer.SetPixelShader(&m_fullTrianglePixelShader);
+		graphicsCmmandBuffer.SetPSShaderResources(&m_testTexture);
 
-		graphicsCmmandBuffer->Draw(3);
+		graphicsCmmandBuffer.Draw(3);
 
 		viewport = { 0.0f, 0.0f, 400.0f, 300.0f, 0.0f, 1.0f };
-		graphicsCmmandBuffer->SetViewport(viewport);
+		graphicsCmmandBuffer.SetViewport(viewport);
 
 		scissor = { 0, 0, 400, 300 };
-		graphicsCmmandBuffer->SetScissor(scissor);
-		graphicsCmmandBuffer->Draw(3);
+		graphicsCmmandBuffer.SetScissor(scissor);
+		graphicsCmmandBuffer.Draw(3);
 	}
-	graphicsCmmandBuffer->EndPass();
+	graphicsCmmandBuffer.EndPass();
 
 //	graphicsCmmandBuffer->Set
 //	m_commandList->IASetVertexBuffers(0, 1, &m_vertexBufferView);

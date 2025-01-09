@@ -2,7 +2,7 @@
 
 #include <d3d12.h>
 
-#include "./../CommandBuffer.h"
+#include <Engine/Graphics/CommandBuffer.h>
 
 namespace StravaEngine::Graphics::D3D12
 {

@@ -1,9 +1,9 @@
 #include <Windows.h>
 
 #include <Engine/Graphics/Renderer.h>
+#include <Engine/Graphics/CommandBuffer.h>
 
 #include "D3D12/D3D12Core.h"
-#include "CommandBuffer.h"
 #include "DrawTriangleSamplePass.h"
 #include "RenderTexture.h"
 
@@ -87,7 +87,7 @@ void Renderer::OnPreRender()
 
 void Renderer::OnRender()
 {
-	m_drawTriangleSamplePass->OnRender();
+	m_drawTriangleSamplePass->OnRender(*m_graphicsCommandBuffer);
 }
 
 void Renderer::OnPostRender()
