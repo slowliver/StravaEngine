@@ -51,13 +51,13 @@
     <ClInclude Include="..\..\..\Include\Engine\Core\BitArray.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Engine\Core\Environment.h">
-      <Filter>ヘッダー ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="..\..\..\Include\Engine\Core\NonCopyable.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="..\..\..\Include\Engine\Core\NonDefaultInstantiatable.h">
+    <ClInclude Include="..\..\..\Include\Engine\Core\StringUtility.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Engine\Core\NonInstantiatable.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
@@ -66,6 +66,9 @@
       <Filter>ソース ファイル\Diagnostics</Filter>
     </ClCompile>
     <ClCompile Include="Allocator.cpp">
+      <Filter>ソース ファイル</Filter>
+    </ClCompile>
+    <ClCompile Include="StringUtility.cpp">
       <Filter>ソース ファイル</Filter>
     </ClCompile>
   </ItemGroup>
