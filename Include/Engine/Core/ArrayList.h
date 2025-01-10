@@ -256,7 +256,7 @@ class ArrayList
 {
 public:
 	using value_type = Type;
-	using allocator_type = Allocator<Type>;
+	using allocator_type = TAllocator<Type>;
 	using pointer = std::add_pointer_t<Type>;
 	using const_pointer = std::add_pointer_t<const Type>;
 	using reference = Type&;
@@ -279,7 +279,7 @@ public:
 	{
 		if (arrayList.m_count)
 		{
-			auto allocator = Allocator<Type>();
+			auto allocator = TAllocator<Type>();
 			m_data = allocator.Allocate(m_capacity);
 			for (Size i = 0; i < m_count; ++i)
 			{
@@ -339,7 +339,7 @@ public:
 		{
 			return;
 		}
-		auto allocator = Allocator<Type>();
+		auto allocator = TAllocator<Type>();
 		auto* newData = allocator.Allocate(capacity);
 		for (Size i = 0; i < m_count; ++i)
 		{
@@ -410,7 +410,7 @@ public:
 		{
 			return;
 		}
-		auto allocator = Allocator<Type>();
+		auto allocator = TAllocator<Type>();
 		if (m_count == 0)
 		{
 			if (m_data)
