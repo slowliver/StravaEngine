@@ -1,5 +1,13 @@
 #pragma once
 
+#include <string>
+
+namespace StravaEngine::Core
+{
+using String = std::u8string;
+}
+
+
 #if 0
 
 #include <initializer_list>

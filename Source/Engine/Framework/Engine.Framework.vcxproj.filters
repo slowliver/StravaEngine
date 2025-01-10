@@ -23,5 +23,8 @@
     <ClInclude Include="..\..\..\Include\Engine\Framework\Application.h">
       <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
+    <ClInclude Include="..\..\..\Include\Engine\Framework\Environment.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

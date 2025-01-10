@@ -30,7 +30,7 @@
       <ExceptionHandling>false</ExceptionHandling>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(SolutionDir)..\Include;$(SolutionDir)..\External\ocornut\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>

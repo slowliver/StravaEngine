@@ -15,6 +15,9 @@ public:
 	virtual bool Initialize(ID3D12Device* d3d12Device, Size numDescriptors, Size numForBinding);
 	virtual void Terminate();
 
+	virtual void Allocate();
+//	virtual void Free();
+
 	virtual D3D12_GPU_DESCRIPTOR_HANDLE Push(D3D12_CPU_DESCRIPTOR_HANDLE handle);
 	virtual D3D12_CPU_DESCRIPTOR_HANDLE** PushMultiple(UInt32 count);
 

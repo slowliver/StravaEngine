@@ -69,6 +69,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\Include\Engine\Framework\Application.h" />
+    <ClInclude Include="..\..\..\Include\Engine\Framework\Environment.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

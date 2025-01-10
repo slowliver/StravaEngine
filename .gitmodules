@@ -4,3 +4,6 @@
 [submodule "External/masyos/xxhash_cx"]
 	path = External/masyos/xxhash_cx
 	url = https://github.com/masyos/xxhash_cx.git
+[submodule "External/ocornut/imgui"]
+	path = External/ocornut/imgui
+	url = https://github.com/ocornut/imgui.git
