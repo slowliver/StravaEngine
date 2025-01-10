@@ -1,6 +1,7 @@
 #include <Windows.h>
 
 #include <Engine/Core/CoreMinimal.h>
+#include <Engine/Core/StringUtility.h>
 #include <Engine/Framework/Environment.h>
 
 namespace StravaEngine::Framework
@@ -11,16 +12,17 @@ const Core::ArrayList<Core::String>& Environment::GetCommandLineArgs()
 {
 	if (g_cachedCommandLineArgs.IsEmpty())
 	{
-		int argc;
+		Int32 argc;
 		auto* argv = ::CommandLineToArgvW(::GetCommandLineW(), &argc);
 		if (argv != nullptr)
 		{
-			for (UInt32 i = 0; i < argc; ++i)
+			for (Int32 i = 0; i < argc; ++i)
 			{
-				g_cachedCommandLineArgs.Add(Core::String(argv[i]));
+				g_cachedCommandLineArgs.Add(Core::StringUtility::ToString(argv[i]));
 			}
-			LocalFree(argv);
+			::LocalFree(argv);
 		}
 	}
-	return commandLineArgs;
+	return g_cachedCommandLineArgs;
+}
 }
