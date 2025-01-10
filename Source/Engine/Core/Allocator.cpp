@@ -32,7 +32,9 @@ void Allocator::Free(void* pointer)
 }
 }
 
+#if 0
 void* operator new(Size size)
 {
 	return StravaEngine::Core::Allocator::Allocate(size);
 }
+#endif

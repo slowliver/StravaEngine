@@ -103,5 +103,7 @@ template<class Type, Size k_alignment = alignof(Type) < alignof(void*) ? alignof
 using TAllocator = Internal::TAllocator<Type, k_alignment>;
 }
 
-[[nodiscard]] 
+#if 0
+[[nodiscard]]
 void* operator new(Size size);
+#endif
