@@ -268,9 +268,13 @@ public:
 };
 #endif
 
-template <Size k_size>
+template <UInt32 k_count>
+requires (k_count > 0)
 class BitArray
 {
+private:
+	static constexpr UInt32 k_countOfPackedData = (k_count - 1) / 8 + 1;
+
 public:
 	using value_type = bool;
 	using size_type = Size;
@@ -286,28 +290,15 @@ public:
 	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
 #endif
 
-	[[nodiscard]]
-	constexpr reference operator[](Size index)
+	constexpr void fill(bool value)
 	{
-		STRAVA_VERIFY(index >= 0 && index < k_size);
-		return m_data[index];
-	}
-
-	[[nodiscard]]
-	constexpr const_reference operator[](Size index) const
-	{
-		STRAVA_VERIFY(index >= 0 && index < k_size);
-		return m_data[index];
-	}
-
-	constexpr void fill(const Type& value)
-	{
-		for (Size i = 0; i < k_size; ++i)
+		for (UInt32 i = 0; i < k_countOfPackedData; ++i)
 		{
-			at[i] == value;
+			m_packedData[i] = value ? 0xFF : 0x00;
 		}
 	}
 
+#if 0
 	constexpr void swap(Array& other)
 	{
 		std::swap_ranges(begin(), end(), other.begin());
@@ -450,27 +441,19 @@ public:
 	{
 		return m_data;
 	}
+#endif
+
+	constexpr void SetAt(UInt32 index, bool value)
+	{
+		m_packedData[index / 8] &= ~UInt8(1 << (index % 8));
+		m_packedData[index / 8] |= (value ? 1 : 0) << (index % 8);
+	}
+
+	constexpr bool GetAt(UInt32 index) const { return (m_packedData[index / 8] & (1 << (index % 8))) != 0; }
+	constexpr bool operator[](UInt32 index) const { return GetAt(index); }
 	
 private:
-	/// <summary>
-	/// arrayクラスはpublicな配列メンバ変数を持ち、非トリビアルなコンストラクタを提供しない。
-	/// そのため、arrayは集成体の要件を満たす。
-	/// これにより、arrayクラスは組み込み配列と同様の初期化構文を使用して初期化を行うことができる。
-	/// https://cpprefjp.github.io/reference/array/array/op_initializer.html
-	/// </summary>
-	Type m_data[k_size] = {};
+	UInt8  m_packedData[k_countOfPackedData] = {};
 };
-
-template <class Type, Size k_size>
-constexpr Array<std::remove_cv_t<Type>, k_size> ToArray(Type(&a)[k_size])
-{
-	return Array<std::remove_cv_t<Type>, k_size>(a);
-}
-
-template <class Type, Size k_size>
-constexpr Array<std::remove_cv_t<Type>, k_size> ToArray(Type(&&a)[k_size])
-{
-	return Array<std::remove_cv_t<Type>, k_size>(a);
-}
 }
 

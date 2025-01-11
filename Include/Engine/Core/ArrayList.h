@@ -526,10 +526,21 @@ public:
 		std::swap(m_capacity, other.m_capacity);
 	}
 
-	bool Contains(Type& element)
+	Int32 IndexOf(const Type& element) const
 	{
-
+		Int32 index = -1;
+		for (UInt32 i = 0; i < m_count; ++i)
+		{
+			if (m_data[i] == element)
+			{
+				index = i;
+				break;
+			}
+		}
+		return index;
 	}
+
+	bool Contains(const Type& element) const { return (IndexOf(element) != -1); }
 
 	// C++ STL alias
 	UInt32 size() const { return GetCount(); }
