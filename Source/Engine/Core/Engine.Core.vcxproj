@@ -28,6 +28,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Allocator.cpp" />
+    <ClCompile Include="BitArrayList.cpp" />
     <ClCompile Include="Diagnostics\Debugger.cpp" />
     <ClCompile Include="StringUtility.cpp" />
   </ItemGroup>

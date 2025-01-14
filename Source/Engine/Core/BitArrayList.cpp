@@ -1,84 +1,51 @@
 #pragma once
 
-#include <iterator>
-#include <algorithm>
-
-#include <Engine/Core/Allocator.h>
-#include <Engine/Core/CoreMinimal.h>
+#include <Engine/Core/BitArrayList.h>
 
 namespace StravaEngine::Core
 {
-class BitArrayList
+BitArrayList::BitArrayList()
+{}
+
+BitArrayList::BitArrayList(UInt32 count)
 {
-public:
-	using value_type = bool;
-	using size_type = Size;
-	using difference_type = ptrdiff_t;
-	using pointer = bool*;
-	using const_pointer = const bool*;
-	using reference = bool&;
-	using const_reference = const bool&;
-#if 0
-	using iterator = BitArrayIterator<Type, k_size>;
-	using const_iterator = ArrayConstIterator<Type, k_size>;
-	using reverse_iterator = std::reverse_iterator<iterator>;
-	using const_reverse_iterator = std::reverse_iterator<const_iterator>;
-#endif
+	Resize(count);
+}
 
-	BitArrayList();
-	explicit BitArrayList(UInt32 count);
-#if 0
-	BitArrayList(UInt32 count, bool value) { Resize(count, value); }
-	template <class IteratorType>
-	BitArrayList(IteratorType first, IteratorType last) { AddRange(first, last); }
-	BitArrayList(const BitArrayList& arrayList)
-		: m_count(arrayList.m_count)
-		, m_capacity(arrayList.m_capacity)
+BitArrayList::BitArrayList(BitArrayList&& bitArrayList)
+	: m_packedData(std::move(bitArrayList.m_packedData))
+	, m_count(std::move(bitArrayList.m_count))
+	, m_capacity(std::move(bitArrayList.m_capacity))
+{}
+
+void BitArrayList::fill(bool value)
+{
+	for (Int64 i = 0; i < (Int64(m_count) - 1) / 8 + 1; ++i)
 	{
-		if (arrayList.m_count)
-		{
-			auto allocator = TAllocator<Type>();
-			m_data = allocator.Allocate(m_capacity);
-			for (UInt32 i = 0; i < m_count; ++i)
-			{
-				::new(&m_data[i]) Type(arrayList.m_data[i]);
-			}
-		}
+		m_packedData[i] = value ? 0xFF : 0x00;
 	}
-#endif
-	BitArrayList(BitArrayList&& bitArrayList);
-#if 0
-	BitArrayList(std::initializer_list<bool> initializerList) { AddRange(initializerList); }
-#endif
+}
 
-	void fill(bool value);
-
-	void Reserve(UInt32 capacity)
+void BitArrayList::Reserve(UInt32 capacity)
+{
+	if (capacity == 0 || capacity / 8 <= m_capacity / 8)
 	{
-		if (capacity <= m_capacity)
-		{
-			return;
-		}
-		auto allocator = Allocator::Allocate(capacity);
-		auto* newData = allocator.Allocate(capacity);
-		for (UInt32 i = 0; i < m_count; ++i)
-		{
-			::new(&newData[i]) Type(std::move(m_data[i]));
-			m_data[i].~Type();
-		}
-		if (m_data)
-		{
-			allocator.Deallocate(m_data);
-		}
-		m_data = newData;
-		m_capacity = capacity;
+		return;
 	}
+	auto* newData = Allocator::Allocate((capacity - 1) / 8 + 1);
+	for (Int64 i = 0; i < (Int64(m_count) - 1) / 8 + 1; ++i)
+	{
+		::new(&newData[i]) UInt8(m_packedData[i]);
+		m_data[i].~Type();
+	}
+	if (m_data)
+	{
+		allocator.Deallocate(m_data);
+	}
+	m_data = newData;
+	m_capacity = capacity;
+}
 
-	UInt32 GetCapacity() const { return m_capacity; }
-
-	UInt32 GetCount() const { return m_count; }
-
-	UInt32 GetMaxCount() const { return UINT64_MAX; }
 
 	void Resize(UInt32 count)
 	{
