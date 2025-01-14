@@ -168,40 +168,7 @@ D3D12DescriptorHeapRTV::D3D12DescriptorHeapRTV()
 }
 #endif
 
-D3D12DescriptorPool::D3D12DescriptorPool(D3D12_DESCRIPTOR_HEAP_TYPE d3d12DescriptorHeapType, Size numDescriptors)
-	: m_d3d12DescriptorHeapType(d3d12DescriptorHeapType)
-	, m_numDescriptors(numDescriptors)
-{}
-
-bool D3D12DescriptorPool::Initialize(ID3D12Device* d3d12Device)
-{
-	HRESULT hr = {};
-
-	m_d3d12DescriptorSize = d3d12Device->GetDescriptorHandleIncrementSize(m_d3d12DescriptorHeapType);
-
-	D3D12_DESCRIPTOR_HEAP_FLAGS d3d12DescriptorHeapFlags = D3D12_DESCRIPTOR_HEAP_FLAG_NONE;
-	if (m_d3d12DescriptorHeapType == D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV ||
-		m_d3d12DescriptorHeapType == D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER)
-	{
-//		d3d12DescriptorHeapFlags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE;
-	}
-
-	D3D12_DESCRIPTOR_HEAP_DESC d3d12DescriptorHeapDesc = {};
-	d3d12DescriptorHeapDesc.Type = m_d3d12DescriptorHeapType;
-	d3d12DescriptorHeapDesc.NumDescriptors = static_cast<UINT>(m_numDescriptors);
-	d3d12DescriptorHeapDesc.Flags = d3d12DescriptorHeapFlags;
-	d3d12DescriptorHeapDesc.NodeMask = 0;
-
-	hr = d3d12Device->CreateDescriptorHeap(&d3d12DescriptorHeapDesc, IID_PPV_ARGS(&m_d3d12DescriptorHeap));
-	if (FAILED(hr))
-	{
-		return false;
-	}
-
-	return true;
-}
-
-D3D12_CPU_DESCRIPTOR_HANDLE D3D12DescriptorPool::CreateShaderResourceView(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc)
+D3D12_CPU_DESCRIPTOR_HANDLE D3D12CPUDescriptorHeap::CreateShaderResourceView(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE d3d12CPUDescriptorHandle = {};
 	if (m_d3d12DescriptorHeapType != D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
@@ -219,7 +186,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE D3D12DescriptorPool::CreateShaderResourceView(ID3D12
 	return d3d12CPUDescriptorHandle;
 }
 
-D3D12_CPU_DESCRIPTOR_HANDLE D3D12DescriptorPool::CreateRenderTargetView(ID3D12Resource* resource, const D3D12_RENDER_TARGET_VIEW_DESC* desc)
+D3D12_CPU_DESCRIPTOR_HANDLE D3D12CPUDescriptorHeap::CreateRenderTargetView(ID3D12Resource* resource, const D3D12_RENDER_TARGET_VIEW_DESC* desc)
 {
 	D3D12_CPU_DESCRIPTOR_HANDLE d3d12CPUDescriptorHandle = {};
 	if (m_d3d12DescriptorHeapType != D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
@@ -237,7 +204,7 @@ D3D12_CPU_DESCRIPTOR_HANDLE D3D12DescriptorPool::CreateRenderTargetView(ID3D12Re
 	return d3d12CPUDescriptorHandle;
 }
 
-void D3D12DescriptorPool::Terminate()
+void D3D12CPUDescriptorHeap::Terminate()
 {
 	if (m_d3d12DescriptorHeap)
 	{

@@ -15,6 +15,7 @@
     <ClInclude Include="..\..\..\Include\Engine\Core\ArrayList.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\ArrayProxy.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\BitArray.h" />
+    <ClInclude Include="..\..\..\Include\Engine\Core\BitArrayList.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\CoreMinimal.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\Allocator.h" />
     <ClInclude Include="..\..\..\Include\Engine\Core\Diagnostics\Debugger.h" />
