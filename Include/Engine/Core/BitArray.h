@@ -443,14 +443,59 @@ public:
 	}
 #endif
 
+	[[nodiscard]]
+	constexpr bool All() const
+	{
+		bool result = true;
+		for (UInt32 i = 0; i < k_countOfPackedData; ++i)
+		{
+			if (m_packedData[i] != 0xFF)
+			{
+				result = false;
+				break;
+			}
+		}
+		return result;
+	}
+
+	[[nodiscard]]
+	constexpr bool Any() const
+	{
+		bool result = false;
+		for (UInt32 i = 0; i < k_countOfPackedData; ++i)
+		{
+			if (m_packedData[i] != 0x00)
+			{
+				result = true;
+				break;
+			}
+		}
+		return result;
+	}
+
+
+	[[nodiscard]]
+	constexpr UInt32 GetCount() const { return k_count; }
+
+	[[nodiscard]]
+	constexpr UInt32 GetMaxCount() const { return GetCount(); }
+
 	constexpr void SetAt(UInt32 index, bool value)
 	{
 		m_packedData[index / 8] &= ~UInt8(1 << (index % 8));
 		m_packedData[index / 8] |= (value ? 1 : 0) << (index % 8);
 	}
 
+	[[nodiscard]]
 	constexpr bool GetAt(UInt32 index) const { return (m_packedData[index / 8] & (1 << (index % 8))) != 0; }
+	[[nodiscard]]
 	constexpr bool operator[](UInt32 index) const { return GetAt(index); }
+
+	// C++ STL alias
+	[[nodiscard]]
+	constexpr UInt32 size() const { return GetCount(); }
+	[[nodiscard]]
+	constexpr UInt32 max_size() const { return GetMaxCount(); }
 	
 private:
 	UInt8  m_packedData[k_countOfPackedData] = {};

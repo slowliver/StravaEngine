@@ -15,6 +15,9 @@ class D3D12PipelineStateManager;
 class D3D12DescriptorHeapCBVSRVUAV;
 class D3D12DescriptorHeapSampler;
 class D3D12DescriptorPool;
+class D3D12CPUDescriptorHeapCBVSRVUAV;
+class D3D12CPUDescriptorHeapSampler;
+class D3D12CPUDescriptorHeapRTV;
 class D3D12Core
 {
 private:
@@ -33,9 +36,9 @@ public:
 	ID3D12CommandQueue* GetD3D12CommandQueue() { return m_d3d12CmmandQueue; }
 
 	STRAVA_FORCE_INLINE D3D12RootSignature* GetRootSignature() { return m_rootSignature.get(); }
-	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeap* GetDescriptorPoolCBVSRVUAV() { return m_descriptorPoolCBVSRVUAV.get(); }
-	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeap* GetDescriptorPoolSampler() { return m_descriptorPoolSampler.get(); }
-	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeap* GetDescriptorPoolRTV() { return m_descriptorPoolRTV.get(); }
+	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeapCBVSRVUAV* GetDescriptorPoolCBVSRVUAV() { return m_descriptorPoolCBVSRVUAV.get(); }
+	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeapSampler* GetDescriptorPoolSampler() { return m_descriptorPoolSampler.get(); }
+	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeapRTV* GetDescriptorPoolRTV() { return m_descriptorPoolRTV.get(); }
 	STRAVA_FORCE_INLINE D3D12DescriptorHeapCBVSRVUAV* GetDescriptorHeapCBVSRVUAV() { return m_descriptorHeapCBVSRVUAV.get(); }
 
 public:
@@ -48,9 +51,9 @@ private:
 private:
 	std::unique_ptr<D3D12CommandProcessor> m_commandProcessor = nullptr;
 	std::unique_ptr<D3D12RootSignature> m_rootSignature = nullptr;
-	D3D12CPUDescriptorHeap<D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV, 1024> m_descriptorPoolCBVSRVUAV;
-	D3D12CPUDescriptorHeap<D3D12_DESCRIPTOR_HEAP_TYPE_SAMPLER, 1024> m_descriptorPoolSampler;
-	D3D12CPUDescriptorHeap<D3D12_DESCRIPTOR_HEAP_TYPE_RTV, 1024> m_descriptorPoolRTV;
+	std::unique_ptr<D3D12CPUDescriptorHeapCBVSRVUAV> m_descriptorPoolCBVSRVUAV = nullptr;
+	std::unique_ptr<D3D12CPUDescriptorHeapSampler> m_descriptorPoolSampler = nullptr;
+	std::unique_ptr<D3D12CPUDescriptorHeapRTV> m_descriptorPoolRTV = nullptr;
 	std::unique_ptr<D3D12DescriptorHeapCBVSRVUAV> m_descriptorHeapCBVSRVUAV = nullptr;
 	std::unique_ptr<D3D12DescriptorHeapSampler> m_descriptorHeapSampler = nullptr;
 	IDXGIFactory7* m_dxgiFactory7 = nullptr;

@@ -6,6 +6,7 @@
 #include <Engine/Core/Allocator.h>
 #include <Engine/Core/CoreMinimal.h>
 
+#if 0
 namespace StravaEngine::Core
 {
 class BitArrayList
@@ -263,4 +264,4 @@ private:
 	UInt8* m_packedData = nullptr;
 };
 }
-
+#endif

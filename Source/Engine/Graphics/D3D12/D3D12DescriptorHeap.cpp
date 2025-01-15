@@ -167,49 +167,4 @@ D3D12DescriptorHeapRTV::D3D12DescriptorHeapRTV()
 	m_d3d12DescriptorHeapType = D3D12_DESCRIPTOR_HEAP_TYPE_RTV;
 }
 #endif
-
-D3D12_CPU_DESCRIPTOR_HANDLE D3D12CPUDescriptorHeap::CreateShaderResourceView(ID3D12Resource* resource, const D3D12_SHADER_RESOURCE_VIEW_DESC* desc)
-{
-	D3D12_CPU_DESCRIPTOR_HANDLE d3d12CPUDescriptorHandle = {};
-	if (m_d3d12DescriptorHeapType != D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV)
-	{
-		return d3d12CPUDescriptorHandle;
-	}
-	if (m_offset >= m_numDescriptors)
-	{
-		return d3d12CPUDescriptorHandle;
-	}
-	d3d12CPUDescriptorHandle.ptr = m_d3d12DescriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr + m_d3d12DescriptorSize * m_offset;
-	auto* d3d12Device = D3D12Core::s_instance->GetD3D12Device();
-	d3d12Device->CreateShaderResourceView(resource, desc, d3d12CPUDescriptorHandle);
-	m_offset++;
-	return d3d12CPUDescriptorHandle;
-}
-
-D3D12_CPU_DESCRIPTOR_HANDLE D3D12CPUDescriptorHeap::CreateRenderTargetView(ID3D12Resource* resource, const D3D12_RENDER_TARGET_VIEW_DESC* desc)
-{
-	D3D12_CPU_DESCRIPTOR_HANDLE d3d12CPUDescriptorHandle = {};
-	if (m_d3d12DescriptorHeapType != D3D12_DESCRIPTOR_HEAP_TYPE_RTV)
-	{
-		return d3d12CPUDescriptorHandle;
-	}
-	if (m_offset >= m_numDescriptors)
-	{
-		return d3d12CPUDescriptorHandle;
-	}
-	d3d12CPUDescriptorHandle.ptr = m_d3d12DescriptorHeap->GetCPUDescriptorHandleForHeapStart().ptr + m_d3d12DescriptorSize * m_offset;
-	auto* d3d12Device = D3D12Core::s_instance->GetD3D12Device();
-	d3d12Device->CreateRenderTargetView(resource, desc, d3d12CPUDescriptorHandle);
-	m_offset++;
-	return d3d12CPUDescriptorHandle;
-}
-
-void D3D12CPUDescriptorHeap::Terminate()
-{
-	if (m_d3d12DescriptorHeap)
-	{
-		m_d3d12DescriptorHeap->Release();
-		m_d3d12DescriptorHeap = nullptr;
-	}
-}
 }

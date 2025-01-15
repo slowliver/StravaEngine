@@ -2,6 +2,7 @@
 
 #include <Engine/Core/BitArrayList.h>
 
+#if 0
 namespace StravaEngine::Core
 {
 BitArrayList::BitArrayList()
@@ -230,4 +231,4 @@ private:
 	UInt8* m_packedData = nullptr;
 };
 }
-
+#endif
