@@ -11,6 +11,13 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="..\..\..\External\ocornut\imgui\backends\imgui_impl_dx12.cpp" />
+    <ClCompile Include="..\..\..\External\ocornut\imgui\backends\imgui_impl_win32.cpp" />
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui.cpp" />
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui_demo.cpp" />
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui_draw.cpp" />
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui_tables.cpp" />
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui_widgets.cpp" />
     <ClCompile Include="D3D12\D3D12CommandProcessor.cpp" />
     <ClCompile Include="D3D12\D3D12Core.cpp" />
     <ClCompile Include="D3D12\D3D12DescriptorHeap.cpp" />
@@ -29,6 +36,11 @@
     <ClCompile Include="VertexBuffer.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\..\..\External\ocornut\imgui\backends\imgui_impl_dx12.h" />
+    <ClInclude Include="..\..\..\External\ocornut\imgui\backends\imgui_impl_win32.h" />
+    <ClInclude Include="..\..\..\External\ocornut\imgui\imconfig.h" />
+    <ClInclude Include="..\..\..\External\ocornut\imgui\imgui.h" />
+    <ClInclude Include="..\..\..\External\ocornut\imgui\imgui_internal.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Type.h" />

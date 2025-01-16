@@ -3,12 +3,19 @@
 #include <Engine/Framework/Application.h>
 
 #include <Engine/Graphics/Renderer.h>
+#include <imgui.h>
+
+extern IMGUI_IMPL_API LRESULT ImGui_ImplWin32_WndProcHandler(HWND, UINT, WPARAM, LPARAM);
 
 namespace StravaEngine::Framework
 {
 static LRESULT Application_WindowProc(HWND hWnd, UINT message, WPARAM wParam, LPARAM lParam)
 {
 	//	DXSample* pSample = reinterpret_cast<DXSample*>(GetWindowLongPtr(hWnd, GWLP_USERDATA));
+	if (ImGui_ImplWin32_WndProcHandler(hWnd, message, wParam, lParam))
+	{
+		return 0;
+	}
 
 	switch (message)
 	{

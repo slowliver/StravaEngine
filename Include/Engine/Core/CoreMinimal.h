@@ -67,6 +67,18 @@ inline bool operator!=(const RectBase<Type>& x, const RectBase<Type>& y) { retur
 
 using Int32Rect = RectBase<Int32>;
 
+template <class KeyType, class ValueType>
+struct Pair
+{
+	KeyType m_key;
+	ValueType m_value;
+};
+
+template <class... Types>
+struct Tuple
+{
+};
+
 template <class Type>
 void SafeDelete(Type*& pointer)
 {

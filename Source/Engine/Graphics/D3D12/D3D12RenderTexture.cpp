@@ -142,7 +142,7 @@ bool D3D12RenderTexture::OnCreate(const RenderTextureSpec& renderTextureSpec)
 	}
 	}
 
-	auto* descriptorPoolRTV = D3D12Core::s_instance->GetDescriptorPoolRTV();
+	auto* descriptorPoolRTV = D3D12Core::s_instance->GetCPUDescriptorHeapRTV();
 	if (m_d3d12CPUDescriptorHandle = descriptorPoolRTV->Allocate(); m_d3d12CPUDescriptorHandle.ptr)
 	{
 		d3d12Device->CreateRenderTargetView(m_d3d12Resource, &d3d12RenderTargetViewDesc, m_d3d12CPUDescriptorHandle);

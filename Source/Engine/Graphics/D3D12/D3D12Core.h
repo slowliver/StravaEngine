@@ -36,9 +36,9 @@ public:
 	ID3D12CommandQueue* GetD3D12CommandQueue() { return m_d3d12CmmandQueue; }
 
 	STRAVA_FORCE_INLINE D3D12RootSignature* GetRootSignature() { return m_rootSignature.get(); }
-	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeapCBVSRVUAV* GetDescriptorPoolCBVSRVUAV() { return m_descriptorPoolCBVSRVUAV.get(); }
-	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeapSampler* GetDescriptorPoolSampler() { return m_descriptorPoolSampler.get(); }
-	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeapRTV* GetDescriptorPoolRTV() { return m_descriptorPoolRTV.get(); }
+	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeapCBVSRVUAV* GetCPUDescriptorHeapCBVSRVUAV() { return m_descriptorPoolCBVSRVUAV.get(); }
+	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeapSampler* GetCPUDescriptorHeapSampler() { return m_descriptorPoolSampler.get(); }
+	STRAVA_FORCE_INLINE D3D12CPUDescriptorHeapRTV* GetCPUDescriptorHeapRTV() { return m_descriptorPoolRTV.get(); }
 	STRAVA_FORCE_INLINE D3D12DescriptorHeapCBVSRVUAV* GetDescriptorHeapCBVSRVUAV() { return m_descriptorHeapCBVSRVUAV.get(); }
 
 public:

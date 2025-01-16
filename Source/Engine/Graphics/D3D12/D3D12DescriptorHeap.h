@@ -18,9 +18,7 @@ public:
 	virtual bool Initialize(ID3D12Device* d3d12Device, Size numDescriptors, Size numForBinding);
 	virtual void Terminate();
 
-	virtual void Allocate();
-//	virtual void Free();
-
+	virtual Int64 Push();
 	virtual D3D12_GPU_DESCRIPTOR_HANDLE Push(D3D12_CPU_DESCRIPTOR_HANDLE handle);
 	virtual D3D12_CPU_DESCRIPTOR_HANDLE** PushMultiple(UInt32 count);
 
@@ -34,8 +32,8 @@ protected:
 	Size m_numDescriptors;
 	Size m_numForBinding;
 	Size m_numForBindless;
-	UInt64 m_cpuBegin;
-	UInt64 m_gpuBegin;
+	D3D12_CPU_DESCRIPTOR_HANDLE m_d3d12BaseCPUDescriptor = CD3DX12_CPU_DESCRIPTOR_HANDLE(D3D12_DEFAULT);
+	D3D12_GPU_DESCRIPTOR_HANDLE m_d3d12BaseGPUDescriptor = CD3DX12_GPU_DESCRIPTOR_HANDLE(D3D12_DEFAULT);
 #if 0
 	UInt64 m_cpuEnd;
 	UInt64 m_gpuEnd;
@@ -65,13 +63,8 @@ public:
 constexpr UInt32 k_invalidCPUDescriptorHeapIndex = 0xFFFFFFFF;
 
 template <D3D12_DESCRIPTOR_HEAP_TYPE k_d3d12DescriptorHeapType>
-//requires (k_numDescriptors > 0) && (k_numDescriptors % 8 == 0) && (k_numDescriptors < UINT32_MAX)
 class D3D12CPUDescriptorHeap
 {
-private:
-//	static constexpr D3D12_DESCRIPTOR_HEAP_TYPE k_d3d12DescriptorHeapType = d3d12DescriptorHeapType;
-//	static constexpr UInt32 k_numDescriptors = numDescriptors;
-
 public:
 	D3D12CPUDescriptorHeap() = default;
 	~D3D12CPUDescriptorHeap() {}
@@ -171,13 +164,13 @@ inline D3D12_CPU_DESCRIPTOR_HANDLE D3D12CPUDescriptorHeap<k_d3d12DescriptorHeapT
 template <D3D12_DESCRIPTOR_HEAP_TYPE k_d3d12DescriptorHeapType>
 inline void D3D12CPUDescriptorHeap<k_d3d12DescriptorHeapType>::Free(D3D12_CPU_DESCRIPTOR_HANDLE handle)
 {
-	const UInt32 index = GetIndexFrom(handle);
+	const Int64 index = GetIndexFrom(handle);
 	if (index < 0 || index >= m_numDescriptors)
 	{
 		STRAVA_ASSERT(0);
 		return;
 	}
-	m_usedMask.SetAt(index, false);
+	m_usedMask.SetAt(UInt32(index), false);
 }
 
 template <D3D12_DESCRIPTOR_HEAP_TYPE k_d3d12DescriptorHeapType>

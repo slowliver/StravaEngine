@@ -257,7 +257,7 @@ bool D3D12Texture::OnCreate(const TextureSpec& textureSpec, Core::ArrayList<Byte
 	}
 	}
 
-	auto* descriptorPoolCBVSRVUAV = D3D12Core::s_instance->GetDescriptorPoolCBVSRVUAV();
+	auto* descriptorPoolCBVSRVUAV = D3D12Core::s_instance->GetCPUDescriptorHeapCBVSRVUAV();
 	if (m_d3d12CPUDescriptorHandle = descriptorPoolCBVSRVUAV->Allocate(); m_d3d12CPUDescriptorHandle.ptr)
 	{
 		d3d12Device->CreateShaderResourceView(m_d3d12Resource, &d3d12ShaderResourceViewDesc, m_d3d12CPUDescriptorHandle);

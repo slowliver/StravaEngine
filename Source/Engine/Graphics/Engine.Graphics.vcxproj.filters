@@ -19,6 +19,9 @@
     <Filter Include="ソース ファイル\D3D12\Shader">
       <UniqueIdentifier>{32d039f7-1662-438a-bfce-2f8ecf1e11d0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="ソース ファイル\imgui %28temp%29">
+      <UniqueIdentifier>{af34bfc7-8ab9-4e53-a669-b73b93dde5b8}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Renderer.cpp">
@@ -68,6 +71,27 @@
     </ClCompile>
     <ClCompile Include="D3D12\D3D12Texture.cpp">
       <Filter>ソース ファイル\D3D12</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui.cpp">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui_demo.cpp">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui_draw.cpp">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui_tables.cpp">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\External\ocornut\imgui\imgui_widgets.cpp">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\External\ocornut\imgui\backends\imgui_impl_dx12.cpp">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClCompile>
+    <ClCompile Include="..\..\..\External\ocornut\imgui\backends\imgui_impl_win32.cpp">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -130,6 +154,21 @@
     </ClInclude>
     <ClInclude Include="..\..\..\Include\Engine\Graphics\CommandBuffer.h">
       <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\External\ocornut\imgui\imconfig.h">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\External\ocornut\imgui\imgui.h">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\External\ocornut\imgui\imgui_internal.h">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\External\ocornut\imgui\backends\imgui_impl_dx12.h">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\External\ocornut\imgui\backends\imgui_impl_win32.h">
+      <Filter>ソース ファイル\imgui %28temp%29</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
