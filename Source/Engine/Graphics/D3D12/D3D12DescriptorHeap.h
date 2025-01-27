@@ -18,9 +18,15 @@ public:
 	virtual bool Initialize(ID3D12Device* d3d12Device, Size numDescriptors, Size numForBinding);
 	virtual void Terminate();
 
-	virtual Int64 Push();
+	[[nodiscard]]
+	virtual UInt32 Allocate();
 	virtual D3D12_GPU_DESCRIPTOR_HANDLE Push(D3D12_CPU_DESCRIPTOR_HANDLE handle);
 	virtual D3D12_CPU_DESCRIPTOR_HANDLE** PushMultiple(UInt32 count);
+
+	[[nodiscard]]
+	D3D12_CPU_DESCRIPTOR_HANDLE GetCPUDescriptorHandleAt(UInt32 index);
+	[[nodiscard]]
+	D3D12_GPU_DESCRIPTOR_HANDLE GetGPUDescriptorHandleAt(UInt32 index);
 
 	ID3D12DescriptorHeap* GetD3D12DescriptorHeap() { return m_d3d12DescriptorHeap; }
 
@@ -40,7 +46,7 @@ protected:
 	UInt64 m_cpuEndForBinding;
 	UInt64 m_gpuEndForBinding;
 #endif
-	UInt64 m_offset;
+	UInt32 m_offset;
 	D3D12_DESCRIPTOR_HEAP_TYPE m_d3d12DescriptorHeapType;
 	UInt32 m_d3d12DescriptorSize;
 	ID3D12DescriptorHeap* m_d3d12DescriptorHeap = nullptr;

@@ -30,6 +30,7 @@ public:
 	void Terminate();
 	void OnPrepareCommandBuffer();
 	void OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsCommandBuffer);
+	void OnPresent(const GraphicsCommandBuffer& graphicsCommandBuffer);
 
 	ID3D12Device* GetD3D12Device() { return m_d3d12Device; }
 	ID3D12CommandAllocator* GetD3D12CommandAllocator(UInt32 index = 0) { return m_commandAllocators[index]; }

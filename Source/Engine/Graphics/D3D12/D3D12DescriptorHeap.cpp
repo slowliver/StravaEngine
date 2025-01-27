@@ -66,9 +66,36 @@ void D3D12DescriptorHeapBase::Terminate()
 	}
 }
 
-Int64 D3D12DescriptorHeapBase::Push()
+UInt32 D3D12DescriptorHeapBase::Allocate()
 {
-	return 0;
+	auto* d3d12Device = D3D12Core::s_instance->GetD3D12Device();
+
+	UInt32 currentOffset;
+
+	// Ring-buffer “à‚ÉŽû‚Ü‚Á‚Ä‚¢‚é.
+	if (m_offset + 1 < m_numForBinding)
+	{
+		currentOffset = m_offset;
+		m_offset += 1;
+	}
+	// Ring-buffer ‚Ì––’[‚ð’´‚¦‚½.
+	else
+	{
+		currentOffset = 0;
+		m_offset = 1;
+	}
+
+	return currentOffset;
+}
+
+D3D12_CPU_DESCRIPTOR_HANDLE D3D12DescriptorHeapBase::GetCPUDescriptorHandleAt(UInt32 index)
+{
+	return CD3DX12_CPU_DESCRIPTOR_HANDLE(m_d3d12BaseCPUDescriptor, index, m_d3d12DescriptorSize);
+}
+
+D3D12_GPU_DESCRIPTOR_HANDLE D3D12DescriptorHeapBase::GetGPUDescriptorHandleAt(UInt32 index)
+{
+	return CD3DX12_GPU_DESCRIPTOR_HANDLE(m_d3d12BaseGPUDescriptor, index, m_d3d12DescriptorSize);
 }
 
 D3D12_GPU_DESCRIPTOR_HANDLE D3D12DescriptorHeapBase::Push(D3D12_CPU_DESCRIPTOR_HANDLE handle)

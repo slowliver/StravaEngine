@@ -6,6 +6,8 @@
 #include "D3D12RootSignature.h"
 #include "D3D12PipelineState.h"
 #include "D3D12DescriptorHeap.h"
+#include <imgui.h>
+#include <backends/imgui_impl_dx12.h>
 
 namespace StravaEngine::Graphics::D3D12
 {
@@ -289,10 +291,70 @@ void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsComma
 
 	d3d12GraphicsCommandList->OMSetRenderTargets(1, &m_d3d12RTVHandles[m_frameIndex], FALSE, nullptr);
 
+
+	ID3D12DescriptorHeap* d3d12DescriptorHeaps[] =
+	{
+		D3D12::D3D12Core::s_instance->GetDescriptorHeapCBVSRVUAV()->GetD3D12DescriptorHeap(),
+	};
+	d3d12GraphicsCommandList->SetDescriptorHeaps(1, d3d12DescriptorHeaps);
+	//	d3d12GraphicsCommandList->SetGraphicsRootDescriptorTable()
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12GraphicsCommandList);
+
 	// Record commands.
-	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
-	d3d12GraphicsCommandList->ClearRenderTargetView(m_d3d12RTVHandles[m_frameIndex], clearColor, 0, nullptr);
-	d3d12GraphicsCommandList->DrawInstanced(3, 1, 0, 0);
+//	const float clearColor[] = { 0.0f, 0.2f, 0.4f, 1.0f };
+//	d3d12GraphicsCommandList->ClearRenderTargetView(m_d3d12RTVHandles[m_frameIndex], clearColor, 0, nullptr);
+//	d3d12GraphicsCommandList->DrawInstanced(3, 1, 0, 0);
+
+	// Indicate that the back buffer will now be used to present.
+	{
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition
+		(
+			m_renderTargets[m_frameIndex],
+			D3D12_RESOURCE_STATE_RENDER_TARGET,
+			D3D12_RESOURCE_STATE_PRESENT
+		);
+		d3d12GraphicsCommandList->ResourceBarrier(1, &barrier);
+	}
+
+	hr = d3d12GraphicsCommandList->Close();
+	if (FAILED(hr))
+	{
+		return;
+	}
+
+	// Execute the command list.
+	ID3D12CommandList* ppCommandLists[] = { d3d12GraphicsCommandList };
+	m_d3d12CmmandQueue->ExecuteCommandLists(static_cast<UINT>(Core::GetCount(ppCommandLists)), ppCommandLists);
+
+	// Present the frame.
+	hr = m_dxgiSwapChain3->Present(1, 0);
+	if (FAILED(hr))
+	{
+		return;
+	}
+
+	MoveToNextFrame();
+}
+
+void D3D12Core::OnPresent(const GraphicsCommandBuffer& graphicsCommandBuffer)
+{
+	HRESULT hr = {};
+
+	auto* d3d12GraphicsCommandList = m_commandProcessor->GetD3D12GraphicsCommandList();
+
+	// Indicate that the back buffer will be used as a render target.
+	{
+		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition
+		(
+			m_renderTargets[m_frameIndex],
+			D3D12_RESOURCE_STATE_PRESENT,
+			D3D12_RESOURCE_STATE_RENDER_TARGET
+		);
+		d3d12GraphicsCommandList->ResourceBarrier(1, &barrier);
+	}
+
+	d3d12GraphicsCommandList->OMSetRenderTargets(1, &m_d3d12RTVHandles[m_frameIndex], FALSE, nullptr);
+
 
 	// Indicate that the back buffer will now be used to present.
 	{

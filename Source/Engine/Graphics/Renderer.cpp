@@ -73,7 +73,9 @@ bool Renderer::Initialize(const RendererSpec& spec)
 	imGuiInitInfo.SrvDescriptorAllocFn =
 	[](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE* cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE* gpuHandle)
 	{
-		*cpuHandle = D3D12::D3D12Core::s_instance->GetCPUDescriptorHeapCBVSRVUAV()->Allocate();
+		const UInt32 index = D3D12::D3D12Core::s_instance->GetDescriptorHeapCBVSRVUAV()->Allocate();
+		*cpuHandle = D3D12::D3D12Core::s_instance->GetDescriptorHeapCBVSRVUAV()->GetCPUDescriptorHandleAt(index);
+		*gpuHandle = D3D12::D3D12Core::s_instance->GetDescriptorHeapCBVSRVUAV()->GetGPUDescriptorHandleAt(index);
 	};
 	imGuiInitInfo.SrvDescriptorFreeFn =
 	[](ImGui_ImplDX12_InitInfo*, D3D12_CPU_DESCRIPTOR_HANDLE cpuHandle, D3D12_GPU_DESCRIPTOR_HANDLE gpuHandle)
@@ -102,12 +104,12 @@ void Renderer::OnUpdate()
 	ImGui_ImplDX12_NewFrame();
 	ImGui_ImplWin32_NewFrame();
 	ImGui::NewFrame();
-	ImGui::Render();
 
 	m_graphicsCommandBuffer->Reset();
 	OnPrepareResource();
 	OnPreRender();
 	OnRender();
+	ImGui::Render();
 	OnPostRender();
 	OnExecuteCommandBuffer();
 }
@@ -131,9 +133,30 @@ void Renderer::OnPreRender()
 {
 }
 
+void Renderer_OnRenderIMGUIWrapper(void* arg0, void*)
+{
+	auto* d3d12GraphicsCommandList = static_cast<ID3D12GraphicsCommandList*>(arg0);
+	ID3D12DescriptorHeap* d3d12DescriptorHeaps[] =
+	{
+		D3D12::D3D12Core::s_instance->GetDescriptorHeapCBVSRVUAV()->GetD3D12DescriptorHeap(),
+	};
+	d3d12GraphicsCommandList->SetDescriptorHeaps(1, d3d12DescriptorHeaps);
+//	d3d12GraphicsCommandList->SetGraphicsRootDescriptorTable()
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12GraphicsCommandList);
+}
+
 void Renderer::OnRender()
 {
-	m_drawTriangleSamplePass->OnRender(*m_graphicsCommandBuffer);
+	//m_drawTriangleSamplePass->OnRender(*m_graphicsCommandBuffer);
+
+	// 1. Show the big demo window (Most of the sample code is in ImGui::ShowDemoWindow()! You can browse its code to learn more about Dear ImGui!).
+	static bool show_demo_window = true;
+	if (show_demo_window)
+	{
+		ImGui::ShowDemoWindow(&show_demo_window);
+	}
+
+//	m_graphicsCommandBuffer->SetNativeCommand(Renderer_OnRenderIMGUIWrapper, nullptr);
 }
 
 void Renderer::OnPostRender()
