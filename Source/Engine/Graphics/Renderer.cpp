@@ -51,6 +51,9 @@ bool Renderer::Initialize(const RendererSpec& spec)
 	m_drawTriangleSamplePass.reset(new DrawTriangleSamplePass());
 	m_drawTriangleSamplePass->Initialize();
 
+	m_finalOutputRenderTexture.reset(new RenderTexture());
+	m_finalOutputRenderTexture->Create2D(spec.m_width, spec.m_height, Format::R8G8B8A8_UNorm, 1);
+
 #if 1
 	IMGUI_CHECKVERSION();
 	ImGui::CreateContext();
@@ -114,11 +117,6 @@ void Renderer::OnUpdate()
 	OnExecuteCommandBuffer();
 }
 
-void Renderer::SetFinalOutput(RenderTexture* renderTexture)
-{
-	m_finalOutputRenderTexture = renderTexture;
-}
-
 void Renderer::OnPrepareResource()
 {
 	for (auto& func : m_resourceQueueCreate)
@@ -167,6 +165,6 @@ void Renderer::OnPostRender()
 void Renderer::OnExecuteCommandBuffer()
 {
 	D3D12::D3D12Core::s_instance->OnPrepareCommandBuffer();
-	D3D12::D3D12Core::s_instance->OnSubmitCommandBuffer(*m_graphicsCommandBuffer);
+	D3D12::D3D12Core::s_instance->OnSubmitCommandBuffer(*m_graphicsCommandBuffer, *m_finalOutputRenderTexture);
 }
 }

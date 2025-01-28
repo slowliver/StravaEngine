@@ -11,6 +11,8 @@ namespace StravaEngine::Graphics
 struct RendererSpec final
 {
 	NativeHandle m_nativeWindowHandle;
+	UInt32 m_width;
+	UInt32 m_height;
 };
 
 class GraphicsCommandBuffer;
@@ -36,8 +38,6 @@ public:
 	Core::ArrayList<std::function<void(void)>>& GetResourceQueueCreate() { return m_resourceQueueCreate; }
 	Core::ArrayList<std::function<void(void)>>& GetResourceQueueRelease() { return m_resourceQueueRelease; }
 
-	void SetFinalOutput(RenderTexture* renderTexture);
-
 private:
 	void OnPrepareResource();
 	void OnPreRender();
@@ -51,6 +51,6 @@ private:
 	Core::ArrayList<std::function<void(void)>> m_resourceQueueRelease;
 	std::unique_ptr<GraphicsCommandBuffer> m_graphicsCommandBuffer;
 	std::unique_ptr<DrawTriangleSamplePass> m_drawTriangleSamplePass;
-	RenderTexture* m_finalOutputRenderTexture = nullptr;
+	std::unique_ptr<RenderTexture> m_finalOutputRenderTexture = nullptr;
 };
 }

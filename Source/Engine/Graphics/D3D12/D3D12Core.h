@@ -4,8 +4,9 @@
 #include <dxgi1_6.h>
 
 #include <Engine/Graphics/Renderer.h>
-
 #include <Engine/Graphics/CommandBuffer.h>
+
+#include "./../RenderTexture.h"
 
 namespace StravaEngine::Graphics::D3D12
 {
@@ -29,7 +30,7 @@ public:
 	bool Initialize(const RendererSpec& spec);
 	void Terminate();
 	void OnPrepareCommandBuffer();
-	void OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsCommandBuffer);
+	void OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsCommandBuffer, RenderTexture& finalOutputTexture);
 	void OnPresent(const GraphicsCommandBuffer& graphicsCommandBuffer);
 
 	ID3D12Device* GetD3D12Device() { return m_d3d12Device; }

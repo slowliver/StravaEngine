@@ -2,10 +2,13 @@
 
 #include <d3dx12.h>
 
+#include <Engine/Graphics/Type.h>
+
 #include "D3D12CommandProcessor.h"
 #include "D3D12RootSignature.h"
 #include "D3D12PipelineState.h"
 #include "D3D12DescriptorHeap.h"
+#include "D3D12RenderTexture.h"
 #include <imgui.h>
 #include <backends/imgui_impl_dx12.h>
 
@@ -17,6 +20,11 @@ extern "C" Byte g_vertexShader[];
 extern "C" Size g_vertexShaderSize;
 extern "C" Byte g_pixelShader[];
 extern "C" Size g_pixelShaderSize;
+
+STRAVA_SHADER_DECLARATION(D3D12::Shader, Shader, VSMain);
+STRAVA_SHADER_DECLARATION(D3D12::Shader, Shader, PSMain);
+STRAVA_SHADER_DECLARATION(D3D12::Shader, Shader, VSMainFull);
+STRAVA_SHADER_DECLARATION(D3D12::Shader, Shader, PSMainFull);
 
 D3D12Core::D3D12Core()
 	: m_commandProcessor(new D3D12CommandProcessor())
@@ -111,8 +119,8 @@ bool D3D12Core::Initialize(const RendererSpec& spec)
 	// Describe and create the swap chain.
 	DXGI_SWAP_CHAIN_DESC1 swapChainDesc = {};
 	swapChainDesc.BufferCount = k_frameCount;
-	swapChainDesc.Width = 800;
-	swapChainDesc.Height = 600;
+	swapChainDesc.Width = spec.m_width;
+	swapChainDesc.Height = spec.m_height;
 	swapChainDesc.Format = DXGI_FORMAT_R8G8B8A8_UNORM;
 	swapChainDesc.BufferUsage = DXGI_USAGE_RENDER_TARGET_OUTPUT;
 	swapChainDesc.SwapEffect = DXGI_SWAP_EFFECT_FLIP_DISCARD;
@@ -270,7 +278,7 @@ void D3D12Core::OnPrepareCommandBuffer()
 	}
 }
 
-void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsCommandBuffer)
+void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsCommandBuffer, RenderTexture& finalOutputTexture)
 {
 	HRESULT hr = {};
 
@@ -278,6 +286,74 @@ void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsComma
 
 	m_commandProcessor->OnSubmitCommandBuffer(graphicsCommandBuffer);
 
+	{
+		D3D12_CPU_DESCRIPTOR_HANDLE handle = finalOutputTexture.GetNativeRenderTexture<D3D12RenderTexture>()->GetD3D12CPUDescriptorHandle();
+		d3d12GraphicsCommandList->OMSetRenderTargets(1, &handle, FALSE, nullptr);
+	}
+
+	ID3D12DescriptorHeap* d3d12DescriptorHeaps[] =
+	{
+		D3D12::D3D12Core::s_instance->GetDescriptorHeapCBVSRVUAV()->GetD3D12DescriptorHeap(),
+	};
+	d3d12GraphicsCommandList->SetDescriptorHeaps(1, d3d12DescriptorHeaps);
+	//	d3d12GraphicsCommandList->SetGraphicsRootDescriptorTable()
+	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12GraphicsCommandList);
+
+	{
+		D3D12_RESOURCE_BARRIER barriers[] =
+		{
+			CD3DX12_RESOURCE_BARRIER::Transition
+			(
+				finalOutputTexture.GetNativeRenderTexture<D3D12RenderTexture>()->GetD3D12Resource(),
+				D3D12_RESOURCE_STATE_RENDER_TARGET,
+				D3D12_RESOURCE_STATE_COPY_SOURCE
+			),
+			CD3DX12_RESOURCE_BARRIER::Transition
+			(
+				m_renderTargets[m_frameIndex],
+				D3D12_RESOURCE_STATE_PRESENT,
+				D3D12_RESOURCE_STATE_COPY_DEST
+			)
+		};
+		d3d12GraphicsCommandList->ResourceBarrier(2, barriers);
+	}
+
+	{
+		auto* dstResource = m_renderTargets[m_frameIndex];
+		auto dstLocation = CD3DX12_TEXTURE_COPY_LOCATION(dstResource, 0);
+		auto* srcResource = finalOutputTexture.GetNativeRenderTexture<D3D12RenderTexture>()->GetD3D12Resource();
+		auto srcLocation = CD3DX12_TEXTURE_COPY_LOCATION(srcResource, 0);
+		d3d12GraphicsCommandList->CopyTextureRegion
+		(
+			&dstLocation,
+			0,
+			0,
+			0,
+			&srcLocation,
+			nullptr
+		);
+	}
+
+	{
+		D3D12_RESOURCE_BARRIER barriers[] =
+		{
+			CD3DX12_RESOURCE_BARRIER::Transition
+			(
+				finalOutputTexture.GetNativeRenderTexture<D3D12RenderTexture>()->GetD3D12Resource(),
+				D3D12_RESOURCE_STATE_COPY_SOURCE,
+				D3D12_RESOURCE_STATE_RENDER_TARGET
+			),
+			CD3DX12_RESOURCE_BARRIER::Transition
+			(
+				m_renderTargets[m_frameIndex],
+				D3D12_RESOURCE_STATE_COPY_DEST,
+				D3D12_RESOURCE_STATE_PRESENT
+			)
+		};
+		d3d12GraphicsCommandList->ResourceBarrier(2, barriers);
+	}
+
+#if 0
 	// Indicate that the back buffer will be used as a render target.
 	{
 		D3D12_RESOURCE_BARRIER barrier = CD3DX12_RESOURCE_BARRIER::Transition
@@ -290,7 +366,6 @@ void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsComma
 	}
 
 	d3d12GraphicsCommandList->OMSetRenderTargets(1, &m_d3d12RTVHandles[m_frameIndex], FALSE, nullptr);
-
 
 	ID3D12DescriptorHeap* d3d12DescriptorHeaps[] =
 	{
@@ -315,6 +390,7 @@ void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsComma
 		);
 		d3d12GraphicsCommandList->ResourceBarrier(1, &barrier);
 	}
+#endif
 
 	hr = d3d12GraphicsCommandList->Close();
 	if (FAILED(hr))

@@ -105,8 +105,9 @@ Application::Application(const ApplicationSpec& spec)
 	auto* renderer = Graphics::Renderer::CreateInstance();
 	Graphics::RendererSpec rendererSpec;
 	rendererSpec.m_nativeWindowHandle = (NativeHandle)hwnd;
+	rendererSpec.m_width = windowRect.right - windowRect.left;
+	rendererSpec.m_height = windowRect.bottom - windowRect.top;
 	renderer->Initialize(rendererSpec);
-
 
 	// Main sample loop.
 	MSG msg = {};

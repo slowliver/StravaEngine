@@ -175,5 +175,8 @@
     <ShaderBuilder Include="D3D12\Shader\Shader.hlsl">
       <Filter>ソース ファイル\D3D12\Shader</Filter>
     </ShaderBuilder>
+    <ShaderBuilder Include="D3D12\Shader\CopyTexture.hlsl">
+      <Filter>ソース ファイル\D3D12\Shader</Filter>
+    </ShaderBuilder>
   </ItemGroup>
 </Project>

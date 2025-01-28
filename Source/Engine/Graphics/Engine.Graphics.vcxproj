@@ -63,6 +63,7 @@
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>
+    <ShaderBuilder Include="D3D12\Shader\CopyTexture.hlsl" />
     <ShaderBuilder Include="D3D12\Shader\Shader.hlsl">
       <FileType>Document</FileType>
       <OptimizationLevel Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Od</OptimizationLevel>
