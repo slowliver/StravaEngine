@@ -287,19 +287,6 @@ void D3D12Core::OnSubmitCommandBuffer(const GraphicsCommandBuffer& graphicsComma
 	m_commandProcessor->OnSubmitCommandBuffer(graphicsCommandBuffer);
 
 	{
-		D3D12_CPU_DESCRIPTOR_HANDLE handle = finalOutputTexture.GetNativeRenderTexture<D3D12RenderTexture>()->GetD3D12CPUDescriptorHandle();
-		d3d12GraphicsCommandList->OMSetRenderTargets(1, &handle, FALSE, nullptr);
-	}
-
-	ID3D12DescriptorHeap* d3d12DescriptorHeaps[] =
-	{
-		D3D12::D3D12Core::s_instance->GetDescriptorHeapCBVSRVUAV()->GetD3D12DescriptorHeap(),
-	};
-	d3d12GraphicsCommandList->SetDescriptorHeaps(1, d3d12DescriptorHeaps);
-	//	d3d12GraphicsCommandList->SetGraphicsRootDescriptorTable()
-	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12GraphicsCommandList);
-
-	{
 		D3D12_RESOURCE_BARRIER barriers[] =
 		{
 			CD3DX12_RESOURCE_BARRIER::Transition

@@ -8,6 +8,7 @@
 
 #include "D3D12/D3D12Core.h"
 #include "D3D12/D3D12DescriptorHeap.h"
+#include "D3D12/D3D12RenderTexture.h"
 #include "DrawTriangleSamplePass.h"
 #include "RenderTexture.h"
 
@@ -131,15 +132,20 @@ void Renderer::OnPreRender()
 {
 }
 
-void Renderer_OnRenderIMGUIWrapper(void* arg0, void*)
+void Renderer_OnRenderIMGUIWrapper(void* arg0, void* arg1)
 {
 	auto* d3d12GraphicsCommandList = static_cast<ID3D12GraphicsCommandList*>(arg0);
+	auto* finalOutputRenderTexture = static_cast<RenderTexture*>(arg1);
+
+	D3D12_CPU_DESCRIPTOR_HANDLE handle = finalOutputRenderTexture->GetNativeRenderTexture<D3D12::D3D12RenderTexture>()->GetD3D12CPUDescriptorHandle();
+	d3d12GraphicsCommandList->OMSetRenderTargets(1, &handle, FALSE, nullptr);
+
 	ID3D12DescriptorHeap* d3d12DescriptorHeaps[] =
 	{
 		D3D12::D3D12Core::s_instance->GetDescriptorHeapCBVSRVUAV()->GetD3D12DescriptorHeap(),
 	};
 	d3d12GraphicsCommandList->SetDescriptorHeaps(1, d3d12DescriptorHeaps);
-//	d3d12GraphicsCommandList->SetGraphicsRootDescriptorTable()
+
 	ImGui_ImplDX12_RenderDrawData(ImGui::GetDrawData(), d3d12GraphicsCommandList);
 }
 
@@ -154,7 +160,7 @@ void Renderer::OnRender()
 		ImGui::ShowDemoWindow(&show_demo_window);
 	}
 
-//	m_graphicsCommandBuffer->SetNativeCommand(Renderer_OnRenderIMGUIWrapper, nullptr);
+	m_graphicsCommandBuffer->SetNativeCommand(Renderer_OnRenderIMGUIWrapper, m_finalOutputRenderTexture.get());
 }
 
 void Renderer::OnPostRender()
