@@ -293,7 +293,7 @@ Outputs = csoOutputList.ToArray();
 		</ItemGroup>
 		<ShaderBuilder
 			Condition				="'@(ShaderBuilder)' != '' and '%(ShaderBuilder.ExcludedFromBuild)' != 'true'"
-			RootDirectory			= "$(SolutionDir)..\"
+			RootDirectory			= "$(StravaEngineRootDir)"
 			OutputDirectory			= "$(IntDir)%(Identity)\..\%(Filename)"
 			VSEntryNames			= "%(ShaderBuilder.VSEntryNames)"
 			PSEntryNames			= "%(ShaderBuilder.PSEntryNames)"

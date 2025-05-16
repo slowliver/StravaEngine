@@ -3,8 +3,8 @@
   <ImportGroup Label="PropertySheets" />
   <PropertyGroup Label="UserMacros" />
   <PropertyGroup>
-    <IntDir>$(SolutionDir)..\Temporary\$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
-    <OutDir>$(SolutionDir)..\Library\$(Platform)\$(Configuration)\</OutDir>
+    <IntDir>$(StravaEngineTemporaryDir)$(Platform)\$(Configuration)\$(ProjectName)</IntDir>
+    <OutDir>$(StravaEngineLibraryDir)$(Platform)\$(Configuration)\</OutDir>
   </PropertyGroup>
   <ItemDefinitionGroup>
     <ClCompile>
@@ -30,13 +30,13 @@
       <ExceptionHandling>false</ExceptionHandling>
       <ConformanceMode>true</ConformanceMode>
       <DisableSpecificWarnings>4530</DisableSpecificWarnings>
-      <AdditionalIncludeDirectories>$(SolutionDir)..\Include;$(SolutionDir)..\External\ocornut\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(StravaEngineIncludeDir);$(StravaEngineExternalDir)ocornut\imgui\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Windows</SubSystem>
     </Link>
     <PreBuildEvent>
-      <Command>$(SolutionDir)..\Tool\Bootstrap\Bootstrap.exe</Command>
+      <Command>$(StravaEngineToolDir)Bootstrap\Bootstrap.exe</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup />
