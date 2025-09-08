@@ -43,6 +43,8 @@
     <ClInclude Include="..\..\..\External\ocornut\imgui\imgui_internal.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\CommandBuffer.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Renderer.h" />
+    <ClInclude Include="..\..\..\Include\Engine\Graphics\RenderObject.h" />
+    <ClInclude Include="..\..\..\Include\Engine\Graphics\Texture.h" />
     <ClInclude Include="..\..\..\Include\Engine\Graphics\Type.h" />
     <ClInclude Include="D3D12\D3D12CommandProcessor.h" />
     <ClInclude Include="D3D12\D3D12Core.h" />
@@ -59,7 +61,6 @@
     <ClInclude Include="ResidentResource.h" />
     <ClInclude Include="Shader.h" />
     <ClInclude Include="SystemResourceManager.h" />
-    <ClInclude Include="Texture.h" />
     <ClInclude Include="VertexBuffer.h" />
   </ItemGroup>
   <ItemGroup>

@@ -80,14 +80,14 @@
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
       <GenerateDebugInformation>true</GenerateDebugInformation>
-      <AdditionalLibraryDirectories>$(SolutionDir)..\External\Microsoft\DirectXShaderCompiler\lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>$(ProjectDir)..\..\..\External\Microsoft\DirectXShaderCompiler\lib\$(Platform)\;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalDependencies>dxcompiler.lib;%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>$(SolutionDir)..\Tool\Bootstrap\Bootstrap.exe</Command>
+      <Command>$(ProjectDir)..\..\..\Tool\Bootstrap\Bootstrap.exe</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>copy $(SolutionDir)..\Package\Microsoft\DirectXShaderCompiler\bin\$(Platform)\dxcompiler.dll $(OutputPath)dxcompiler.dll</Command>
+      <Command>copy $(ProjectDir)..\..\..\Package\Microsoft\DirectXShaderCompiler\bin\$(Platform)\dxcompiler.dll $(OutputPath)dxcompiler.dll</Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>

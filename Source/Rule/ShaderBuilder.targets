@@ -30,6 +30,7 @@
 			<Using Namespace="System.Windows.Forms"/>
 			<Code Type="Fragment" Language="cs">
 <![CDATA[
+#line 0
 var inputPath = Path.GetFullPath(Input);
 
 if (!File.Exists(inputPath))
@@ -83,6 +84,7 @@ Outputs = outputPaths.ToArray();
 			<Using Namespace="System.Diagnostics"/>
 			<Code Type="Fragment" Language="cs">
 <![CDATA[
+#line 87 "TestClass.cs"
 var inputPath = Path.GetFullPath(Input);
 var shaderBuilderPath = Path.GetFullPath(Path.Combine(RootDirectory, "Tool/ShaderBuilder/ShaderBuilder.exe"));
 var bin2ObjPath = Path.GetFullPath(Path.Combine(RootDirectory, "Tool/Bin2Obj/Bin2Obj.exe"));

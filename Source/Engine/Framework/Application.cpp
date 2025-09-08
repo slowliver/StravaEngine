@@ -62,7 +62,7 @@ static LRESULT Application_WindowProc(HWND hWnd, UINT message, WPARAM wParam, LP
 	return DefWindowProc(hWnd, message, wParam, lParam);
 }
 
-Application::Application(const ApplicationSpec& spec)
+bool Application::Initialize(const ApplicationSpec& spec)
 {
 	HINSTANCE hInstance = (HINSTANCE)spec.m_nativeHandle;
 
@@ -73,11 +73,11 @@ Application::Application(const ApplicationSpec& spec)
 	windowClass.lpfnWndProc = Application_WindowProc;
 	windowClass.hInstance = hInstance;
 	windowClass.hCursor = LoadCursor(NULL, IDC_ARROW);
-	windowClass.lpszClassName = "DXSampleClass";
+	windowClass.lpszClassName = spec.m_title.c_str();
 
 	RegisterClassExA(&windowClass);
 
-	RECT windowRect = { 0, 0, static_cast<LONG>(800), static_cast<LONG>(600) };
+	RECT windowRect = { 0, 0, static_cast<LONG>(spec.m_windowWidth), static_cast<LONG>(spec.m_windowHeight) };
 	AdjustWindowRect(&windowRect, WS_OVERLAPPEDWINDOW, FALSE);
 
 	// Create the window and store a handle to it.
@@ -107,8 +107,11 @@ Application::Application(const ApplicationSpec& spec)
 	rendererSpec.m_nativeWindowHandle = (NativeHandle)hwnd;
 	rendererSpec.m_width = windowRect.right - windowRect.left;
 	rendererSpec.m_height = windowRect.bottom - windowRect.top;
-	renderer->Initialize(rendererSpec);
+	return renderer->Initialize(rendererSpec);
+}
 
+void Application::Run()
+{
 	// Main sample loop.
 	MSG msg = {};
 	while (msg.message != WM_QUIT)
@@ -120,7 +123,10 @@ Application::Application(const ApplicationSpec& spec)
 			DispatchMessage(&msg);
 		}
 	}
+}
 
-	//	pSample->OnDestroy();
+void Application::Terminate()
+{
+
 }
 }

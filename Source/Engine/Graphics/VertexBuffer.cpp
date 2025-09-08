@@ -1,4 +1,4 @@
-#include "VertexBuffer.h"
+#include <Engine/Graphics/VertexBuffer.h>
 
 #include <Engine/Graphics/Renderer.h>
 

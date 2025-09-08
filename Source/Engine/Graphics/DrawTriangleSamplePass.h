@@ -3,11 +3,11 @@
 #include <Engine/Core/CoreMinimal.h>
 #include <Engine/Graphics/Type.h>
 #include <Engine/Graphics/CommandBuffer.h>
+#include <Engine/Graphics/Texture.h>
 
 #include "VertexBuffer.h"
 #include "RenderTexture.h"
 #include "Shader.h"
-#include "Texture.h"
 
 namespace StravaEngine::Graphics
 {

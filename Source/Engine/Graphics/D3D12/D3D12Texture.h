@@ -6,7 +6,7 @@
 #include <Engine/Core/CoreMinimal.h>
 #include <Engine/Core/ArrayList.h>
 #include <Engine/Graphics/Type.h>
-#include "./../Texture.h"
+#include <Engine/Graphics/Texture.h>
 
 namespace StravaEngine::Graphics
 {

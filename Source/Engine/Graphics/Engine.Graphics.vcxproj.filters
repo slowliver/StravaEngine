@@ -146,9 +146,6 @@
     <ClInclude Include="SystemResourceManager.h">
       <Filter>ソース ファイル</Filter>
     </ClInclude>
-    <ClInclude Include="Texture.h">
-      <Filter>ソース ファイル</Filter>
-    </ClInclude>
     <ClInclude Include="D3D12\D3D12Texture.h">
       <Filter>ソース ファイル\D3D12</Filter>
     </ClInclude>
@@ -169,6 +166,12 @@
     </ClInclude>
     <ClInclude Include="..\..\..\External\ocornut\imgui\backends\imgui_impl_win32.h">
       <Filter>ソース ファイル\imgui %28temp%29</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Engine\Graphics\Texture.h">
+      <Filter>ヘッダー ファイル</Filter>
+    </ClInclude>
+    <ClInclude Include="..\..\..\Include\Engine\Graphics\RenderObject.h">
+      <Filter>ヘッダー ファイル</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
